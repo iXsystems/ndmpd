@@ -1,0 +1,22 @@
+java -jar ndmpcopy.jar -srchost 172.17.22.118 -srcuser bart -srcpass ABcd_1234 -srcbutype dump -srcpath /vol/es -dstpath /tmp/restore/es.dump
+
+java -jar ndmpcopy.jar -srchost 172.17.22.77 -srcuser bart -srcpass ABcd_1234 -srcbutype dump -srcpath /vol/vv -dstpath c:\vv.dump
+
+-srcenv FILES=*.*
+java -jar ndmpcopy.jar -srchost 127.0.0.1 -srcuser bart -srcpass ABcd_1234 -srcbutype dump -srcpath /tmp/restore/es.dump -dsthost 172.17.22.118 -dstuser bart -dstpass ABcd_1234 -dstbutype dump -dstpath /vol/es 
+
+java -jar ndmpcopy.jar -srchost 172.17.23.115 -srcuser bart -srcpass oSADS0LKltnG0fDg -srcbutype dump -srcpath /vol/NFSstore/ -dsthost 172.17.22.77 -dstuser bart -dstpass ABcd_1234 -dstpath /vol/vv/                                                                                   
+
+java -jar ndmpcopy.jar -srchost 172.17.22.77 -srcuser bart -srcpass ABcd_1234  -srcbutype dump -srcpath /vol/vv/ -dsthost 172.17.23.115 -dstuser bart -dstpass ABcd_1234 -dstpath /vol/es/ -dstenv TYPE=dump -dstenv RECURSIVE=Y -dstenv FILESYSTEM=/vol/es/                                                                                  
+
+java -jar ndmpcopy.jar -srchost 172.17.22.118 -srcuser bart -srcpass ABcd_1234 -srcbutype dump -srcpath /vol/es/ -dsthost 172.17.22.77 -dstuser bart -dstpass ABcd_1234 -dstpath /vol/vv/ -dstenv TYPE=dump -dstenv RECURSIVE=Y -dstenv FILESYSTEM=/vol/es/
+
+>java -jar ndmpcopy.jar -srchost 172.17.22.77 -srcuser bart -srcpass ABcd_1234  -srcbutype dump -srcpath /vol/vv/ -dsthost 172.17.22.118 -dstuser bart -dstpass ABcd_1234 -dstpath /vol/es/
+  -dstenv TYPE=dump -dstenv RECURSIVE=Y -dstenv FILESYSTEM=/vol/es/ -srcenv TYPE=dump -srcenv RECURSIVE=Y -srcenv HIST=Y
+  
+  
+  java -jar ndmpcopy.jar -srchost 172.17.22.81 -srcuser bart -srcpass ABcd_1234 -srcpath /share/ndmp_spa/ -srcbutype dump -srcenv TYPE=dump -srcenv RECURSIVE=Y -srcenv HIST=Y -dstenv FILESYSTEM=/share/ndmp_spa/ -dsthost 172.17.22.67 -dstuser bart -dstpass ABcd_1234 -dstpath /share/ndmp_spb/ -dstbutype dump -dstenv TYPE=dump -dstenv RECURSIVE=Y -dstenv FILESYSTEM=/share/ndmp_spb/
+  
+  
+   java -jar ndmpcopy.jar -srchost 172.17.22.67 -srcuser bart -srcpass ABcd_1234 -srcpath /share/ndmpd_spa/ -srcbutype dump -srcenv TYPE=dump -srcenv RECURSIVE=Y -srcenv HIST=Y -dstenv FILESYSTEM=/share/ndmpd_spa/ -dsthost 172.17.22.67 -dstuser bart -dstpass ABcd_1234 -dstpath /share/ndmpd_spb/ -dstbutype dump -dstenv TYPE=dump -dstenv RECURSIVE=Y -dstenv FILESYSTEM=/share/ndmpd_spb/
+  

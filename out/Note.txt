@@ -1,0 +1,6 @@
+
+for TS build
+put all lib to /lib
+
+for ES build.
+cp ../../lib_es/libzfs_core.so.2 /lib/

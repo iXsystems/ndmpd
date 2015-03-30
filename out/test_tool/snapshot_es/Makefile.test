@@ -1,0 +1,38 @@
+
+SRCPATH ?= /usr/src
+LIBPATH ?= /usr/lib
+
+CFLAGS+=    -I${SRCPATH}/cddl/contrib/opensolaris/lib/libzpool/common
+CFLAGS+=    -I${SRCPATH}/cddl/compat/opensolaris/include
+CFLAGS+=    -I${SRCPATH}/cddl/compat/opensolaris/lib/libumem
+CFLAGS+=    -I${SRCPATH}/sys/cddl/compat/opensolaris
+CFLAGS+=    -I${SRCPATH}/cddl/contrib/opensolaris/head
+CFLAGS+=    -I${SRCPATH}/cddl/contrib/opensolaris/lib/libuutil/common
+CFLAGS+=    -I${SRCPATH}/cddl/contrib/opensolaris/lib/libzfs/common
+CFLAGS+=    -I${SRCPATH}/cddl/contrib/opensolaris/lib/libumem/common
+CFLAGS+=    -I${SRCPATH}/cddl/contrib/opensolaris/lib/libnvpair
+CFLAGS+=    -I${SRCPATH}/sys/cddl/contrib/opensolaris/uts/common
+CFLAGS+=    -I${SRCPATH}/sys/cddl/contrib/opensolaris/uts/common/fs/zfs
+CFLAGS+=    -I${SRCPATH}/sys/cddl/contrib/opensolaris/uts/common/sys
+CFLAGS+=    -DNEED_SOLARIS_BOOLEAN
+
+LIBS+=  ${LIBPATH}/libzfs.a
+LIBS+=  ${LIBPATH}/libzfs_core.a
+LIBS+=  ${LIBPATH}/libgeom.a
+LIBS+=  ${LIBPATH}/libbsdxml.a
+LIBS+=  ${LIBPATH}/libsbuf.a
+LIBS+=  ${LIBPATH}/libm.a
+LIBS+=  ${LIBPATH}/libnvpair.a
+LIBS+=  ${LIBPATH}/libuutil.a
+LIBS+=  ${LIBPATH}/libutil.a
+LIBS+=  ${LIBPATH}/libavl.a
+LIBS+=  ${LIBPATH}/libpthread.a
+LIBS+=  ${LIBPATH}/libumem.a
+LIBS+=  ${LIBPATH}/libzpool.a
+LIBS+=  ${LIBPATH}/libcrypto.a
+
+all:
+	$(CC) -I.  $(CFLAGS) take.c -o take
+
+clean:
+	rm take
