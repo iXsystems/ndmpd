@@ -95,7 +95,7 @@ void ndmpd_free_env(ndmpd_session_t *session);
 void ndmpd_free_tcp(ndmpd_session_t *session);
 
 void ndmp_session_ref(ndmpd_session_t *session);
-voidndmp_session_unref(ndmpd_session_t *session);
+void ndmp_session_unref(ndmpd_session_t *session);
 
 char *ndmp_new_job_name(char *jname);
 int ndmp_get_cur_bk_time(ndmp_lbr_params_t *nlp, time_t *tp, char *jname);

@@ -104,8 +104,7 @@ static u_longlong_t ndmpd_data_get_info(ndmpd_session_t *session);
 	strcasecmp(fs, MNTTYPE_ZFS) == 0 || \
 	strcasecmp(fs, MNTTYPE_NFS) == 0 || \
 	strcasecmp(fs, MNTTYPE_NFS3) == 0 || \
-	strcasecmp(fs, MNTTYPE_NFS4) == 0 || \
-	strcasecmp(fs, MNTTYPE_EXT4) == 0))
+	strcasecmp(fs, MNTTYPE_NFS4) == 0)) 
 
 #define	MNTTYPE_LEN	10
 
