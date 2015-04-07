@@ -49,17 +49,12 @@
 #include <ndmpd.h>
 #include <dirent.h>
 
-
-
 #include <ndmpd.h>
 #include <ndmpd_tar_v3.h>
 #include <ndmpd_session.h>
 #include <ndmpd_util.h>
 #include <ndmpd_func.h>
-
 #include <ndmpd_fhistory.h>
-
-
 
 #define	N_PATH_ENTRIES	1000
 #define	N_FILE_ENTRIES	N_PATH_ENTRIES
@@ -72,20 +67,15 @@
 /* Figure an average of 16 bytes per file name */
 #define	DIR_NAMEBUF_SIZE	(N_PATH_ENTRIES * 16)
 
-
 static void ndmpd_file_history_cleanup_v3(ndmpd_session_t *session,
     bool_t send_flag);
 static ndmpd_module_params_t *get_params(void *cookie);
 
-
 /*
  * Each file history as a separate message to the client.
  */
-
 /*	defined in ndmpd_tar_v3.c	*/
 extern char *get_bk_path_v3(ndmpd_module_params_t *params);
-
-
 
 /*
  * Check if it's "." or ".."
@@ -101,8 +91,6 @@ rootfs_dot_or_dotdot(char *name)
 
 	return (FALSE);
 }
-
-
 
 /*
  * ************************************************************************
@@ -241,7 +229,6 @@ ndmpd_api_file_history_file_v3(void *cookie, char *name,
 	return (0);
 }
 
-
 /*
  * ndmpd_api_file_history_dir_v3
  *
@@ -263,9 +250,9 @@ ndmpd_api_file_history_file_v3(void *cookie, char *name,
  *  -1 - error
  */
 int
-ndmpd_api_file_history_dir_v3(void *cookie, char *name, u_long node, u_long parent)
+ndmpd_api_file_history_dir_v3(void *cookie, char *name,
+	u_long node, u_long parent)
 {
-
 	ndmpd_log(LOG_DEBUG, "ndmpd_api_file_history_dir_v3");
 
 	ndmpd_session_t *session = (ndmpd_session_t *)cookie;
@@ -333,12 +320,13 @@ ndmpd_api_file_history_dir_v3(void *cookie, char *name, u_long node, u_long pare
 
 	dir_name_entry->fs_type = NDMP_FS_UNIX;
 
-	dir_name_entry->ndmp_file_name_v3_u.unix_name = &session->ns_fh_v3.fh_dir_name_buf[session->ns_fh_v3.fh_dir_name_buf_index];
+	dir_name_entry->ndmp_file_name_v3_u.unix_name =
+		&session->ns_fh_v3.fh_dir_name_buf[session->ns_fh_v3.fh_dir_name_buf_index];
 
-	(void) strlcpy(&session->ns_fh_v3.fh_dir_name_buf[session->ns_fh_v3.fh_dir_name_buf_index], name, PATH_NAMEBUF_SIZE);
+	(void) strlcpy(&session->ns_fh_v3.fh_dir_name_buf[session->ns_fh_v3.fh_dir_name_buf_index],
+		name, PATH_NAMEBUF_SIZE);
 
 	session->ns_fh_v3.fh_dir_name_buf_index += PATH_NAMEBUF_SIZE ;
-	//session->ns_fh_v3.fh_dir_name_buf_index += strlen(name)+1 ;
 
 	dir_entry->names.names_len = 1;
 	dir_entry->names.names_val = dir_name_entry;
@@ -349,7 +337,6 @@ ndmpd_api_file_history_dir_v3(void *cookie, char *name, u_long node, u_long pare
 
 	return (0);
 }
-
 
 /*
  * ndmpd_api_file_history_node_v3
@@ -450,8 +437,6 @@ ndmpd_api_file_history_node_v3(void *cookie, u_long node,
 	file_stat_entry->owner = file_stat->st_uid;
 	file_stat_entry->group = file_stat->st_gid;
 
-	// solaris have some issue on this.
-//	file_stat_entry->fattr = file_stat->st_mode & 0x0fff;
 	file_stat_entry->fattr = file_stat->st_mode;
 	file_stat_entry->size =
 	    long_long_to_quad((u_longlong_t)file_stat->st_size);
@@ -467,13 +452,11 @@ ndmpd_api_file_history_node_v3(void *cookie, u_long node,
 	return (0);
 }
 
-
 /*
  * ************************************************************************
  * NDMP V4 HANDLERS
  * ************************************************************************
  */
-
 
 /*
  * ndmpd_fhpath_v3_cb
@@ -514,7 +497,6 @@ ndmpd_fhpath_v3_cb(lbr_fhlog_call_backs_t *cbp, char *path, struct stat *stp,
 	 * should add file filter here?????
 	 *
 	 * */
-
 	if (NLP_ISSET(nlp, NLPF_FH)) {
 		if (!NLP_ISSET(nlp, NLPF_DIRECT)) {
 			ndmpd_log(LOG_DEBUG, "DAR NOT SET!");
@@ -536,7 +518,6 @@ ndmpd_fhpath_v3_cb(lbr_fhlog_call_backs_t *cbp, char *path, struct stat *stp,
 	return (err);
 }
 
-
 /*
  * ndmpd_fhdir_v3_cb
  *
@@ -545,7 +526,6 @@ ndmpd_fhpath_v3_cb(lbr_fhlog_call_backs_t *cbp, char *path, struct stat *stp,
 int
 ndmpd_fhdir_v3_cb(lbr_fhlog_call_backs_t *cbp, char *dir, struct stat *stp)
 {
-
 	int err;
 	u_long ino, pino;
 	u_long pos;
@@ -556,7 +536,6 @@ ndmpd_fhdir_v3_cb(lbr_fhlog_call_backs_t *cbp, char *dir, struct stat *stp)
 	char path[PATH_MAX];
 	struct dirent *entry;
 	struct stat statbuf;
-
 
 	ndmpd_log(LOG_DEBUG, "ndmpd_fhdir_v3_cb");
 	if (!cbp) {
@@ -582,18 +561,14 @@ ndmpd_fhdir_v3_cb(lbr_fhlog_call_backs_t *cbp, char *dir, struct stat *stp)
 	if (!NLP_ISSET(nlp, NLPF_FH))
 		return (0);
 
-
-
 	params = nlp->nlp_params;
 	if (!params || !params->mp_file_history_dir_func)
 		return (-1);
 
-
-	if (stp->st_ino == nlp->nlp_bkdirino){
+	if (stp->st_ino == nlp->nlp_bkdirino) {
 		pino = ROOT_INODE;
-	}else
+	} else
 		pino = stp->st_ino;
-
 
 	err = 0;
 
@@ -601,35 +576,29 @@ ndmpd_fhdir_v3_cb(lbr_fhlog_call_backs_t *cbp, char *dir, struct stat *stp)
 	if (dirp == NULL)
 		return (0);
 
-
-    while((entry = readdir(dirp)) != NULL) {
-
+	while((entry = readdir(dirp)) != NULL) {
 		ino=entry->d_fileno;
 
 		if (pino == ROOT_INODE) {
 			if (rootfs_dot_or_dotdot(entry->d_name))
 				ino = ROOT_INODE;
 		} else if (ino == nlp->nlp_bkdirino && IS_DOTDOT( entry->d_name)) {
-			ndmpd_log(LOG_DEBUG, "entry->d_name(%s): %lu", entry->d_name, ino);
+			ndmpd_log(LOG_DEBUG, "entry->d_name(%s): %lu",
+				entry->d_name, ino);
 			ino = ROOT_INODE;
 		}
 
-		err = (*params->mp_file_history_dir_func)(cbp->fh_cookie, entry->d_name, ino, pino);
+		err = (*params->mp_file_history_dir_func)(cbp->fh_cookie,
+			entry->d_name, ino, pino);
+
 		if (err < 0) {
 			ndmpd_log(LOG_DEBUG, "\"%s\": %d", dir, err);
 			break;
 		}
-
-
-
-
-
     }
-
 	(void) closedir(dirp);
 	return (err);
 }
-
 
 /*
  * ndmpd_fhnode_v3_cb
@@ -669,8 +638,6 @@ ndmpd_fhnode_v3_cb(lbr_fhlog_call_backs_t *cbp, char *dir, char *file,
 	if (err != 0)
 		return (0);
 
-
-
 	ndmpd_log(LOG_DEBUG, "d(%s), f(%s)", dir, file);
 
 	err = 0;
@@ -694,7 +661,6 @@ ndmpd_fhnode_v3_cb(lbr_fhlog_call_backs_t *cbp, char *dir, char *file,
 
 	return (err);
 }
-
 
 /*
  * ndmp_send_recovery_stat_v3
@@ -730,7 +696,6 @@ ndmp_send_recovery_stat_v3(ndmpd_module_params_t *params,
 
 	return (rv);
 }
-
 
 /*
  * ndmpd_path_restored_v3
@@ -769,6 +734,7 @@ ndmpd_path_restored_v3(lbr_fhlog_call_backs_t *cbp, char *name,
 		ndmpd_log(LOG_DEBUG, "Invalid idx: %d", idx);
 		return (-1);
 	}
+
 	params = nlp->nlp_params;
 	if (!params || !params->mp_file_recovered_func)
 		return (-1);
@@ -782,15 +748,13 @@ ndmpd_path_restored_v3(lbr_fhlog_call_backs_t *cbp, char *name,
 	 * Note: We should set the nm3_err here.
 	 */
 	if (nlp->nlp_lastidx != idx) {
-		rv = ndmp_send_recovery_stat_v3(params, nlp, nlp->nlp_lastidx,
-		    0);
+		rv = ndmp_send_recovery_stat_v3(params, nlp,
+			nlp->nlp_lastidx, 0);
 		nlp->nlp_lastidx = idx;
 	}
 
 	return (rv);
 }
-
-
 
 /*
  * ndmpd_file_history_init
@@ -841,7 +805,6 @@ ndmpd_file_history_init(ndmpd_session_t *session)
 	session->ns_fh_v3.fh_file_name_buf_index = 0;
 	session->ns_fh_v3.fh_dir_name_buf_index = 0;
 }
-
 
 /*
  * ndmpd_file_history_cleanup_v3
@@ -909,7 +872,6 @@ ndmpd_file_history_cleanup_v3(ndmpd_session_t *session, bool_t send_flag)
 	session->ns_fh_v3.fh_dir_name_buf_index = 0;
 }
 
-
 /*
  * ndmpd_file_history_cleanup
  *
@@ -936,8 +898,8 @@ ndmpd_file_history_cleanup(ndmpd_session_t *session, bool_t send_flag)
  *
  * Callbacks from LBR.
  */
-static ndmpd_module_params_t *
-get_params(void *cookie)
+static ndmpd_module_params_t
+*get_params(void *cookie)
 {
 	ndmp_lbr_params_t *nlp;
 
@@ -946,5 +908,3 @@ get_params(void *cookie)
 
 	return (nlp->nlp_params);
 }
-
-

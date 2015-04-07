@@ -40,8 +40,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <md5.h>
 #include <handler.h>
+#include <md5.h>
 
 #include <ndmpd.h>
 #include <ndmpd_table.h>

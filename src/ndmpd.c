@@ -375,7 +375,7 @@ file_exists(const char * filename)
 {
 	FILE  *file;
 
-    	if (file = fopen(filename, "r")) {
+    	if ((file = fopen(filename, "r"))) {
         	fclose(file);
         	return TRUE;
     	}
