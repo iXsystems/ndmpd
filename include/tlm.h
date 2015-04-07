@@ -44,11 +44,7 @@
 #define	_TLM_H_
 
 #include <rpc/types.h>
-
 #include <limits.h>
-
-//#include <sys/acl.h>
-
 
 #include <stdio.h>
 #include <errno.h>
@@ -58,7 +54,7 @@
 #include <time.h>
 #include <sys/queue.h>
 
-#define	IS_SET(f, m)	(((f) & (m)) != 0)
+#define	IS_SET(f, m) (((f) & (m)) != 0)
 
 #define	TLM_MAX_BACKUP_JOB_NAME	32	/* max size of a job's name */
 //#define	TLM_TAPE_BUFFERS	10	/* number of rotating buffers */
@@ -80,18 +76,12 @@
 #define	APPENDED_ID_MAX	(ID_STR_MAX + 1)
 #define	ACL_ENTRY_SIZE	(ENTRYTYPELEN + ID_STR_MAX + PERMS + APPENDED_ID_MAX)
 
-/*	this is defined in sys/acl.h	*/
+/* this is defined in sys/acl.h	*/
 #define	MAX_ACL_ENTRIES		(1024)	/* max entries of each type */
-#define	TLM_MAX_ACL_TXT	MAX_ACL_ENTRIES * ACL_ENTRY_SIZE
+#define	TLM_MAX_ACL_TXT		MAX_ACL_ENTRIES * ACL_ENTRY_SIZE
 
-
-#ifdef QNAP_TS
-	#define XATTR_SIZE_MAX 65536    /* size of an extended attribute value (64k) */
-#endif
-
-/*	max tlm_ioctl retry count*/
+/* max tlm_ioctl retry count */
 #define	MAXIORETRY	20
-
 
 /* operation flags */
 #define	TLM_OP_CHOOSE_ARCHIVE	0x00000001	/* look for archive bit */
@@ -105,21 +95,20 @@ typedef struct fs_fhandle {
 	char *fh_fpath;
 } fs_fhandle_t;
 
-
 #define	DEFAULT_SLINK_MAX_XFER	(64*1024)
 
 typedef struct	tlm_info {
-	int			ti_init_done;	/* initialization done ? */
-	int			ti_library_count; /* number of libraries */
-	struct tlm_library	*ti_library;	/* first in chain */
-	struct tlm_chain_link	*ti_job_stats;  /* chain of job statistics */
+	int ti_init_done;			/* initialization done ? */
+	int ti_library_count; 			/* number of libraries */
+	struct tlm_library *ti_library;		/* first in chain */
+	struct tlm_chain_link *ti_job_stats;	/* chain of job statistics */
 } tlm_info_t;
 
 typedef struct	tlm_chain_link {
-	struct tlm_chain_link	*tc_next;	/* next blob of statistics */
-	struct tlm_chain_link	*tc_prev;	/* previous blob in the chain */
-	int	tc_ref_count;			/* number of routines */
-	void	*tc_data;			/* the data blob */
+	struct tlm_chain_link *tc_next;	/* next blob of statistics */
+	struct tlm_chain_link *tc_prev;	/* previous blob in the chain */
+	int tc_ref_count;		/* number of routines */
+	void *tc_data;			/* the data blob */
 } tlm_chain_link_t;
 
 #define	TLM_NO_ERRORS			0x00000000
@@ -148,7 +137,6 @@ typedef struct	tlm_chain_link {
 #define	TLM_MOVE			0x00000017
 #define	TLM_SKIP			0x00000018
 #define	TLM_OPEN_ERR			0x00000019
-
 
 #define	TLM_MAX_TAPE_DRIVES	16
 #define	TLM_NAME_SIZE		100
@@ -184,7 +172,6 @@ typedef struct	tlm_tar_hdr {
 } tlm_tar_hdr_t;
 
 
-
 /*
  * The linkflag defines the type of file
  */
@@ -197,8 +184,8 @@ typedef struct	tlm_tar_hdr {
 #define	LF_DIR		'5'		/* Directory */
 #define	LF_FIFO		'6'		/* FIFO special file */
 #define	LF_CONTIG	'7'		/* Contiguous file */
-/* Further link types may be defined later. */
 
+/* Further link types may be defined later. */
 #define	LF_DUMPDIR	'D'
 					/*
 					 * This is a dir entry that contains
@@ -243,17 +230,12 @@ typedef struct	tlm_tar_hdr {
 /*
  * ACL support structure
  *
- * For TS, we will also save extended attributes as a part of ACL.
+ * We will also save extended attributes as a part of ACL.
  *
  */
 typedef struct sec_attr {
 	char attr_type;
 	int 	attr_len;
-//#ifdef QNAP_TS
-//	// the acl in xattr will be save in attr_info too. we will by pass this.
-//	// After TS have rich ACL, everything will be fine.
-//	int		xattr_len;
-//#endif
 	char 	*attr_info;
 
 } sec_attr_t;
@@ -359,13 +341,6 @@ extern int hardlink_q_get(struct hardlink_q *qhead, unsigned long inode,
 extern int hardlink_q_add(struct hardlink_q *qhead, unsigned long inode,
     unsigned long long offset, char *path, int is_tmp);
 
-
-
-
-
-
-
-
 /*
  * To prune a directory when traversing it, this return
  * value should be returned by the callback function in
@@ -430,7 +405,6 @@ typedef void (*ft_log_t)();
  */
 typedef struct fs_traverse {
 	char *ft_path;
-//	char *ft_lpath;
 	unsigned int ft_flags;
 	int (*ft_callbk)();
 	void *ft_arg;
@@ -452,19 +426,5 @@ typedef struct path_list {
 	char *pl_path;
 	struct path_list *pl_next;
 } path_list_t;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 #endif	/* !_TLM_H_ */

@@ -1550,69 +1550,50 @@ struct ndmp_fh_add_node_request_v3 {
 typedef struct ndmp_fh_add_node_request_v3 ndmp_fh_add_node_request_v3;
 
 typedef ndmp_auth_text ndmp_auth_text_v2;
-
 typedef ndmp_auth_text_v3 ndmp_auth_text_v4;
 
 typedef ndmp_auth_md5 ndmp_auth_md5_v2;
-
 typedef ndmp_auth_md5_v3 ndmp_auth_md5_v4;
 
 typedef ndmp_auth_data ndmp_auth_data_v2;
-
 typedef ndmp_auth_data_v3 ndmp_auth_data_v4;
 
 typedef ndmp_connect_open_request ndmp_connect_open_request_v2;
-
 typedef ndmp_connect_open_request ndmp_connect_open_request_v3;
-
 typedef ndmp_connect_open_request ndmp_connect_open_request_v4;
 
 typedef ndmp_connect_open_reply ndmp_connect_open_reply_v2;
-
 typedef ndmp_connect_open_reply ndmp_connect_open_reply_v3;
-
 typedef ndmp_connect_open_reply ndmp_connect_open_reply_v4;
 
 typedef ndmp_connect_client_auth_request ndmp_connect_client_auth_request_v2;
-
 typedef ndmp_connect_client_auth_request_v3 ndmp_connect_client_auth_request_v4;
 
 typedef ndmp_connect_client_auth_reply ndmp_connect_client_auth_reply_v2;
-
 typedef ndmp_connect_client_auth_reply_v3 ndmp_connect_client_auth_reply_v4;
 
 typedef ndmp_connect_server_auth_request ndmp_connect_server_auth_request_v2;
-
 typedef ndmp_connect_server_auth_request ndmp_connect_server_auth_request_v3;
-
 typedef ndmp_connect_server_auth_request ndmp_connect_server_auth_request_v4;
 
 typedef ndmp_connect_server_auth_reply ndmp_connect_server_auth_reply_v2;
-
 typedef ndmp_connect_server_auth_reply ndmp_connect_server_auth_reply_v3;
-
 typedef ndmp_connect_server_auth_reply ndmp_connect_server_auth_reply_v4;
 
 typedef ndmp_config_get_host_info_reply ndmp_config_get_host_info_reply_v2;
-
 typedef ndmp_config_get_host_info_reply_v3 ndmp_config_get_host_info_reply_v4;
 
 typedef ndmp_config_get_butype_attr_request ndmp_config_get_butype_attr_request_v2;
-
 typedef ndmp_config_get_butype_attr_reply ndmp_config_get_butype_attr_reply_v2;
 
 typedef ndmp_config_get_mover_type_reply ndmp_config_get_mover_type_reply_v2;
 
 typedef ndmp_config_get_auth_attr_request ndmp_config_get_auth_attr_request_v2;
-
 typedef ndmp_config_get_auth_attr_request ndmp_config_get_auth_attr_request_v3;
-
 typedef ndmp_config_get_auth_attr_request ndmp_config_get_auth_attr_request_v4;
 
 typedef ndmp_config_get_auth_attr_reply ndmp_config_get_auth_attr_reply_v2;
-
 typedef ndmp_config_get_auth_attr_reply ndmp_config_get_auth_attr_reply_v3;
-
 typedef ndmp_config_get_auth_attr_reply ndmp_config_get_auth_attr_reply_v4;
 
 typedef ndmp_config_get_connection_type_reply_v3 ndmp_config_get_connection_type_reply_v4;
@@ -1630,125 +1611,87 @@ typedef ndmp_config_get_tape_info_reply_v3 ndmp_config_get_tape_info_reply_v4;
 typedef ndmp_config_get_scsi_info_reply_v3 ndmp_config_get_scsi_info_reply_v4;
 
 typedef ndmp_config_get_ext_list_reply ndmp_config_get_ext_list_reply_v4;
-
 typedef ndmp_config_set_ext_list_request ndmp_config_set_ext_list_request_v4;
-
 typedef ndmp_config_set_ext_list_reply ndmp_config_set_ext_list_reply_v4;
 
 typedef ndmp_scsi_open_request ndmp_scsi_open_request_v2;
-
 typedef ndmp_scsi_open_request_v3 ndmp_scsi_open_request_v4;
 
 typedef ndmp_scsi_open_reply ndmp_scsi_open_reply_v2;
-
 typedef ndmp_scsi_open_reply ndmp_scsi_open_reply_v3;
-
 typedef ndmp_scsi_open_reply ndmp_scsi_open_reply_v4;
 
 typedef ndmp_scsi_close_reply ndmp_scsi_close_reply_v2;
-
 typedef ndmp_scsi_close_reply ndmp_scsi_close_reply_v3;
-
 typedef ndmp_scsi_close_reply ndmp_scsi_close_reply_v4;
 
 typedef ndmp_scsi_get_state_reply ndmp_scsi_get_state_reply_v2;
-
 typedef ndmp_scsi_get_state_reply ndmp_scsi_get_state_reply_v3;
-
 typedef ndmp_scsi_get_state_reply ndmp_scsi_get_state_reply_v4;
 
 typedef ndmp_scsi_set_target_request ndmp_scsi_set_target_request_v2;
 
 typedef ndmp_scsi_set_target_reply ndmp_scsi_set_target_reply_v2;
-
 typedef ndmp_scsi_set_target_reply ndmp_scsi_set_target_reply_v3;
 
 typedef ndmp_scsi_reset_device_reply ndmp_scsi_reset_device_reply_v2;
-
 typedef ndmp_scsi_reset_device_reply ndmp_scsi_reset_device_reply_v3;
-
 typedef ndmp_scsi_reset_device_reply ndmp_scsi_reset_device_reply_v4;
 
 typedef ndmp_scsi_reset_bus_reply ndmp_scsi_reset_bus_reply_v2;
-
 typedef ndmp_scsi_reset_bus_reply ndmp_scsi_reset_bus_reply_v3;
 
 typedef ndmp_execute_cdb_request ndmp_scsi_execute_cdb_request_v2;
-
 typedef ndmp_execute_cdb_request ndmp_scsi_execute_cdb_request_v3;
-
 typedef ndmp_execute_cdb_request ndmp_scsi_execute_cdb_request_v4;
 
 typedef ndmp_execute_cdb_reply ndmp_scsi_execute_cdb_reply_v2;
-
 typedef ndmp_execute_cdb_reply ndmp_scsi_execute_cdb_reply_v3;
-
 typedef ndmp_execute_cdb_reply ndmp_scsi_execute_cdb_reply_v4;
 
 typedef ndmp_tape_open_request ndmp_tape_open_request_v2;
-
 typedef ndmp_tape_open_request_v3 ndmp_tape_open_request_v4;
 
 typedef ndmp_tape_open_reply ndmp_tape_open_reply_v2;
-
 typedef ndmp_tape_open_reply ndmp_tape_open_reply_v3;
-
 typedef ndmp_tape_open_reply ndmp_tape_open_reply_v4;
 
 typedef ndmp_tape_close_reply ndmp_tape_close_reply_v2;
-
 typedef ndmp_tape_close_reply ndmp_tape_close_reply_v3;
-
 typedef ndmp_tape_close_reply ndmp_tape_close_reply_v4;
 
 typedef ndmp_tape_get_state_reply ndmp_tape_get_state_reply_v2;
 
 typedef ndmp_tape_mtio_request ndmp_tape_mtio_request_v2;
-
 typedef ndmp_tape_mtio_request ndmp_tape_mtio_request_v3;
-
 typedef ndmp_tape_mtio_request ndmp_tape_mtio_request_v4;
 
 typedef ndmp_tape_mtio_reply ndmp_tape_mtio_reply_v2;
-
 typedef ndmp_tape_mtio_reply ndmp_tape_mtio_reply_v3;
-
 typedef ndmp_tape_mtio_reply ndmp_tape_mtio_reply_v4;
 
 typedef ndmp_tape_write_request ndmp_tape_write_request_v2;
-
 typedef ndmp_tape_write_request ndmp_tape_write_request_v3;
-
 typedef ndmp_tape_write_request ndmp_tape_write_request_v4;
 
 typedef ndmp_tape_write_reply ndmp_tape_write_reply_v2;
-
 typedef ndmp_tape_write_reply ndmp_tape_write_reply_v3;
-
 typedef ndmp_tape_write_reply ndmp_tape_write_reply_v4;
 
 typedef ndmp_tape_read_request ndmp_tape_read_request_v2;
-
 typedef ndmp_tape_read_request ndmp_tape_read_request_v3;
-
 typedef ndmp_tape_read_request ndmp_tape_read_request_v4;
 
 typedef ndmp_tape_read_reply ndmp_tape_read_reply_v2;
-
 typedef ndmp_tape_read_reply ndmp_tape_read_reply_v3;
-
 typedef ndmp_tape_read_reply ndmp_tape_read_reply_v4;
 
 typedef ndmp_tape_execute_cdb_request ndmp_tape_execute_cdb_request_v2;
-
 typedef ndmp_tape_execute_cdb_request ndmp_tape_execute_cdb_request_v3;
-
 typedef ndmp_tape_execute_cdb_request ndmp_tape_execute_cdb_request_v4;
 
 typedef ndmp_tape_execute_cdb_reply ndmp_tape_execute_cdb_reply_v2;
-
 typedef ndmp_tape_execute_cdb_reply ndmp_tape_execute_cdb_reply_v3;
-
 typedef ndmp_tape_execute_cdb_reply ndmp_tape_execute_cdb_reply_v4;
 
 typedef ndmp_fc_addr_v3 ndmp_fc_addr;
@@ -1758,71 +1701,49 @@ typedef ndmp_ipc_addr_v3 ndmp_ipc_addr;
 typedef ndmp_mover_get_state_reply ndmp_mover_get_state_reply_v2;
 
 typedef ndmp_mover_listen_request ndmp_mover_listen_request_v2;
-
 typedef ndmp_mover_listen_request ndmp_mover_listen_request_v3;
-
 typedef ndmp_mover_listen_request ndmp_mover_listen_request_v4;
 
 typedef ndmp_mover_listen_reply ndmp_mover_listen_reply_v2;
 
 typedef ndmp_mover_set_record_size_request ndmp_mover_set_record_size_request_v2;
-
 typedef ndmp_mover_set_record_size_request ndmp_mover_set_record_size_request_v3;
-
 typedef ndmp_mover_set_record_size_request ndmp_mover_set_record_size_request_v4;
 
 typedef ndmp_mover_set_record_size_reply ndmp_mover_set_record_size_reply_v2;
-
 typedef ndmp_mover_set_record_size_reply ndmp_mover_set_record_size_reply_v3;
-
 typedef ndmp_mover_set_record_size_reply ndmp_mover_set_record_size_reply_v4;
 
 typedef ndmp_mover_set_window_request ndmp_mover_set_window_request_v2;
-
 typedef ndmp_mover_set_window_request ndmp_mover_set_window_request_v3;
-
 typedef ndmp_mover_set_window_request ndmp_mover_set_window_request_v4;
 
 typedef ndmp_mover_set_window_reply ndmp_mover_set_window_reply_v2;
-
 typedef ndmp_mover_set_window_reply ndmp_mover_set_window_reply_v3;
-
 typedef ndmp_mover_set_window_reply ndmp_mover_set_window_reply_v4;
 
 typedef ndmp_mover_continue_reply ndmp_mover_continue_reply_v2;
-
 typedef ndmp_mover_continue_reply ndmp_mover_continue_reply_v3;
-
 typedef ndmp_mover_continue_reply ndmp_mover_continue_reply_v4;
 
 typedef ndmp_mover_abort_reply ndmp_mover_abort_reply_v2;
-
 typedef ndmp_mover_abort_reply ndmp_mover_abort_reply_v3;
-
 typedef ndmp_mover_abort_reply ndmp_mover_abort_reply_v4;
 
 typedef ndmp_mover_stop_reply ndmp_mover_stop_reply_v2;
-
 typedef ndmp_mover_stop_reply ndmp_mover_stop_reply_v3;
-
 typedef ndmp_mover_stop_reply ndmp_mover_stop_reply_v4;
 
 typedef ndmp_mover_read_request ndmp_mover_read_request_v2;
-
 typedef ndmp_mover_read_request ndmp_mover_read_request_v3;
-
 typedef ndmp_mover_read_request ndmp_mover_read_request_v4;
 
 typedef ndmp_mover_read_reply ndmp_mover_read_reply_v2;
-
 typedef ndmp_mover_read_reply ndmp_mover_read_reply_v3;
-
 typedef ndmp_mover_read_reply ndmp_mover_read_reply_v4;
 
 typedef ndmp_mover_close_reply ndmp_mover_close_reply_v2;
-
 typedef ndmp_mover_close_reply ndmp_mover_close_reply_v3;
-
 typedef ndmp_mover_close_reply ndmp_mover_close_reply_v4;
 
 typedef ndmp_mover_connect_reply_v3 ndmp_mover_connect_reply_v4;
@@ -1830,45 +1751,32 @@ typedef ndmp_mover_connect_reply_v3 ndmp_mover_connect_reply_v4;
 typedef ndmp_data_get_state_reply ndmp_data_get_state_reply_v2;
 
 typedef ndmp_data_start_backup_request ndmp_data_start_backup_request_v2;
-
 typedef ndmp_data_start_backup_request_v3 ndmp_data_start_backup_request_v4;
 
 typedef ndmp_data_start_backup_reply ndmp_data_start_backup_reply_v2;
-
 typedef ndmp_data_start_backup_reply ndmp_data_start_backup_reply_v3;
-
 typedef ndmp_data_start_backup_reply ndmp_data_start_backup_reply_v4;
 
 typedef ndmp_name ndmp_name_v2;
 
 typedef ndmp_data_start_recover_request ndmp_data_start_recover_request_v2;
-
 typedef ndmp_data_start_recover_request_v3 ndmp_data_start_recover_request_v4;
 
 typedef ndmp_data_start_recover_reply ndmp_data_start_recover_reply_v2;
-
 typedef ndmp_data_start_recover_reply ndmp_data_start_recover_reply_v3;
-
 typedef ndmp_data_start_recover_reply ndmp_data_start_recover_reply_v4;
-
 typedef ndmp_data_start_recover_reply ndmp_data_start_recover_filehist_reply_v4;
 
 typedef ndmp_data_abort_reply ndmp_data_abort_reply_v2;
-
 typedef ndmp_data_abort_reply ndmp_data_abort_reply_v3;
-
 typedef ndmp_data_abort_reply ndmp_data_abort_reply_v4;
 
 typedef ndmp_data_stop_reply ndmp_data_stop_reply_v2;
-
 typedef ndmp_data_stop_reply ndmp_data_stop_reply_v3;
-
 typedef ndmp_data_stop_reply ndmp_data_stop_reply_v4;
 
 typedef ndmp_data_get_env_reply ndmp_data_get_env_reply_v2;
-
 typedef ndmp_data_get_env_reply ndmp_data_get_env_reply_v3;
-
 typedef ndmp_data_get_env_reply ndmp_data_get_env_reply_v4;
 
 typedef ndmp_data_listen_request_v3 ndmp_data_listen_request_v4;
@@ -1876,41 +1784,29 @@ typedef ndmp_data_listen_request_v3 ndmp_data_listen_request_v4;
 typedef ndmp_data_connect_reply_v3 ndmp_data_connect_reply_v4;
 
 typedef ndmp_notify_data_halted_request ndmp_notify_data_halted_request_v2;
-
 typedef ndmp_notify_data_halted_request ndmp_notify_data_halted_request_v3;
 
 typedef ndmp_notify_connected_request ndmp_notify_connection_status_request_v2;
-
 typedef ndmp_notify_connected_request ndmp_notify_connection_status_request_v3;
-
 typedef ndmp_notify_connected_request ndmp_notify_connection_status_request_v4;
 
 typedef ndmp_notify_mover_paused_request ndmp_notify_mover_paused_request_v2;
-
 typedef ndmp_notify_mover_paused_request ndmp_notify_mover_paused_request_v3;
-
 typedef ndmp_notify_mover_paused_request ndmp_notify_mover_paused_request_v4;
 
 typedef ndmp_notify_mover_halted_request ndmp_notify_mover_halted_request_v2;
-
 typedef ndmp_notify_mover_halted_request ndmp_notify_mover_halted_request_v3;
 
 typedef ndmp_notify_data_read_request ndmp_notify_data_read_request_v2;
-
 typedef ndmp_notify_data_read_request ndmp_notify_data_read_request_v3;
-
 typedef ndmp_notify_data_read_request ndmp_notify_data_read_request_v4;
 
 typedef ndmp_log_log_request ndmp_log_log_request_v2;
-
 typedef ndmp_log_log_request ndmp_log_log_request_v3;
-
 typedef ndmp_log_log_request ndmp_log_log_request_v4;
 
 typedef ndmp_log_debug_request ndmp_log_debug_request_v2;
-
 typedef ndmp_log_debug_request ndmp_log_debug_request_v3;
-
 typedef ndmp_log_debug_request ndmp_log_debug_request_v4;
 
 typedef ndmp_log_file_request ndmp_log_file_request_v2;
@@ -1922,19 +1818,16 @@ typedef ndmp_dir_v3 ndmp_dir;
 typedef ndmp_node_v3 ndmp_node;
 
 typedef ndmp_fh_add_unix_path_request ndmp_fh_add_unix_path_request_v2;
-
 typedef ndmp_fh_add_unix_path_request ndmp_fh_add_unix_path_request_v3;
 
 typedef ndmp_fh_add_file_request_v3 ndmp_fh_add_file_request_v4;
 
 typedef ndmp_fh_add_unix_dir_request ndmp_fh_add_unix_dir_request_v2;
-
 typedef ndmp_fh_add_unix_dir_request ndmp_fh_add_unix_dir_request_v3;
 
 typedef ndmp_fh_add_dir_request_v3 ndmp_fh_add_dir_request_v4;
 
 typedef ndmp_fh_add_unix_node_request ndmp_fh_add_unix_node_request_v2;
-
 typedef ndmp_fh_add_unix_node_request ndmp_fh_add_unix_node_request_v3;
 
 typedef ndmp_fh_add_node_request_v3 ndmp_fh_add_node_request_v4;
@@ -2261,7 +2154,8 @@ extern  bool_t xdr_ndmp_data_start_recover_request_v4(XDR *, ndmp_data_start_rec
 extern  bool_t xdr_ndmp_data_start_recover_reply_v2(XDR *, ndmp_data_start_recover_reply_v2*);
 extern  bool_t xdr_ndmp_data_start_recover_reply_v3(XDR *, ndmp_data_start_recover_reply_v3*);
 extern  bool_t xdr_ndmp_data_start_recover_reply_v4(XDR *, ndmp_data_start_recover_reply_v4*);
-extern  bool_t xdr_ndmp_data_start_recover_filehist_reply_v4(XDR *, ndmp_data_start_recover_filehist_reply_v4*);
+extern  bool_t xdr_ndmp_data_start_recover_filehist_reply_v4(XDR *,
+		ndmp_data_start_recover_filehist_reply_v4*);
 extern  bool_t xdr_ndmp_data_abort_reply_v2(XDR *, ndmp_data_abort_reply_v2*);
 extern  bool_t xdr_ndmp_data_abort_reply_v3(XDR *, ndmp_data_abort_reply_v3*);
 extern  bool_t xdr_ndmp_data_abort_reply_v4(XDR *, ndmp_data_abort_reply_v4*);

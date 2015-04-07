@@ -52,7 +52,6 @@ extern "C" {
 #endif
 
 /* Magic numbers */
-
 #define	CMN_ASC	0x070701	/* Cpio Magic Number for ASCii header */
 #define	CMN_BIN	070707		/* Cpio Magic Number for Binary header */
 #define	CMN_BBS	0143561		/* Cpio Magic Number for Byte-Swap header */
@@ -63,18 +62,16 @@ extern "C" {
 #define	CMS_LEN	6		/* Cpio Magic String LENgth */
 
 /* Various header and field lengths */
+#define	CHRSZ 76		/* -c hdr size minus filename field */
+#define	ASCSZ 110		/* ASC and CRC hdr size minus filename field */
+#define	TARSZ 512		/* TAR hdr size */
 
-#define	CHRSZ	76		/* -c hdr size minus filename field */
-#define	ASCSZ	110		/* ASC and CRC hdr size minus filename field */
-#define	TARSZ	512		/* TAR hdr size */
-
-#define	HNAMLEN	256	/* maximum filename length for binary and -c headers */
-#define	EXPNLEN	1024	/* maximum filename length for ASC and CRC headers */
-#define	HTIMLEN	2	/* length of modification time field */
-#define	HSIZLEN	2	/* length of file size field */
+#define	HNAMLEN	256		/* maximum filename length for binary and -c headers */
+#define	EXPNLEN	1024		/* maximum filename length for ASC and CRC headers */
+#define	HTIMLEN	2		/* length of modification time field */
+#define	HSIZLEN	2		/* length of file size field */
 
 /* cpio binary header definition */
-
 struct hdr_cpio {
 	short	h_magic,		/* magic number field */
 		h_dev;			/* file system of file */
@@ -91,7 +88,6 @@ struct hdr_cpio {
 };
 
 /* cpio ODC header format */
-
 struct c_hdr {
 	char	c_magic[CMS_LEN],
 		c_dev[6],
@@ -108,7 +104,6 @@ struct c_hdr {
 };
 
 /* -c and CRC header format */
-
 struct Exp_cpio_hdr {
 	char	E_magic[CMS_LEN],
 		E_ino[8],
@@ -128,7 +123,6 @@ struct Exp_cpio_hdr {
 };
 
 /* Tar header structure and format */
-
 #define	TBLOCK	512	/* length of tar header and data blocks */
 #define	TNAMLEN	100	/* maximum length for tar file names */
 #define	TMODLEN	8	/* length of mode field */
@@ -139,7 +133,6 @@ struct Exp_cpio_hdr {
 #define	TCRCLEN	8	/* length of header checksum field */
 
 /* tar header definition */
-
 union tblock {
 	char dummy[TBLOCK];
 	struct tar_hdr {
@@ -163,7 +156,6 @@ union tblock {
 };
 
 /* volcopy tape label format and structure */
-
 #define	VMAGLEN 8
 #define	VVOLLEN 6
 #define	VFILLEN 464
@@ -256,10 +248,10 @@ struct volcopy_label {
  *                      as h_component_len.
  */
 struct xattr_hdr {
-	char	h_version[7];
-	char	h_size[10];
-	char	h_component_len[10];	   /* total length of path component */
-	char	h_link_component_len[10];
+	char h_version[7];
+	char h_size[10];
+	char h_component_len[10];	/* total length of path component */
+	char h_link_component_len[10];
 };
 
 /*
@@ -267,9 +259,9 @@ struct xattr_hdr {
  * filepathNULattrpathNUL[attrpathNULL]...
  */
 struct xattr_buf {
-	char	h_namesz[7];   /* length of h_names */
-	char	h_typeflag;    /* actual typeflag of file being archived */
-	char	h_names[1];	/* filepathNULattrpathNUL... */
+	char h_namesz[7];	/* length of h_names */
+	char h_typeflag;	/* actual typeflag of file being archived */
+	char h_names[1];	/* filepathNULattrpathNUL... */
 };
 
 /*
@@ -290,7 +282,7 @@ struct xattr_buf {
  * _XATTR_CPIO_MODE ORED into the mode field in both
  * character and binary versions of the archive format
  */
-#define	_XATTR_CPIO_MODE	0xB000
+#define	_XATTR_CPIO_MODE 0xB000
 
 #ifdef	__cplusplus
 }

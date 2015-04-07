@@ -51,7 +51,6 @@
 #include <ndmpd.h>
 #include "tlm.h"
 
-
 #ifndef RECORDSIZE
 #define	RECORDSIZE	512
 #endif /* !RECORDSIZE */
@@ -61,9 +60,6 @@
 #define	SLASH	'/'
 
 #define	NDMP_MAX_SELECTIONS	64
-
-
-
 
 typedef struct	tlm_buffer {
 	char	*tb_buffer_data;	/* area to be used for I/O */
@@ -82,7 +78,6 @@ typedef struct	tlm_buffer {
 		tb_read_buf_read;
 	int	tb_errno;	/* I/O error values */
 } tlm_buffer_t;
-
 
 /*
  * Flags for tlm_buffers.
@@ -214,9 +209,6 @@ extern tlm_job_stats_t *tlm_ref_job_stats(char *);
 extern void tlm_un_ref_job_stats(char *);
 extern bool_t tlm_is_excluded(char *, char *, char **);
 
-
-
-
 tlm_buffers_t *tlm_allocate_buffers(bool_t, long);
 tlm_buffer_t *tlm_buffer_advance_in_idx(tlm_buffers_t *);
 tlm_buffer_t *tlm_buffer_advance_out_idx(tlm_buffers_t *);
@@ -237,8 +229,8 @@ tlm_cmd_t *tlm_create_reader_writer_ipc(bool_t, long);
 void tlm_release_reader_writer_ipc(tlm_cmd_t *);
 
 void tlm_cmd_wait(tlm_cmd_t *cmd, uint32_t event_type);
-void	tlm_cmd_signal(tlm_cmd_t *cmd, uint32_t event_type);
-int	tlm_tarhdr_size(void);
+void tlm_cmd_signal(tlm_cmd_t *cmd, uint32_t event_type);
+int tlm_tarhdr_size(void);
 
 typedef int (*path_hist_func_t)(lbr_fhlog_call_backs_t *,
     char *,
@@ -268,7 +260,6 @@ typedef struct {
 	char *ba_sels[NDMP_MAX_SELECTIONS];
 	pthread_barrier_t ba_barrier;
 } tlm_backup_restore_arg_t;
-
 
 extern void write_tar_eof(tlm_cmd_t *);
 

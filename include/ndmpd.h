@@ -43,60 +43,33 @@
 #ifndef _NDMPD_H_
 #define	_NDMPD_H_
 
-
-/*	socket	*/
 #include <netinet/in.h>
-/*	socket defined value	*/
 #include <sys/socket.h>
 #include <string.h> /* memset */
 #include <unistd.h> /* close */
 
-/*	free()	*/
+/* free() */
 #include <stdlib.h>
 
 #include <sys/types.h>
-/*	thread	*/
+/* thread */
 #include <pthread.h>
-/*	ndmp xdr define	*/
+/* ndmp xdr define */
 #include <ndmp.h>
 
 #include <syslog.h>
 
-
-/*	struct stat	*/
+/* struct stat */
 #include <sys/stat.h>
-
-/*	LIST_ENTRY and all LIST operation	*/
+/* LIST_ENTRY and all LIST operation */
 #include <sys/queue.h>
 
-#ifdef QNAP_TS
-	#define __USE_LARGEFILE64
-	#define _LARGEFILE_SOURCE
-	#define _LARGEFILE64_SOURCE
-#endif
-
-
-
 #define	MAX_RECORD_SIZE (126*512)
-#define	REMOTE_RECORD_SIZE    (60*KB)
+#define	REMOTE_RECORD_SIZE (60*KB)
 #define	SCSI_MAX_NAME 32
-
-
-
-/********** ndmpd_connect	**************/
-
-
-
-
-#define	MD5_CHALLENGE_SIZE	64
-#define	MD5_PASS_LIMIT		32
-/********** ndmpd_connect	**************/
-
-
-
-/*	backup */
-#define	MAX_BACKUP_JOB_NAME	32	/* max size of a job's name */
-
+#define	MD5_CHALLENGE_SIZE 64
+#define	MD5_PASS_LIMIT 32
+#define	MAX_BACKUP_JOB_NAME 32	/* max size of a job's name */
 
 /* File handler classes */
 #define	HC_CLIENT	1
@@ -117,23 +90,19 @@
 #define	BUFFER_SIZE	32768
 
 #ifdef EMC_MODEL
-/*	pretend we are a EMC product for Symantec BackupExec*/
-	#define	VENDOR_NAME		"EMC2"
+/* pretend we are a EMC product for Symantec BackupExec */
+	#define	VENDOR_NAME	"EMC2"
 	#define	PRODUCT_NAME	"CELERRA"
-	#define OS_TYPE			"DartOS"
-	#define OS_VERSION		"EMC Celerra File Server.T.6.0.55abc1997"
+	#define OS_TYPE		"DartOS"
+	#define OS_VERSION	"EMC Celerra File Server.T.6.0.55abc1997"
 	#define SOFTWARE_REV 	"T.6.0.55.3"
 #else
-	#define	VENDOR_NAME		"QNAP"
-	#define	PRODUCT_NAME	"ES"
+	#define	VENDOR_NAME	"FreeBSD"
+	#define	PRODUCT_NAME	"FreeBSD"
 	#define OS_TYPE         "BSD"
-	#define OS_VERSION      "QNAP ES 1"
-	#define SOFTWARE_REV    "4.2"
-
+	#define OS_VERSION      "FreeBSD"
+	#define SOFTWARE_REV    "XXX"
 #endif
-
-
-
 
 /*
  * Patchable socket buffer sizes in kilobytes.
@@ -143,23 +112,22 @@
 #define ndmp_sbs  60
 #define ndmp_rbs  60
 
-
 /*
  * NLP flags.
  */
-#define	NLPF_SNAP		(1 << 0)
-#define	NLPF_FH			(1 << 1)
-#define	NLPF_DIRECT		(1 << 2)
-#define	NLPF_UPDATE		(1 << 3)
-#define	NLPF_DUMP		(1 << 4)
-#define	NLPF_TAR		(1 << 5)
-#define	NLPF_ABORTED		(1 << 6)
+#define	NLPF_SNAP	(1 << 0)
+#define	NLPF_FH		(1 << 1)
+#define	NLPF_DIRECT	(1 << 2)
+#define	NLPF_UPDATE	(1 << 3)
+#define	NLPF_DUMP	(1 << 4)
+#define	NLPF_TAR	(1 << 5)
+#define	NLPF_ABORTED	(1 << 6)
 //#define	NLPF_TOKENBK		(1 << 8)
 //#define	NLPF_LBRBK		(1 << 9)
-#define	NLPF_LEVELBK		(1 << 10)
-#define	NLPF_IGNCTIME		(1 << 11)
-#define	NLPF_INCLMTIME		(1 << 12)
-#define	NLPF_RECURSIVE		(1 << 13)
+#define	NLPF_LEVELBK	(1 << 10)
+#define	NLPF_IGNCTIME	(1 << 11)
+#define	NLPF_INCLMTIME	(1 << 12)
+#define	NLPF_RECURSIVE	(1 << 13)
 
 /*
  * Macros on NLP flags.
@@ -181,6 +149,7 @@
  * its elements.
  */
 #define	ARRAY_LEN(a, t)	(sizeof (a) / sizeof (t))
+
 /*
  * Default maximum permitted sequence number for the token-based backup.
  */
@@ -191,19 +160,19 @@
  * It's one less than the ASCII value of 'A'.  The 'A' letter
  * can be used as level in the lbr-type backups.
  */
-#define	NDMP_TOKSEQ_HLIMIT	('A' - 1)
+#define	NDMP_TOKSEQ_HLIMIT ('A' - 1)
 
 
 /*
  * Soft-limit for the sequence number in the token-based backup.
  */
-#define	NDMP_TOKSEQ_SLIMIT	(NDMP_TOKSEQ_HLIMIT - 5)
+#define	NDMP_TOKSEQ_SLIMIT (NDMP_TOKSEQ_HLIMIT - 5)
 
 
 /*
  * Root inode number of dump format in V2.
  */
-#define	ROOT_INODE	2
+#define	ROOT_INODE 2
 
 /*
  * NDMP backup image signature.
@@ -219,7 +188,7 @@
 /* All 1's binary maximum mover window */
 #define	MAX_WINDOW_SIZE	0xffffffffffffffffULL
 
-#define	NDMP_FREE(cp)	{ free((char *)(cp)); (cp) = NULL; }
+#define	NDMP_FREE(cp) 	{ free((char *)(cp)); (cp) = NULL; }
 
 #define	NDMP_YORN(f)	((f) ? 'Y' : 'N')
 #define	NDMP_TORF(f)	((f) ? "TRUE" : "FALSE")
@@ -232,17 +201,12 @@
 		env++; \
 	}
 
-#define	NDMP_CL_ADDR_LEN	24
+#define	NDMP_CL_ADDR_LEN 	24
 #define	NDMP_TCP_ADDR_SIZE	32
 #define	NDMP_TAPE_DEV_NAME	256
 
-
-
 /*	dispatch message, mapping function with it's version	*/
 #define	XDR_AND_SIZE(func) (bool_t(*)(XDR*, ...))xdr_##func, sizeof (func)
-
-
-
 
 /*
  * List of files/directories to be excluded from backup list.
@@ -259,11 +223,11 @@ typedef pthread_cond_t cond_t;
 typedef pthread_rwlock_t rwlock_t;
 
 /*
-		POSXI to SOLARIS
-typedef PTHREAD_MUTEX_INITIALIZER	DEFAULTMUTEX
-typedef PTHREAD_COND_INITIALIZER	DEFAULTCV
-typedef PTHREAD_RWLOCK_INITIALIZER	DEFAULTRWLOCK
-*/
+ *	POSXI to SOLARIS
+ *	typedef PTHREAD_MUTEX_INITIALIZER	DEFAULTMUTEX
+ *	typedef PTHREAD_COND_INITIALIZER	DEFAULTCV
+ *	typedef PTHREAD_RWLOCK_INITIALIZER	DEFAULTRWLOCK
+ */
 #define	mutex_init(l,f,a)	pthread_mutex_init(l,NULL)
 #define	mutex_destroy(l)	pthread_mutex_destroy(l)
 #define	mutex_lock(l)		pthread_mutex_lock(l)
@@ -308,10 +272,10 @@ typedef struct ndmp_connection {
 
 typedef void (*ndmp_con_handler_func_t) (struct ndmp_connection *);
 
-/*	function pointer	*/
+/* function pointer */
 typedef void ndmp_msg_handler_func_t(struct ndmp_connection *, void *);
 
-/*	find the corresponding interface handle.	*/
+/* find the corresponding interface handle. */
 typedef struct ndmp_msg_handler {
 	ndmp_msg_handler_func_t *mh_func;
 	bool_t(*mh_xdr_request) (XDR *xdrs, ...);
@@ -320,7 +284,7 @@ typedef struct ndmp_msg_handler {
 	int mh_sizeof_reply;
 } ndmp_msg_handler_t;
 
-/*	structure of handlers, check on the ndmpd_dispatch file */
+/* structure of handlers, check on the ndmpd_dispatch file */
 typedef struct ndmp_handler {
 	int hd_cnt;
 	struct hd_messages {
@@ -341,15 +305,11 @@ typedef struct ndmp_chkpnt_vol {
 #define	NDMPD_SELECT_MODE_EXCEPTION	4
 
 
-/*	extern functions	*/
+/* extern functions */
 extern int ndmp_connect_list_add(ndmp_connection_t *connection, int *id);
 extern int ndmp_connect_list_del(ndmp_connection_t *connection);
 
-//define a print log function
+/* define a print log function */
 void ndmpd_log(int level, const char *fmt,...);
 
-
-
 #endif /* _NDMPD_H_ */
-
-
