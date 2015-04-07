@@ -52,7 +52,7 @@
 
 int ndmp_process_messages(ndmp_connection_t *connection, bool_t reply_expected);
 
-/*	we do not support NDMP version 1, start from NDMP version 2*/
+/* we do not support NDMP version 1, start from NDMP version 2 */
 int ndmp_ver = 2;
 
 /*
@@ -70,80 +70,62 @@ int ndmp_full_restore_path = 1;
 
 
 /* Debug Function START	*/
-void printXDR(ndmp_connection_t *chanlde,ndmp_notify_connected_request* request_data){
-/*
-	int conn_sock;
-	XDR conn_xdrs;
-	u_long conn_my_sequence;
-	bool_t conn_authorized;
-	bool_t conn_eof;
-	msg_info_t conn_msginfo; 
-	u_short conn_version;
-	void *conn_client_data;
-	pthread_mutex_t conn_lock;
-*/
-	
+void
+printXDR(ndmp_connection_t *chanlde, 
+	ndmp_notify_connected_request *request_data){
 	if (request_data) {
-		ndmpd_log(LOG_DEBUG,"ndmp_notify_connected_request reason = %d",(request_data->reason));
-		ndmpd_log(LOG_DEBUG,"ndmp_notify_connected_request protocol_version = %d ",(request_data->protocol_version));
-		ndmpd_log(LOG_DEBUG,"ndmp_notify_connected_request text_reason = %s ",(request_data->text_reason));
+		ndmpd_log(LOG_DEBUG,"ndmp_notify_connected_request reason = %d",
+			(request_data->reason));
+		ndmpd_log(LOG_DEBUG,"ndmp_notify_connected_request protocol_version = %d ",
+			(request_data->protocol_version));
+		ndmpd_log(LOG_DEBUG,"ndmp_notify_connected_request text_reason = %s ",
+			(request_data->text_reason));
 	}
 	
-	
-	
 	ndmpd_log(LOG_DEBUG, "connection->conn_sock = %d",chanlde->conn_sock);
-	
-	//XDR conn_xdrs;
 	ndmpd_log(LOG_DEBUG, "connection->conn_xdrs");
 	
-		if(chanlde->conn_xdrs.x_op==XDR_ENCODE)
-			ndmpd_log(LOG_DEBUG, "connection->conn_xdrs = XDR_ENCODE");
-		else if(chanlde->conn_xdrs.x_op==XDR_DECODE)
-			ndmpd_log(LOG_DEBUG, "connection->conn_xdrs = XDR_DECODE");
-		else
-			ndmpd_log(LOG_DEBUG, "connection->conn_xdrs = %d", chanlde->conn_xdrs.x_op);
-	
+	if (chanlde->conn_xdrs.x_op==XDR_ENCODE)
+		ndmpd_log(LOG_DEBUG, "connection->conn_xdrs = XDR_ENCODE");
+	else if (chanlde->conn_xdrs.x_op==XDR_DECODE)
+		ndmpd_log(LOG_DEBUG, "connection->conn_xdrs = XDR_DECODE");
+	else
+		ndmpd_log(LOG_DEBUG, "connection->conn_xdrs = %d", chanlde->conn_xdrs.x_op);
 	
 	ndmpd_log(LOG_DEBUG, "connection->conn_my_sequence = %lu", chanlde->conn_my_sequence);
 	ndmpd_log(LOG_DEBUG, "connection->conn_authorized = %d", chanlde->conn_authorized);
 	ndmpd_log(LOG_DEBUG, "connection->conn_eof = %d", chanlde->conn_eof);
-	
-
 	ndmpd_log(LOG_DEBUG, "connection->conn_msginfo");
 	ndmpd_log(LOG_DEBUG, "connection->conn_msginfo.mi_hdr");
-
-	ndmpd_log(LOG_DEBUG, "connection->conn_msginfo.mi_hdr.sequence = %lu",chanlde->conn_msginfo.mi_hdr.sequence);
-	ndmpd_log(LOG_DEBUG, "connection->conn_msginfo.mi_hdr.time_stamp = %lu",chanlde->conn_msginfo.mi_hdr.time_stamp);
-	ndmpd_log(LOG_DEBUG, "connection->conn_msginfo.mi_hdr.message_type = %x",chanlde->conn_msginfo.mi_hdr.message_type);
-	ndmpd_log(LOG_DEBUG, "connection->conn_msginfo.mi_hdr.message = %x",chanlde->conn_msginfo.mi_hdr.message);
-	ndmpd_log(LOG_DEBUG, "connection->conn_msginfo.mi_hdr.reply_sequence = %lu",chanlde->conn_msginfo.mi_hdr.reply_sequence);
-	ndmpd_log(LOG_DEBUG, "connection->conn_msginfo.mi_hdr.error = %x",chanlde->conn_msginfo.mi_hdr.error);
-
-	
+	ndmpd_log(LOG_DEBUG, "connection->conn_msginfo.mi_hdr.sequence = %lu",
+		chanlde->conn_msginfo.mi_hdr.sequence);
+	ndmpd_log(LOG_DEBUG, "connection->conn_msginfo.mi_hdr.time_stamp = %lu",
+		chanlde->conn_msginfo.mi_hdr.time_stamp);
+	ndmpd_log(LOG_DEBUG, "connection->conn_msginfo.mi_hdr.message_type = %x",
+		chanlde->conn_msginfo.mi_hdr.message_type);
+	ndmpd_log(LOG_DEBUG, "connection->conn_msginfo.mi_hdr.message = %x",
+		chanlde->conn_msginfo.mi_hdr.message);
+	ndmpd_log(LOG_DEBUG, "connection->conn_msginfo.mi_hdr.reply_sequence = %lu",
+		chanlde->conn_msginfo.mi_hdr.reply_sequence);
+	ndmpd_log(LOG_DEBUG, "connection->conn_msginfo.mi_hdr.error = %x",
+		chanlde->conn_msginfo.mi_hdr.error);
 	ndmpd_log(LOG_DEBUG, "connection->conn_msginfo.mi_handler - no way to print it.");
-	
-
 	ndmpd_log(LOG_DEBUG, "connection->conn_version=%d",chanlde->conn_version);
-
 }
 
 /* Debug Function END	*/
-
-void *
-ndmp_malloc(size_t size)
+void
+*ndmp_malloc(size_t size)
 {
 	void *data;
 
-	if ((data = calloc(1, size)) == NULL) {
+	if ((data = calloc(1, size)) == NULL)
 		ndmpd_log(LOG_ERR, "Out of memory.");
-	}
 
 	return (data);
 }
 
-
 /**************   send and receive main function for NDMPD XDR *************************/
-
 /*
  * ndmp_send_response
  *
@@ -161,7 +143,8 @@ ndmp_malloc(size_t size)
  * Notes:
  *   - The body is only sent if the error code is NDMP_NO_ERR.
  */
-int ndmp_send_response(ndmp_connection_t *connection_handle, ndmp_error err,
+int 
+ndmp_send_response(ndmp_connection_t *connection_handle, ndmp_error err,
     void *reply)
 {
 	ndmp_connection_t *connection = (ndmp_connection_t *)connection_handle;
@@ -195,7 +178,7 @@ int ndmp_send_response(ndmp_connection_t *connection_handle, ndmp_error err,
 			    header.message);
 			(void) xdrrec_endofrecord(&connection->conn_xdrs, 1);
 			return (-1);
-	}
+		}
 	}
 	(void) xdrrec_endofrecord(&connection->conn_xdrs, 1);
 	return (0);
@@ -234,12 +217,12 @@ ndmp_send_request(ndmp_connection_t *connection_handle, ndmp_message message,
 
 	/* Lookup info necessary for processing this request. */
 	if (!(handler = ndmp_get_handler(connection, message))) {
-
 		ndmpd_log(LOG_DEBUG, "Sending message 0x%x: not supported",
 		    message);
 
 		return (-1);
 	}
+
 	(void) gettimeofday(&time, 0);
 
 	header.sequence = ++(connection->conn_my_sequence);
@@ -250,32 +233,32 @@ ndmp_send_request(ndmp_connection_t *connection_handle, ndmp_message message,
 	header.error = err;
 
 	connection->conn_xdrs.x_op = XDR_ENCODE;
-	/*	copy header to XDR structure	*/
+	/* copy header to XDR structure */
 	if (!xdr_ndmp_header(&connection->conn_xdrs, &header)) {
 		ndmpd_log(LOG_DEBUG,
 		    "Sending message 0x%x: encoding request header", message);
 		(void) xdrrec_endofrecord(&connection->conn_xdrs, 1);
+
 		return (-1);
 	}
-
 
 	ndmpd_log(LOG_DEBUG,"got handler");
 
 	if (err == NDMP_NO_ERR && handler->mh_xdr_request && request_data) {
-
 		if (!(*handler->mh_xdr_request)(&connection->conn_xdrs,request_data)) {
 			ndmpd_log(LOG_DEBUG,"Sending message 0x%x: encoding request body",message);
-
 			(void) xdrrec_endofrecord(&connection->conn_xdrs, 1);
+
 			return (-1);
 		}
 	}
 
-	/*	flush output	*/
+	/* flush output	*/
 	(void) xdrrec_endofrecord(&connection->conn_xdrs, 1);
 
 	if (handler->mh_xdr_reply == 0) {
 		ndmpd_log(LOG_DEBUG, "handler->mh_xdr_reply == 0");
+
 		return (0);
 	}
 
@@ -283,7 +266,7 @@ ndmp_send_request(ndmp_connection_t *connection_handle, ndmp_message message,
 	 * Process messages until the reply to this request has been
 	 * processed.
 	 */
-	for (; ; ) {
+	for (;;) {
 		ndmpd_log(LOG_DEBUG, "ndmp_process_messages");
 
 		r = ndmp_process_messages(connection, TRUE);
@@ -311,6 +294,7 @@ ndmp_send_request(ndmp_connection_t *connection_handle, ndmp_message message,
 				ndmp_free_message(connection_handle);
 				return (-1);
 			}
+
 			if (reply != NULL)
 				*reply = connection->conn_msginfo.mi_body;
 			else
@@ -325,7 +309,6 @@ ndmp_send_request(ndmp_connection_t *connection_handle, ndmp_message message,
 		return (-1);
 	}
 	return(-1);
-
 }
 
 /*
@@ -338,24 +321,15 @@ ndmp_send_request_lock(ndmp_connection_t *connection_handle,
 	int rv;
 	ndmp_connection_t *connection = (ndmp_connection_t *)connection_handle;
 
-
-
 	(void) pthread_mutex_lock(&connection->conn_lock);
-
-
 
 	rv = ndmp_send_request(connection_handle, message, err, request_data,
 	    reply);
 
-
 	(void) pthread_mutex_unlock(&connection->conn_lock);
-
-
 
 	return (rv);
 }
-
-
 
 /*
  * ndmp_recv_msg
@@ -381,11 +355,10 @@ ndmp_recv_msg(ndmp_connection_t *connection)
 
 	(void) xdrrec_skiprecord(&connection->conn_xdrs);
 
-	/*	extract header	*/
+	/* extract header */
 	if (!xdr_ndmp_header(&connection->conn_xdrs,
 	    &connection->conn_msginfo.mi_hdr))
 		return (-1);
-
 
 	/* Lookup info necessary for processing this message. */
 	if ((connection->conn_msginfo.mi_handler = ndmp_get_handler(connection,
@@ -567,9 +540,6 @@ ndmp_free_message(ndmp_connection_t *connection_handle)
 	connection->conn_msginfo.mi_body = 0;
 }
 
-
-
-
 /*
  * Allocate and initialize a connection structure for XDR
  *
@@ -582,8 +552,8 @@ ndmp_free_message(ndmp_connection_t *connection_handle)
  *   ndmp_destroy_xdr_connection().
  */
 
-ndmp_connection_t *
-ndmp_create_xdr_connection(void)
+ndmp_connection_t
+*ndmp_create_xdr_connection(void)
 {
 	ndmp_connection_t *connection;
 
@@ -597,22 +567,21 @@ ndmp_create_xdr_connection(void)
 	connection->conn_authorized = FALSE;
 	connection->conn_eof = FALSE;
 	connection->conn_msginfo.mi_body = 0;
-	/*	we don't support version v1	*/
+
+	/* we don't support version v1 */
 	if(ndmp_ver<2)
 		connection->conn_version = 2;
 	else
 		connection->conn_version = ndmp_ver;
+
 	connection->conn_client_data = 0;
-
 	(void) pthread_mutex_init(&connection->conn_lock, NULL);
-
 	connection->conn_xdrs.x_ops = 0;
-
 
 	xdrrec_create(&connection->conn_xdrs, 0, 0, (caddr_t)connection, ndmp_readit, ndmp_writeit);
 
 	if (connection->conn_xdrs.x_ops == 0) {		
-		/*	free mutex	*/
+		/* free mutex */
 		pthread_mutex_destroy(&connection->conn_lock);
 		(void) close(connection->conn_sock);
 		free(connection);
@@ -635,8 +604,6 @@ ndmp_create_xdr_connection(void)
 void
 ndmp_destroy_xdr_connection(ndmp_connection_t *connection_handle)
 {
-
-
 	ndmp_connection_t *connection = (ndmp_connection_t *)connection_handle;
 
 	xdr_destroy(&connection->conn_xdrs);
@@ -649,8 +616,6 @@ ndmp_destroy_xdr_connection(ndmp_connection_t *connection_handle)
 	}
 	free(connection);
 }
-
-
 
 /*
  * ndmp_process_requests
@@ -668,11 +633,10 @@ ndmp_destroy_xdr_connection(ndmp_connection_t *connection_handle)
 int
 ndmp_process_requests(ndmp_connection_t *connection_handle)
 {
-	int rv;
+	int rv = 0;
 	ndmp_connection_t *connection = (ndmp_connection_t *)connection_handle;
 
 	(void) mutex_lock(&connection->conn_lock);
-	rv = 0;
 	if (ndmp_process_messages(connection, FALSE) < 0)
 		rv = -1;
 
@@ -680,7 +644,6 @@ ndmp_process_requests(ndmp_connection_t *connection_handle)
 
 	return (rv);
 }
-
 
 /*
  * connection_file_handler
@@ -706,9 +669,6 @@ connection_file_handler(void *cookie, int fd, u_long mode)
 	if (ndmp_process_requests(session->ns_connection) < 0)
 		session->ns_eof = TRUE;
 }
-
-
-
 
 /*
  * ndmp_process_messages
@@ -801,11 +761,9 @@ ndmp_process_messages(ndmp_connection_t *connection, bool_t reply_expected)
 
 				continue;
 			}
-			if (connection->conn_msginfo.mi_hdr.message_type != NDMP_MESSAGE_REQUEST){
-				
+			if (connection->conn_msginfo.mi_hdr.message_type != NDMP_MESSAGE_REQUEST) {
 				ndmpd_log(LOG_DEBUG, "received reply: 0x%x",
 					connection->conn_msginfo.mi_hdr.message);
-
 				if (reply_expected == FALSE ||
 				    reply_read == TRUE)
 					ndmpd_log(LOG_DEBUG,"Unexpected reply message: 0x%x",
@@ -830,7 +788,6 @@ ndmp_process_messages(ndmp_connection_t *connection, bool_t reply_expected)
 			continue;
 		}
 		if (connection->conn_msginfo.mi_hdr.message_type!= NDMP_MESSAGE_REQUEST) {
-		
 			ndmpd_log(LOG_DEBUG, "received reply: 0x%x",
 				connection->conn_msginfo.mi_hdr.message);
 
@@ -857,15 +814,14 @@ ndmp_process_messages(ndmp_connection_t *connection, bool_t reply_expected)
 		 */
 		 
 		
-		/*	check if the handler exist and assigned.	*/
+		/* check if the handler exist and assigned. */
 		if (connection->conn_msginfo.mi_handler == NULL ||
 			connection->conn_msginfo.mi_handler->mh_func == NULL) {
-			
 			ndmpd_log(LOG_DEBUG, "No handler for message 0x%x",
 				connection->conn_msginfo.mi_hdr.message);
 
 			(void) ndmp_send_response((ndmp_connection_t *)connection, NDMP_NOT_SUPPORTED_ERR, NULL);
-			/*	free allocated memory before leave the function	*/
+			/* free allocated memory before leave the function */
 			ndmp_free_message((ndmp_connection_t *)connection);
 			continue;
 		}
@@ -873,9 +829,10 @@ ndmp_process_messages(ndmp_connection_t *connection, bool_t reply_expected)
 		 * Call the handler function.
 		 * The handler will send any necessary reply.
 		 */
-		(*connection->conn_msginfo.mi_handler->mh_func) (connection,connection->conn_msginfo.mi_body);
+		(*connection->conn_msginfo.mi_handler->mh_func)
+			(connection,connection->conn_msginfo.mi_body);
 
-		/*	free allocated memory before leave the function	*/
+		/* free allocated memory before leave the function */
 		ndmp_free_message((ndmp_connection_t *)connection);
 
 
@@ -898,7 +855,6 @@ ndmp_process_messages(ndmp_connection_t *connection, bool_t reply_expected)
 	}
 	return (NDMP_PROC_REP);
 }
-
 
 /*
  * tcp_accept
@@ -932,7 +888,6 @@ tcp_accept(int listen_sock, unsigned int *inaddr_p)
 	}
 	return (-1);
 }
-
 
 /*
  * tcp_get_peer
@@ -970,9 +925,6 @@ tcp_get_peer(int sock, unsigned int *inaddr_p, int *port_p)
 
 }
 
-
-
-
 /*
  * ndmp_get_fd
  *
@@ -990,7 +942,6 @@ ndmp_get_fd(ndmp_connection_t *connection_handle)
 {
 	return (((ndmp_connection_t *)connection_handle)->conn_sock);
 }
-
 
 /*
  * ndmp_set_client_data
@@ -1013,7 +964,6 @@ ndmp_set_client_data(ndmp_connection_t *connection_handle, void *client_data)
 	    client_data;
 }
 
-
 /*
  * ndmp_get_client_data
  *
@@ -1027,12 +977,11 @@ ndmp_set_client_data(ndmp_connection_t *connection_handle, void *client_data)
  * Returns:
  *   client data pointer.
  */
-void *
-ndmp_get_client_data(ndmp_connection_t *connection_handle)
+void
+*ndmp_get_client_data(ndmp_connection_t *connection_handle)
 {
 	return (((ndmp_connection_t *)connection_handle)->conn_client_data);
 }
-
 
 /*
  * ndmp_set_version
@@ -1052,7 +1001,6 @@ ndmp_set_version(ndmp_connection_t *connection_handle, u_short version)
 	((ndmp_connection_t *)connection_handle)->conn_version = version;
 }
 
-
 /*
  * ndmp_get_version
  *
@@ -1071,7 +1019,6 @@ ndmp_get_version(ndmp_connection_t *connection_handle)
 	return (((ndmp_connection_t *)connection_handle)->conn_version);
 }
 
-
 /*
  * ndmp_set_authorized
  *
@@ -1089,8 +1036,6 @@ ndmp_set_authorized(ndmp_connection_t *connection_handle, bool_t authorized)
 {
 	((ndmp_connection_t *)connection_handle)->conn_authorized = authorized;
 }
-
-
 
 /*
  * ndmp_check_auth_required
@@ -1117,7 +1062,6 @@ ndmp_check_auth_required(ndmp_message message)
 	return (auth_req);
 }
 
-
 /*
  * ndmp_get_interface
  *
@@ -1131,8 +1075,8 @@ ndmp_check_auth_required(ndmp_message message)
  *   NULL - message not found.
  *   pointer to handler info.
  */
-ndmp_handler_t *
-ndmp_get_interface(ndmp_message message)
+ndmp_handler_t
+*ndmp_get_interface(ndmp_message message)
 {
 	ndmp_handler_t *ni = &ndmp_msghdl_tab[(message >> 8) % INT_MAXCMD];
 
@@ -1148,7 +1092,6 @@ ndmp_get_interface(ndmp_message message)
 
 	return (ni);
 }
-
 
 /*
  * ndmp_get_handler
@@ -1174,13 +1117,13 @@ ndmp_get_handler(ndmp_connection_t *connection, ndmp_message message)
 	ndmpd_log(LOG_DEBUG, "protocol version=%d",ver);
 
 	/* we don't support v1, we'll handle here just for safety.	*/
-	if(ver<2)	ver=2;
+	if(ver<2)
+		ver=2;
 	if (ni)
 		handler = &ni->hd_msgs[message & 0xff].hm_msg_v[ver - 2];
 
 	return (handler);
 }
-
 
 /*
  * ndmp_close
@@ -1199,100 +1142,9 @@ ndmp_close(ndmp_connection_t *connection_handle)
 	ndmp_connection_t *connection = (ndmp_connection_t *)connection_handle;
 
 	if (connection->conn_sock >= 0) {
-
 		(void) mutex_destroy(&connection->conn_lock);
 		(void) close(connection->conn_sock);
 		connection->conn_sock = -1;
 	}
 	connection->conn_eof = TRUE;
 }
-
-
-
-#ifdef QNAP_TS
-
-/*
- *
- *
- *	POSIX FUNCTIONS.
- *
- *
- *
- * */
-
-
-/*
-  * Copy src to string dst of size siz.  At most siz-1 characters
-  * will be copied.  Always NUL terminates (unless siz == 0).
-  * Returns strlen(src); if retval >= siz, truncation occurred.
-  *
-  *
-  * Linux does not implement this
-*/
-size_t
-strlcpy(char * __restrict dst, const char * __restrict src, size_t siz)
-{
-	char *d = dst;
-	const char *s = src;
-	size_t n = siz;
-
-	/* Copy as many bytes as will fit */
-	if (n != 0) {
-		while (--n != 0) {
-			if ((*d++ = *s++) == '\0')
-				break;
-		}
-	}
-
-	/* Not enough room in dst, add NUL and traverse rest of src */
-	if (n == 0) {
-		if (siz != 0)
-			*d = '\0';		/* NUL-terminate dst */
-		while (*s++)
-			;
-	}
-
-	return(s - src - 1);	/* count does not include NUL */
-}
-
-
-/*
- * Appends src to string dst of size siz (unlike strncat, siz is the
- * full size of dst, not space left).  At most siz-1 characters
- * will be copied.  Always NUL terminates (unless siz <= strlen(dst)).
- * Returns strlen(src) + MIN(siz, strlen(initial dst)).
- * If retval >= siz, truncation occurred.
- *
- *
- * Linux does not implement this
- */
-size_t
-strlcat(char * __restrict dst, const char * __restrict src, size_t siz)
-{
-	char *d = dst;
-	const char *s = src;
-	size_t n = siz;
-	size_t dlen;
-
-	/* Find the end of dst and adjust bytes left but don't go past end */
-	while (n-- != 0 && *d != '\0')
-		d++;
-	dlen = d - dst;
-	n = siz - dlen;
-
-	if (n == 0)
-		return(dlen + strlen(s));
-	while (*s != '\0') {
-		if (n != 1) {
-			*d++ = *s;
-			n--;
-		}
-		s++;
-	}
-	*d = '\0';
-
-	return(dlen + (s - src));	/* count does not include NUL */
-}
-
-
-#endif
