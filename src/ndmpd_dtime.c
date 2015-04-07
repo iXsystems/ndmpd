@@ -52,7 +52,6 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
-//#include <libnvpair.h>
 
 #include <ndmpd.h>
 #include <ndmpd_util.h>
@@ -135,6 +134,7 @@ lookup(char *str)
 			return ((cp-months) / 3);
 	return (-1);
 }
+
 /*
  * filecopy - Copy a file
  *
@@ -263,7 +263,6 @@ unctime(char *str, time_t *t)
 	return (0);
 }
 
-
 /*
  * ddates_pathname
  *
@@ -274,7 +273,6 @@ ddates_pathname(char *buf)
 {
 	return (ndmpd_make_bk_dir_path(buf, NDMP_DUMPDATES));
 }
-
 
 /*
  * getline
@@ -323,7 +321,6 @@ getline(FILE *fp, char *line, int llen)
 	return (save);
 }
 
-
 /*
  * get_ddname
  *
@@ -364,7 +361,6 @@ get_ddname(char **bpp)
 	*h++ = '\0';
 	return (save);
 }
-
 
 /*
  * get_ddlevel
@@ -407,7 +403,6 @@ get_ddlevel(char **bpp)
 	return (atoi(save));
 }
 
-
 /*
  * get_ddate
  *
@@ -429,7 +424,6 @@ get_ddate(char **bpp)
 	*bpp += strlen(*bpp);
 	return (save);
 }
-
 
 /*
  * put_ddname
@@ -456,7 +450,6 @@ put_ddname(FILE *fp, char *nm)
 		}
 }
 
-
 /*
  * put_ddlevel
  *
@@ -471,14 +464,13 @@ put_ddlevel(FILE *fp, int level)
 	(void) fprintf(fp, IS_LBR_BKTYPE(level) ? "%c" : "%d", level);
 }
 
-
 /*
  * put_ddate
  *
  * Print the dump date into the dumpdates file.
  */
-static void put_ddate(FILE *fp,
-	time_t t)
+static void 
+put_ddate(FILE *fp, time_t t)
 {
 	char tbuf[64];
 
@@ -487,12 +479,10 @@ static void put_ddate(FILE *fp,
 
 	ndmpd_log(LOG_DEBUG, "[%lu]", t);
 
-
 	(void) ctime_r(&t, tbuf);
 	/* LINTED variable format specifier */
 	(void) fprintf(fp, "%s", tbuf);
 }
-
 
 /*
  * dd_free
@@ -514,7 +504,6 @@ dd_free(dumpdates_t *ddheadp)
 		ddheadp = save;
 	}
 }
-
 
 /*
  * makedumpdate
@@ -556,7 +545,6 @@ makedumpdate(dumpdates_t *ddp, char *tbuf)
 	return (rv);
 }
 
-
 /*
  * getrecord
  *
@@ -583,7 +571,6 @@ getrecord(FILE *fp, dumpdates_t *ddatep, int *recno)
 	if (makedumpdate(ddatep, tbuf) < 0)
 		ndmpd_log(LOG_DEBUG,
 		    "Unknown intermediate format in %s, line %d", tbuf, *recno);
-
 	(*recno)++;
 
 	if (IS_LBR_BKTYPE(ddatep->dd_level & 0xff)) {
@@ -595,7 +582,6 @@ getrecord(FILE *fp, dumpdates_t *ddatep, int *recno)
 
 	return (0);
 }
-
 
 /*
  * readdumptimes
@@ -635,7 +621,6 @@ readdumptimes(FILE *fp, dumpdates_t *ddheadp)
 	return (0);
 }
 
-
 /*
  * dumprecout
  *
@@ -660,7 +645,6 @@ dumprecout(FILE *fp, dumpdates_t *ddp)
 	(void) fputc('\t', fp);
 	put_ddate(fp, ddp->dd_ddate);
 }
-
 
 /*
  * initdumptimes
@@ -718,7 +702,6 @@ initdumptimes(dumpdates_t *ddheadp)
 	return (rv);
 }
 
-
 /*
  * putdumptime
  *
@@ -742,11 +725,10 @@ putdumptime(char *path, int level, time_t ddate)
 	if (!path)
 		return (-1);
 
-	if (IS_LBR_BKTYPE(level)) {
+	if (IS_LBR_BKTYPE(level))
 		ndmpd_log(LOG_DEBUG, "Lbr: [%s][%c][%lu]", path, level, ddate);
-	} else {
+	else
 		ndmpd_log(LOG_DEBUG, "[%s][%d][%lu]", path, level, ddate);
-	}
 
 	if (!ddates_pathname(fname)) {
 		ndmpd_log(LOG_ERR, "Cannot get dumpdate file path name.");
@@ -825,7 +807,6 @@ putdumptime(char *path, int level, time_t ddate)
 	return (0);
 }
 
-
 /*
  * append_dumptime
  *
@@ -892,7 +873,6 @@ append_dumptime(char *fname, char *path, int level, time_t ddate)
 	return (0);
 }
 
-
 /*
  * find_date
  *
@@ -908,7 +888,6 @@ find_date(dumpdates_t *ddp, char *path, int level, time_t t)
 
 	return (ddp);
 }
-
 
 /*
  * Get the dumpdate of the last level backup done on the path.
@@ -989,7 +968,6 @@ ndmpd_get_dumptime(char *path, int *level, time_t *ddate)
 	return (0);
 }
 
-
 /*
  * Put the date and the level of the back up for the
  * specified path in the dumpdates file.  If there is a line
@@ -1004,28 +982,11 @@ int
 ndmpd_put_dumptime(char *path, int level, time_t ddate)
 {
 	ndmpd_log(LOG_DEBUG, "++++++++++++++++ndmpd_put_dumptime+++++++++++++");
-//	char vol[VOL_MAXNAMELEN];
-//	zfs_handle_t *zhp;
 	char tbuf[64];
 	int rv;
 
 	ndmpd_log(LOG_DEBUG, "[%s][%d][%lu]", path, level,
 	    ddate);
-
-	/* Check if this is a ZFS dataset */
-//	(void) mutex_lock(&zlib_mtx);
-//	if ((zlibh != NULL) &&
-//	    (get_zfsvolname(vol, sizeof (vol), path) == 0) &&
-//	    ((zhp = zfs_open(zlibh, vol, ZFS_TYPE_DATASET)) != NULL)) {
-//
-//		(void) ctime_r(&ddate, tbuf, sizeof (tbuf));
-//		rv = zfs_prop_set(zhp, zfs_dumpdate_props[level], tbuf);
-//		zfs_close(zhp);
-//
-//		(void) mutex_unlock(&zlib_mtx);
-//		return (rv);
-//	}
-//	(void) mutex_unlock(&zlib_mtx);
 
 	(void) mutex_lock(&ndmp_dd_lock);
 	rv = putdumptime(path, level, ddate);
@@ -1034,7 +995,6 @@ ndmpd_put_dumptime(char *path, int level, time_t ddate)
 	return (rv);
 }
 
-
 /*
  * Append a backup date record to the specified file.
  */
@@ -1042,28 +1002,11 @@ int
 ndmpd_append_dumptime(char *fname, char *path, int level, time_t ddate)
 {
 	ndmpd_log(LOG_DEBUG, "++++++++++++++++++ndmpd_append_dumptime+++++++++++++++++++++");
-//	char vol[VOL_MAXNAMELEN];
-//	zfs_handle_t *zhp;
 	char tbuf[64];
 	int rv;
 
 	ndmpd_log(LOG_DEBUG, "[%s][%s][%d][%lu]", fname,
 	    path, level, ddate);
-
-	/* Check if this is a ZFS dataset */
-//	(void) mutex_lock(&zlib_mtx);
-//	if ((zlibh != NULL) &&
-//	    (get_zfsvolname(vol, sizeof (vol), path) == 0) &&
-//	    ((zhp = zfs_open(zlibh, vol, ZFS_TYPE_DATASET)) != NULL)) {
-//
-//		(void) ctime_r(&ddate, tbuf, sizeof (tbuf));
-//		rv = zfs_prop_set(zhp, zfs_dumpdate_props[level], tbuf);
-//		zfs_close(zhp);
-//
-//		(void) mutex_unlock(&zlib_mtx);
-//		return (rv);
-//	}
-//	(void) mutex_unlock(&zlib_mtx);
 
 	(void) mutex_lock(&ndmp_dd_lock);
 	rv = append_dumptime(fname, path, level, ddate);

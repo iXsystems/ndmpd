@@ -50,10 +50,6 @@
 #include <ndmpd_fhistory.h>
 #include <ndmpd_tar_v3.h>
 
-
-
-
-
 /*
  * ************************************************************************
  * NDMP V3 HANDLERS
@@ -92,7 +88,6 @@ ndmpd_data_get_env_v3(ndmp_connection_t *connection, void *body)
 		reply.env.env_len = session->ns_data.dd_env_len;
 		reply.env.env_val = session->ns_data.dd_env;
 	}
-
 
 	ndmp_send_reply(connection, &reply, "sending data_get_env reply");
 }
@@ -147,7 +142,6 @@ ndmpd_data_get_state_v3(ndmp_connection_t *connection, void *body)
 	    "sending ndmp_data_get_state_v3 reply");
 }
 
-
 /*
  * ndmpd_data_start_backup_v3
  *
@@ -186,7 +180,6 @@ ndmpd_data_start_backup_v3(ndmp_connection_t *connection, void *body)
 		ndmpd_data_cleanup(session);
 	}
 }
-
 
 /*
  * ndmpd_data_start_recover_v3
@@ -230,7 +223,6 @@ ndmpd_data_start_recover_v3(ndmp_connection_t *connection, void *body)
 	}
 }
 
-
 /*
  * ndmpd_data_abort_v3
  *
@@ -257,7 +249,6 @@ ndmpd_data_abort_v3(ndmp_connection_t *connection, void *body)
 		reply.error = NDMP_ILLEGAL_STATE_ERR;
 		ndmpd_log(LOG_ERR, "Invalid state to process abort request.");
 		break;
-
 	case NDMP_DATA_STATE_ACTIVE:
 		/*
 		 * Don't go to HALTED state yet.  Need to wait for data
@@ -270,7 +261,6 @@ ndmpd_data_abort_v3(ndmp_connection_t *connection, void *body)
 			(*session->ns_data.dd_module.dm_abort_func)(
 			    session->ns_data.dd_module.dm_module_cookie);
 		break;
-
 	case NDMP_DATA_STATE_HALTED:
 	case NDMP_DATA_STATE_LISTEN:
 	case NDMP_DATA_STATE_CONNECTED:
@@ -287,7 +277,6 @@ ndmpd_data_abort_v3(ndmp_connection_t *connection, void *body)
 	ndmp_send_reply(connection, &reply,
 	    "sending data_abort_v3 reply");
 }
-
 
 /*
  * ndmpd_data_stop_v3
@@ -328,7 +317,6 @@ ndmpd_data_stop_v3(ndmp_connection_t *connection, void *body)
 	    "sending data_stop_v3 reply");
 }
 
-
 /*
  * ndmpd_data_listen_v3
  *
@@ -363,9 +351,8 @@ ndmpd_data_listen_v3(ndmp_connection_t *connection, void *body)
 		reply.error = NDMP_ILLEGAL_STATE_ERR;
 		ndmpd_log(LOG_DEBUG,
 		    "Invalid mover state to process listen request.");
-	} else {
+	} else
 		reply.error = NDMP_NO_ERR;
-	}
 
 	if (reply.error != NDMP_NO_ERR) {
 		ndmp_send_reply(connection, &reply,
@@ -377,14 +364,12 @@ ndmpd_data_listen_v3(ndmp_connection_t *connection, void *body)
 	case NDMP_ADDR_LOCAL:
 		reply.data_connection_addr.addr_type = request->addr_type;
 		session->ns_data.dd_data_addr.addr_type = NDMP_ADDR_LOCAL;
-
 		break;
 	case NDMP_ADDR_TCP:
 		if (create_listen_socket_v3(session, &addr, &port) < 0) {
 			reply.error = NDMP_IO_ERR;
 			break;
 		}
-
 		reply.error = NDMP_NO_ERR;
 		reply.data_connection_addr.addr_type = request->addr_type;
 		reply.data_connection_addr.tcp_ip_v3 = htonl(addr);
@@ -392,9 +377,7 @@ ndmpd_data_listen_v3(ndmp_connection_t *connection, void *body)
 		session->ns_data.dd_data_addr.addr_type = NDMP_ADDR_TCP;
 		session->ns_data.dd_data_addr.tcp_ip_v3 = addr;
 		session->ns_data.dd_data_addr.tcp_port_v3 = ntohs(port);
-
 		break;
-
 	default:
 		ndmpd_log(LOG_DEBUG, "Invalid address type: %d",
 		    request->addr_type);
@@ -408,7 +391,6 @@ ndmpd_data_listen_v3(ndmp_connection_t *connection, void *body)
 	ndmp_send_reply(connection, &reply,
 	    "ndmp_data_listen_request_v3 reply");
 }
-
 
 /*
  * ndmpd_data_connect_v3
@@ -466,12 +448,10 @@ ndmpd_data_connect_v3(ndmp_connection_t *connection, void *body)
 			session->ns_mover.md_state = NDMP_MOVER_STATE_ACTIVE;
 		}
 		break;
-
 	case NDMP_ADDR_TCP:
 		reply.error = data_connect_sock_v3(session,
 		    request->addr.tcp_ip_v3, request->addr.tcp_port_v3);
 		break;
-
 	default:
 		reply.error = NDMP_ILLEGAL_ARGS_ERR;
 		ndmpd_log(LOG_DEBUG, "Invalid address type %d",
@@ -484,7 +464,6 @@ ndmpd_data_connect_v3(ndmp_connection_t *connection, void *body)
 	ndmp_send_reply(connection, &reply,
 	    "sending ndmp_data_connect_v3 reply");
 }
-
 
 /*
  * ************************************************************************
@@ -535,7 +514,6 @@ ndmpd_data_get_env_v4(ndmp_connection_t *connection, void *body)
 		ndmpd_log(LOG_DEBUG, "%d reply.env.env_val[%s]=%s",i, reply.env.env_val[i].name, reply.env.env_val[i].value);
 	}
 
-
 	ndmp_send_reply(connection, &reply, "sending data_get_env reply");
 }
 
@@ -566,11 +544,10 @@ ndmpd_data_get_state_v4(ndmp_connection_t *connection, void *body)
 	reply.operation = session->ns_data.dd_operation;
 	reply.state = session->ns_data.dd_state;
 	reply.halt_reason = session->ns_data.dd_halt_reason;
-	if (reply.operation == NDMP_DATA_OP_BACKUP){
+	if (reply.operation == NDMP_DATA_OP_BACKUP) {
 		reply.bytes_processed = long_long_to_quad(
 		    session->ns_data.dd_module.dm_stats.ms_bytes_processed);
-	}
-	else
+	} else
 		reply.bytes_processed =
 		    long_long_to_quad(ndmpd_data_get_info(session));
 
@@ -583,20 +560,23 @@ ndmpd_data_get_state_v4(ndmp_connection_t *connection, void *body)
 	reply.read_offset = long_long_to_quad(session->ns_data.dd_read_offset);
 	reply.read_length = long_long_to_quad(session->ns_data.dd_read_length);
 
-	ndmpd_log(LOG_DEBUG,"reply.operation = %d ",reply.operation);
-	ndmpd_log(LOG_DEBUG,"reply.state = %d ",reply.state);
-	ndmpd_log(LOG_DEBUG,"reply.halt_reason = %d ",reply.halt_reason);
-	ndmpd_log(LOG_DEBUG,"reply.bytes_processed high= %lu low= %lu ",reply.bytes_processed.high,reply.bytes_processed.low);
-	ndmpd_log(LOG_DEBUG,"reply.est_bytes_remainhigh= %lu low= %lu ",reply.est_bytes_remain.high, reply.est_bytes_remain.low);
-	ndmpd_log(LOG_DEBUG,"reply.est_time_remain = %lu ",reply.est_time_remain);
-	ndmpd_log(LOG_DEBUG,"reply.read_offset high= %lu low= %lu ",reply.read_offset.high,reply.read_offset.low);
-	ndmpd_log(LOG_DEBUG,"reply.read_length high= %lu low= %lu ",reply.read_length.high,reply.read_length.low);
-
+	ndmpd_log(LOG_DEBUG,"reply.operation = %d ", reply.operation);
+	ndmpd_log(LOG_DEBUG,"reply.state = %d ", reply.state);
+	ndmpd_log(LOG_DEBUG,"reply.halt_reason = %d ", reply.halt_reason);
+	ndmpd_log(LOG_DEBUG,"reply.bytes_processed high= %lu low= %lu ",
+		reply.bytes_processed.high, reply.bytes_processed.low);
+	ndmpd_log(LOG_DEBUG,"reply.est_bytes_remainhigh= %lu low= %lu ",
+		reply.est_bytes_remain.high, reply.est_bytes_remain.low);
+	ndmpd_log(LOG_DEBUG,"reply.est_time_remain = %lu ", reply.est_time_remain);
+	ndmpd_log(LOG_DEBUG,"reply.read_offset high= %lu low= %lu ", reply.read_offset.high,
+		reply.read_offset.low);
+	ndmpd_log(LOG_DEBUG,"reply.read_length high= %lu low= %lu ", reply.read_length.high,
+		reply.read_length.low);
 	ndmp_send_reply(connection, &reply,
 	    "sending ndmp_data_get_state_v4 reply");
+
 	free(reply.data_connection_addr.tcp_addr_v4);
 }
-
 
 /*
  * ndmpd_data_connect_v4
@@ -629,9 +609,8 @@ ndmpd_data_connect_v4(ndmp_connection_t *connection, void *body)
 	} else if (session->ns_data.dd_state != NDMP_DATA_STATE_IDLE) {
 		reply.error = NDMP_ILLEGAL_STATE_ERR;
 		ndmpd_log(LOG_ERR, "Invalid state to process connect request.");
-	} else {
+	} else
 		reply.error = NDMP_NO_ERR;
-	}
 
 	if (reply.error != NDMP_NO_ERR) {
 		ndmp_send_reply(connection, &reply,
@@ -654,12 +633,10 @@ ndmpd_data_connect_v4(ndmp_connection_t *connection, void *body)
 			session->ns_mover.md_state = NDMP_MOVER_STATE_ACTIVE;
 		}
 		break;
-
 	case NDMP_ADDR_TCP:
 		reply.error = data_connect_sock_v3(session,
 		    request->addr.tcp_ip_v4(0), request->addr.tcp_port_v4(0));
 		break;
-
 	default:
 		reply.error = NDMP_ILLEGAL_ARGS_ERR;
 		ndmpd_log(LOG_DEBUG, "Invalid address type %d",
@@ -697,7 +674,6 @@ ndmpd_data_listen_v4(ndmp_connection_t *connection, void *body)
 
 	request = (ndmp_data_listen_request_v4 *)body;
 
-
 	(void) memset((void*)&reply, 0, sizeof (reply));
 
 	if (session->ns_data.dd_state != NDMP_DATA_STATE_IDLE) {
@@ -708,9 +684,8 @@ ndmpd_data_listen_v4(ndmp_connection_t *connection, void *body)
 		reply.error = NDMP_ILLEGAL_STATE_ERR;
 		ndmpd_log(LOG_ERR,
 		    "Invalid mover state to process listen request.");
-	} else {
+	} else
 		reply.error = NDMP_NO_ERR;
-	}
 
 	if (reply.error != NDMP_NO_ERR) {
 		ndmp_send_reply(connection, &reply,
@@ -722,7 +697,6 @@ ndmpd_data_listen_v4(ndmp_connection_t *connection, void *body)
 	case NDMP_ADDR_LOCAL:
 		reply.connect_addr.addr_type = request->addr_type;
 		session->ns_data.dd_data_addr.addr_type = NDMP_ADDR_LOCAL;
-
 		break;
 	case NDMP_ADDR_TCP:
 		if (create_listen_socket_v3(session, &addr, &port) < 0) {
@@ -750,9 +724,7 @@ ndmpd_data_listen_v4(ndmp_connection_t *connection, void *body)
 		session->ns_data.dd_data_addr.addr_type = NDMP_ADDR_TCP;
 		session->ns_data.dd_data_addr.tcp_ip_v3 = addr;
 		session->ns_data.dd_data_addr.tcp_port_v3 = ntohs(port);
-
 		break;
-
 	default:
 		ndmpd_log(LOG_DEBUG, "Invalid address type: %d",
 		    request->addr_type);
@@ -767,10 +739,7 @@ ndmpd_data_listen_v4(ndmp_connection_t *connection, void *body)
 	    "ndmp_data_listen_request_v4 reply");
 
 	free(reply.connect_addr.tcp_addr_v4);
-
-
 }
-
 
 /*
  * ndmpd_data_start_recover_filehist_v4
@@ -829,7 +798,6 @@ ndmpd_data_error_send(ndmpd_session_t *session, ndmp_data_halt_reason reason)
 	    NDMP_NOTIFY_DATA_HALTED, NDMP_NO_ERR, &req, 0));
 }
 
-
 /*
  * ndmpd_data_error_send_v4
  *
@@ -854,7 +822,6 @@ ndmpd_data_error_send_v4(ndmpd_session_t *session, ndmp_data_halt_reason reason)
 	    NDMP_NOTIFY_DATA_HALTED, NDMP_NO_ERR, &req, 0);
 }
 
-
 /*
  * ndmpd_data_error
  *
@@ -877,7 +844,6 @@ ndmpd_data_error(ndmpd_session_t *session, ndmp_data_halt_reason reason)
 		return;
 
 	if (session->ns_data.dd_operation == NDMP_DATA_OP_BACKUP) {
-
 		/*
 		 * Send/discard any buffered file history data.
 		 */
@@ -906,7 +872,6 @@ ndmpd_data_error(ndmpd_session_t *session, ndmp_data_halt_reason reason)
 
 	if (session->ns_data.dd_data_addr.addr_type == NDMP_ADDR_TCP) {
 		if (session->ns_data.dd_sock != -1) {
-
 			(void) ndmpd_remove_file_handler(session,
 			    session->ns_data.dd_sock);
 			/*
@@ -916,22 +881,17 @@ ndmpd_data_error(ndmpd_session_t *session, ndmp_data_halt_reason reason)
 			if (session->ns_data.dd_sock != session->ns_mover.md_sock){
 				(void) close(session->ns_data.dd_sock);
 			}
-
 			session->ns_data.dd_sock = -1;
 		}
 		if (session->ns_data.dd_listen_sock != -1) {
-
 			(void) ndmpd_remove_file_handler(session,
-			    session->ns_data.dd_listen_sock);
-
+				session->ns_data.dd_listen_sock);
 			(void) close(session->ns_data.dd_listen_sock);
 			session->ns_data.dd_listen_sock = -1;
 		}
-	} else {
+	} else
 		ndmpd_mover_error(session, NDMP_MOVER_HALT_CONNECT_CLOSED);
-	}
 }
-
 
 /*
  * data_accept_connection_v3
@@ -961,9 +921,8 @@ data_accept_connection_v3(void *cookie, int fd, u_long mode)
 	session->ns_data.dd_sock = accept(fd, (struct sockaddr *)&from,
 	    &from_len);
 
-
-	ndmpd_log(LOG_DEBUG, "sin: port %d addr %s",   ntohs(from.sin_port),
-										inet_ntoa(IN_ADDR(from.sin_addr.s_addr)));
+	ndmpd_log(LOG_DEBUG, "sin: port %d addr %s", ntohs(from.sin_port),
+		inet_ntoa(IN_ADDR(from.sin_addr.s_addr)));
 
 	ndmpd_remove_file_handler(session, fd);
 	(void) close(session->ns_data.dd_listen_sock);
@@ -996,7 +955,6 @@ data_accept_connection_v3(void *cookie, int fd, u_long mode)
 
 	session->ns_data.dd_state = NDMP_DATA_STATE_CONNECTED;
 }
-
 
 /*
  * create_listen_socket_v3
@@ -1031,7 +989,6 @@ create_listen_socket_v3(ndmpd_session_t *session, u_long *addr, u_short *port)
 	return (0);
 }
 
-
 /*
  * data_connect_sock_v3
  *
@@ -1062,7 +1019,6 @@ data_connect_sock_v3(ndmpd_session_t *session, u_long addr, u_short port)
 
 	return (NDMP_NO_ERR);
 }
-
 
 /*
  * start_backup_v3
@@ -1100,7 +1056,6 @@ start_backup_v3(ndmpd_session_t *session, char *bu_type, ndmp_pval *env_val,
 		return (NDMP_ILLEGAL_STATE_ERR);
 	}
 
-
 	if (session->ns_data.dd_data_addr.addr_type == NDMP_ADDR_LOCAL) {
 		return (NDMP_NO_DEVICE_ERR);
 	}
@@ -1121,7 +1076,7 @@ start_backup_v3(ndmpd_session_t *session, char *bu_type, ndmp_pval *env_val,
 	params = nlp->nlp_params = ndmp_malloc(sizeof (ndmpd_module_params_t));
 	if (!params)
 		return (NDMP_NO_MEM_ERR);
-	/*	setup params for ndmpd_mover	*/
+	/* setup params for ndmpd_mover	*/
 	params->mp_daemon_cookie = (void *)session;
 	params->mp_module_cookie = &session->ns_data.dd_module.dm_module_cookie;
 	params->mp_protocol_version = session->ns_protocol_version;
@@ -1247,6 +1202,7 @@ start_recover_v3(ndmpd_session_t *session, char *bu_type, ndmp_pval *env_val,
 		ndmpd_log(LOG_ERR, "Can't start new recover in current state.");
 		return (NDMP_ILLEGAL_STATE_ERR);
 	}
+
 	if (strcmp(bu_type, NDMP_DUMP_TYPE) != 0 &&
 	    strcmp(bu_type, NDMP_TAR_TYPE) != 0) {
 		ndmpd_log(LOG_ERR, "Invalid backup type: %s.", bu_type);
@@ -1257,9 +1213,9 @@ start_recover_v3(ndmpd_session_t *session, char *bu_type, ndmp_pval *env_val,
 	nlp = ndmp_get_nlp(session);
 	NDMP_FREE(nlp->nlp_params);
 	params = nlp->nlp_params = ndmp_malloc(sizeof (ndmpd_module_params_t));
-	if (!params) {
+
+	if (!params)
 		return (NDMP_NO_MEM_ERR);
-	}
 
 	reply.error = ndmpd_save_env(session, env_val, env_len);
 	if (reply.error != NDMP_NO_ERR) {
@@ -1286,6 +1242,7 @@ start_recover_v3(ndmpd_session_t *session, char *bu_type, ndmp_pval *env_val,
 	params->mp_get_name_func = ndmpd_api_get_name_v3;
 	params->mp_dispatch_func = ndmpd_api_dispatch;
 	params->mp_done_func = ndmpd_api_done_v3;
+
 	if (session->ns_protocol_version == NDMPV4) {
 		params->mp_log_func_v3 = ndmpd_api_log_v4;
 		params->mp_file_recovered_func = ndmpd_api_file_recovered_v4;
@@ -1332,18 +1289,17 @@ start_recover_v3(ndmpd_session_t *session, char *bu_type, ndmp_pval *env_val,
 		return (NDMP_NO_ERR);
 	}
 
-//	NS_INC(nrs);
 	session->ns_data.dd_state = NDMP_DATA_STATE_ACTIVE;
 	session->ns_data.dd_operation = NDMP_DATA_OP_RECOVER;
 	session->ns_data.dd_abort = FALSE;
-
 
 	pthread_attr_t tattr;
 	pthread_t thread;
 
 	(void) pthread_attr_init(&tattr);
 	(void) pthread_attr_setdetachstate(&tattr, PTHREAD_CREATE_DETACHED);
-	err = pthread_create(&thread, &tattr, (funct_t)session->ns_data.dd_module.dm_start_func,params);
+	err = pthread_create(&thread, &tattr,
+		(funct_t)session->ns_data.dd_module.dm_start_func,params);
 	(void) pthread_attr_destroy(&tattr);
 
 	if (err != 0) {
@@ -1355,8 +1311,6 @@ start_recover_v3(ndmpd_session_t *session, char *bu_type, ndmp_pval *env_val,
 
 	return (NDMP_NO_ERR);
 }
-
-
 
 /*
  * nlp_release_job_stat
@@ -1387,7 +1341,6 @@ nlp_release_job_stat(ndmpd_session_t *session)
 		ndmpd_log(LOG_DEBUG, "JSTAT == NULL");
 }
 
-
 /* *** ndmpd global internal functions *********************************** */
 
 /*
@@ -1416,7 +1369,6 @@ ndmpd_data_init(ndmpd_session_t *session)
 
 	session->ns_data.dd_sock = -1;
 
-
 	session->ns_data.dd_read_offset = 0;
 	session->ns_data.dd_read_length = 0;
 	session->ns_data.dd_module.dm_stats.ms_est_bytes_remaining = 0;
@@ -1431,10 +1383,9 @@ ndmpd_data_init(ndmpd_session_t *session)
 	session->ns_data.dd_bytes_left_to_read = 0LL;
 	session->ns_data.dd_position = 0LL;
 	session->ns_data.dd_discard_length = 0LL;
+
 	return (0);
 }
-
-
 
 /*
  * ndmpd_data_cleanup
@@ -1450,7 +1401,6 @@ ndmpd_data_init(ndmpd_session_t *session)
 void
 ndmpd_data_cleanup(ndmpd_session_t *session)
 {
-
 	if (session->ns_data.dd_listen_sock != -1) {
 		(void) ndmpd_remove_file_handler(session, session->ns_data.dd_listen_sock);
 		(void) close(session->ns_data.dd_listen_sock);
@@ -1472,9 +1422,6 @@ ndmpd_data_cleanup(ndmpd_session_t *session)
 	ndmpd_free_nlist(session);
 }
 
-
-//
-///* *** static functions ******************************************** */
 /*
  * ndmpd_data_get_info
  *
@@ -1492,6 +1439,7 @@ ndmpd_data_get_info(ndmpd_session_t *session)
 	ndmp_lbr_params_t *nlp;
 
 	nlp = ndmp_get_nlp(session);
+
 	if (nlp == NULL)
 		return ((u_longlong_t)0);
 

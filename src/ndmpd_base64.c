@@ -40,15 +40,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <ndmpd_util.h>
-
-
 #include <stdio.h>
-
+#include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include <stdlib.h>
 
+#include <ndmpd_util.h>
 
 #define	NDMP_ENC_LEN	1024
 #define	NDMP_DEC_LEN	256
@@ -68,8 +65,8 @@ ndmp_is_base64(unsigned char c)
 }
 
 /* caller should use the encloded string and then free the string. */
-char *
-ndmp_base64_encode(char *str_to_encode)
+char
+*ndmp_base64_encode(char *str_to_encode)
 {
 	int ret_cnt = 0;
 	int i = 0, j = 0;
@@ -119,8 +116,8 @@ ndmp_base64_encode(char *str_to_encode)
 	return (ret);
 }
 
-char *
-ndmp_base64_decode(char *encoded_str)
+char
+*ndmp_base64_decode(char *encoded_str)
 {
 	int len = strlen(encoded_str);
 	int i = 0, j = 0;

@@ -40,20 +40,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <md5.h>
 #include <handler.h>
-
-
-//	MD5_CTX md;
-#ifdef QNAP_TS
-	#include<openssl/md5.h>
-	#define MD5Init 	MD5_Init
-	#define MD5Update 	MD5_Update
-	#define MD5Final	MD5_Final
-
-#else
-	#include <md5.h>
-#endif
-
 
 #include <ndmpd.h>
 #include <ndmpd_table.h>
@@ -66,13 +54,13 @@
 
 extern int ndmp_ver;
 
-int		ndmp_connect_list_add(ndmp_connection_t *connection, int *id);
+int ndmp_connect_list_add(ndmp_connection_t *connection, int *id);
 
-static int 		ndmpd_connect_auth_text				(char *uname, char *auth_id,char *auth_password);
-static int	 	ndmpd_connect_auth_md5				(char *uname, char *auth_id, char *auth_digest,unsigned char *auth_challenge);
-static struct 	conn_list *ndmp_connect_list_find	(ndmp_connection_t *connection);
-static void 	create_md5_digest					(unsigned char *digest, char *passwd,unsigned char *challenge);
-
+static int ndmpd_connect_auth_text (char *uname, char *auth_id,char *auth_password);
+static int ndmpd_connect_auth_md5 (char *uname, char *auth_id, char *auth_digest,
+	unsigned char *auth_challenge);
+static struct conn_list *ndmp_connect_list_find	(ndmp_connection_t *connection);
+static void create_md5_digest (unsigned char *digest, char *passwd,unsigned char *challenge);
 
 #ifndef LIST_FOREACH
 #define	LIST_FOREACH(var, head, field)					\
@@ -118,7 +106,6 @@ int ndmp_connect_print_verbose = 0;
 void
 ndmpd_connect_open_v3(ndmp_connection_t *connection, void *body)
 {
-
 	ndmp_connect_open_request *request = (ndmp_connect_open_request *)body;
 	ndmp_connect_open_reply reply;
 	ndmpd_session_t *session;
@@ -152,7 +139,6 @@ ndmpd_connect_open_v3(ndmp_connection_t *connection, void *body)
 	}
 }
 
-
 /*
  * ************************************************************************
  * NDMP V3 HANDLERS
@@ -174,7 +160,6 @@ ndmpd_connect_open_v3(ndmp_connection_t *connection, void *body)
 void
 ndmpd_connect_client_auth_v3(ndmp_connection_t *connection, void *body)
 {
-
 	ndmp_connect_client_auth_request_v3 *request;
 	ndmp_connect_client_auth_reply_v3 reply;
 	ndmp_auth_text_v3 *auth;
@@ -198,7 +183,6 @@ ndmpd_connect_client_auth_v3(ndmp_connection_t *connection, void *body)
 		reply.error = NDMP_NOT_SUPPORTED_ERR;
 		//ndmpd_audit_connect(connection, ENOTSUP);
 		break;
-
 	case NDMP_AUTH_TEXT:
 		/* Check authorization.  */
 		if ((uname = ndmpd_get_prop(NDMP_CLEARTEXT_USERNAME)) == NULL ||
@@ -216,9 +200,7 @@ ndmpd_connect_client_auth_v3(ndmp_connection_t *connection, void *body)
 		auth = &request->auth_data.ndmp_auth_data_v3_u.auth_text;
 		reply.error = ndmpd_connect_auth_text(uname, auth->auth_id,
 		    auth->auth_password);
-
 		break;
-
 	case NDMP_AUTH_MD5:
 		/* Check authorization.  */
 		if ((uname = ndmpd_get_prop(NDMP_CRAM_MD5_USERNAME)) == NULL ||
@@ -237,9 +219,7 @@ ndmpd_connect_client_auth_v3(ndmp_connection_t *connection, void *body)
 		md5 = &request->auth_data.ndmp_auth_data_v3_u.auth_md5;
 		reply.error = ndmpd_connect_auth_md5(uname, md5->auth_id,
 		    md5->auth_digest, session->ns_challenge);
-
 		break;
-
 	default:
 		type = "unknown";
 		reply.error = NDMP_ILLEGAL_ARGS_ERR;
@@ -261,7 +241,6 @@ ndmpd_connect_client_auth_v3(ndmp_connection_t *connection, void *body)
 	    "sending ndmp_connect_auth reply");
 }
 
-
 /*
  * ndmpd_connect_server_auth_v3
  *
@@ -277,7 +256,6 @@ ndmpd_connect_client_auth_v3(ndmp_connection_t *connection, void *body)
 void
 ndmpd_connect_server_auth_v3(ndmp_connection_t *connection, void *body)
 {
-
 	ndmp_connect_server_auth_request *request;
 	ndmp_connect_server_auth_reply reply;
 
@@ -294,16 +272,13 @@ ndmpd_connect_server_auth_v3(ndmp_connection_t *connection, void *body)
 	switch (request->client_attr.auth_type) {
 	case NDMP_AUTH_NONE:
 		break;
-
 	case NDMP_AUTH_TEXT:
 		reply.auth_result.ndmp_auth_data_u.auth_text.user = "ndmpd";
 		reply.auth_result.ndmp_auth_data_u.auth_text.password = "ndmpsdk";
 		break;
-
 	case NDMP_AUTH_MD5:
 		reply.error = NDMP_ILLEGAL_ARGS_ERR;
 		break;
-
 	default:
 		reply.error = NDMP_ILLEGAL_ARGS_ERR;
 	}
@@ -311,7 +286,6 @@ ndmpd_connect_server_auth_v3(ndmp_connection_t *connection, void *body)
 	ndmp_send_reply(connection, (void *) &reply,
 	    "sending ndmp_connect_auth reply");
 }
-
 
 /*
  * ndmpd_connect_close_v3
@@ -330,13 +304,11 @@ ndmpd_connect_server_auth_v3(ndmp_connection_t *connection, void *body)
 void
 ndmpd_connect_close_v3(ndmp_connection_t *connection, void *body)
 {
-
 	ndmpd_session_t *session;
 	ndmp_notify_connected_request req;
 
 	if (!(session = (ndmpd_session_t *)ndmp_get_client_data(connection)))
 		return;
-
 
 	/* Send the SHUTDOWN message before closing the connection. */
 	req.reason = NDMP_SHUTDOWN;
@@ -387,13 +359,11 @@ ndmpd_connect_close_v3(ndmp_connection_t *connection, void *body)
 static void
 create_md5_digest(unsigned char *digest, char *passwd, unsigned char *challenge)
 {
-
 	char buf[130];
 	char *p = &buf[0];
 	int len, i;
 	MD5_CTX md;
 	char *pwd;
-
 
 	*p = 0;
 	pwd = passwd;
@@ -412,8 +382,6 @@ create_md5_digest(unsigned char *digest, char *passwd, unsigned char *challenge)
 	MD5Init(&md);
 	MD5Update(&md, buf, 128);
 	MD5Final(digest, &md);
-
-
 }
 
 /*
@@ -428,8 +396,8 @@ create_md5_digest(unsigned char *digest, char *passwd, unsigned char *challenge)
  *   NULL - error
  *   connection list element pointer
  */
-static struct conn_list *
-ndmp_connect_list_find(ndmp_connection_t *connection)
+static struct conn_list
+*ndmp_connect_list_find(ndmp_connection_t *connection)
 {
 	struct conn_list *clp;
 
@@ -493,7 +461,6 @@ ndmp_connect_list_add(ndmp_connection_t *connection, int *id)
 int
 ndmp_connect_list_del(ndmp_connection_t *connection)
 {
-
 	struct conn_list *clp;
 
 	(void) mutex_lock(&cl_mutex);
@@ -509,7 +476,6 @@ ndmp_connect_list_del(ndmp_connection_t *connection)
 
 	return (0);
 }
-
 
 /*
  * ndmpd_connect_auth_text
@@ -549,15 +515,13 @@ ndmpd_connect_auth_text(char *uname, char *auth_id, char *auth_password)
 		}
 	}
 
-	if (rv == NDMP_NO_ERR) {
+	if (rv == NDMP_NO_ERR)
 		ndmpd_log(LOG_DEBUG, "Authorization granted.");
-	} else {
+	else
 		ndmpd_log(LOG_ERR, "Authorization denied.");
-	}
 
 	return (rv);
 }
-
 
 /*
  * ndmpd_connect_auth_md5
@@ -580,18 +544,17 @@ int
 ndmpd_connect_auth_md5(char *uname, char *auth_id, char *auth_digest,
     unsigned char *auth_challenge)
 {
-
 	char *passwd, *dec_passwd;
 	unsigned char digest[16];
 	int rv;
 
-	if (strcmp(uname, auth_id) != 0) {
+	if (strcmp(uname, auth_id) != 0)
 		rv = NDMP_NOT_AUTHORIZED_ERR;
-	} else {
+	else {
 		passwd = ndmpd_get_prop(NDMP_CRAM_MD5_PASSWORD);
-		if (passwd == NULL || *passwd == 0) {
+		if (passwd == NULL || *passwd == 0)
 			rv = NDMP_NOT_AUTHORIZED_ERR;
-		} else {
+		else {
 			dec_passwd = ndmp_base64_decode(passwd);
 
 			if (dec_passwd == NULL || *dec_passwd == 0) {

@@ -40,11 +40,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <ndmpd_callbacks.h>
-
-
-#include <handler.h>
-
 #include <sys/types.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -57,14 +52,9 @@
 #include <ndmpd_session.h>
 #include <ndmpd_util.h>
 #include <ndmpd_func.h>
+#include <ndmpd_callbacks.h>
 
 #include <handler.h>
-
-
-
-
-
-
 
 /*
  * Message Id counter.  This number is increased by MOD_LOGV3 macro.
@@ -72,8 +62,6 @@
  *
  */
 int ndmp_log_msg_id = 0;
-
-
 
 /*
  * ************************************************************************
@@ -106,19 +94,15 @@ ndmpd_api_done_v3(void *cookie, int err)
 	case 0:
 		reason = NDMP_DATA_HALT_SUCCESSFUL;
 		break;
-
 	case EINTR:
 		reason = NDMP_DATA_HALT_ABORTED;
 		break;
-
 	case EIO:
 		reason = NDMP_DATA_HALT_CONNECT_ERROR;
 		break;
-
 	default:
 		reason = NDMP_DATA_HALT_INTERNAL_ERROR;
 	}
-
 	ndmpd_data_error(session, reason);
 }
 
@@ -189,7 +173,7 @@ int
 ndmpd_api_write_v3(void *client_data, char *data, u_long length)
 {
 	ndmpd_session_t *session = (ndmpd_session_t *)client_data;
-	if (session == NULL){
+	if (session == NULL) {
 		ndmpd_log(LOG_DEBUG, "ndmpd_api_write_v3 session == NULL");
 		return (-1);
 	}
@@ -244,7 +228,6 @@ ndmpd_api_read_v3(void *client_data, char *data, u_long length)
 		return (ndmpd_remote_read_v3(session, data, length));
 }
 
-
 /*
  * ndmpd_api_get_name_v3
  *
@@ -259,8 +242,8 @@ ndmpd_api_read_v3(void *client_data, char *data, u_long length)
  *   Pointer to name entry.
  *   0 if requested entry does not exist.
  */
-void *
-ndmpd_api_get_name_v3(void *cookie, u_long name_index)
+void
+*ndmpd_api_get_name_v3(void *cookie, u_long name_index)
 {
 	ndmpd_session_t *session = (ndmpd_session_t *)cookie;
 
@@ -272,7 +255,6 @@ ndmpd_api_get_name_v3(void *cookie, u_long name_index)
 
 	return (&session->ns_data.dd_nlist_v3[name_index]);
 }
-
 
 /*
  * ndmpd_api_file_recovered_v3
@@ -321,7 +303,6 @@ ndmpd_api_file_recovered_v3(void *cookie, char *name, int error)
 	return (0);
 }
 
-
 /*
  * ndmpd_api_seek_v3
  *
@@ -343,7 +324,6 @@ ndmpd_api_seek_v3(void *cookie, u_longlong_t offset, u_longlong_t length)
 {
 	return 0;
 }
-
 
 /*
  * ************************************************************************
@@ -399,7 +379,6 @@ ndmpd_api_log_v4(void *cookie, ndmp_log_type type, u_long msg_id,
 	}
 	return (0);
 }
-
 
 /*
  * ndmpd_api_file_recovered_v4
@@ -463,7 +442,6 @@ ndmpd_api_file_recovered_v4(void *cookie, char *name, int error)
 	return (0);
 }
 
-
 /*
  * ************************************************************************
  * LOCALS
@@ -485,8 +463,8 @@ ndmpd_api_file_recovered_v4(void *cookie, char *name, int error)
  *   NULL if variable not found.
  *
  */
-ndmp_pval *
-ndmpd_api_find_env(void *cookie, char *name)
+ndmp_pval
+*ndmpd_api_find_env(void *cookie, char *name)
 {
 	ndmpd_session_t *session = (ndmpd_session_t *)cookie;
 	u_long i;
@@ -503,7 +481,6 @@ ndmpd_api_find_env(void *cookie, char *name)
 	return (NULL);
 }
 
-
 /*
  * ndmpd_api_get_env
  *
@@ -518,8 +495,8 @@ ndmpd_api_find_env(void *cookie, char *name)
  *   0 if variable not found.
  *
  */
-char *
-ndmpd_api_get_env(void *cookie, char *name)
+char
+*ndmpd_api_get_env(void *cookie, char *name)
 {
 	ndmp_pval *envp;
 
@@ -529,7 +506,6 @@ ndmpd_api_get_env(void *cookie, char *name)
 
 	return (NULL);
 }
-
 
 /*
  * ndmpd_api_add_env
@@ -582,7 +558,6 @@ ndmpd_api_add_env(void *cookie, char *name, char *value)
 	return (0);
 }
 
-
 /*
  * ndmpd_api_set_env
  *
@@ -620,7 +595,6 @@ ndmpd_api_set_env(void *cookie, char *name, char *value)
 	return (rv);
 }
 
-
 /*
  * ndmpd_api_get_name
  *
@@ -649,7 +623,6 @@ ndmpd_api_get_name(void *cookie, u_long name_index)
 	return (&session->ns_data.dd_nlist[name_index]);
 }
 
-
 /*
  * ndmpd_api_dispatch
  *
@@ -676,7 +649,7 @@ ndmpd_api_dispatch(void *cookie, bool_t block)
 	if (session == NULL)
 		return (-1);
 
-	for (; ; ) {
+	for (;;) {
 		err = ndmpd_select(session, block, HC_ALL);
 		if (err < 0 || session->ns_data.dd_abort == TRUE ||
 		    session->ns_eof)
@@ -695,7 +668,6 @@ ndmpd_api_dispatch(void *cookie, bool_t block)
 	}
 	return (-1);
 }
-
 
 /*
  * ndmpd_api_add_file_handler
@@ -727,7 +699,6 @@ ndmpd_api_add_file_handler(void *daemon_cookie, void *cookie, int fd,
 	return (ndmpd_add_file_handler(session, cookie, fd, mode, HC_MODULE,
 	    func));
 }
-
 
 /*
  * ndmpd_api_remove_file_handler

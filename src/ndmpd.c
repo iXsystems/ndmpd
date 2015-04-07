@@ -40,12 +40,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-
 #include <stdio.h>
 
-/*	getopt	*/
+/* getopt */
 #include <unistd.h>
-
 
 #include <ndmpd.h>
 #include <handler.h>
@@ -56,38 +54,35 @@
 #include <ndmpd_prop.h>
 
 #include <signal.h>
-
 #include <assert.h>
 
-// for print log function
+/* for print log function */
 #include <stdarg.h>
 
-extern void	ndmpd_mover_cleanup(ndmpd_session_t *session);
+extern void ndmpd_mover_cleanup(ndmpd_session_t *session);
 
-extern ndmp_connection_t* 	ndmp_create_xdr_connection(void);
-extern void 				ndmp_destroy_xdr_connection(ndmp_connection_t *);
-extern void*				ndmp_malloc(size_t size);
+extern ndmp_connection_t *ndmp_create_xdr_connection(void);
+extern void ndmp_destroy_xdr_connection(ndmp_connection_t *);
+extern void *ndmp_malloc(size_t size);
 
-/*	in ndmpd_func	*/
+/* in ndmpd_func */
 extern int tcp_accept(int listen_sock, unsigned int *inaddr_p);
 extern int ndmp_get_fd(ndmp_connection_t *connection_handle);
 extern int ndmpd_remove_file_handler(ndmpd_session_t *session, int fd);
 extern int ndmpd_select(ndmpd_session_t *session, bool_t block, u_long class_mask);
 extern int ndmp_ver;
 
-/*	defined in hist*/
-extern void	ndmpd_file_history_init(ndmpd_session_t *session);
-extern void	ndmpd_file_history_cleanup(ndmpd_session_t *session, bool_t send_flag);
-
-
+/* defined in hist */
+extern void ndmpd_file_history_init(ndmpd_session_t *session);
+extern void ndmpd_file_history_cleanup(ndmpd_session_t *session, bool_t send_flag);
 
 extern void ndmpd_mover_shut_down(ndmpd_session_t *session);
 
-
 int PRINT_DEBUG_LOG;
 
-
-void ndmpd_log(int level, const char *fmt,...){
+void
+ndmpd_log(int level, const char *fmt,...)
+{
 	va_list arg;
 	va_start(arg, fmt);
 	if (PRINT_DEBUG_LOG){
@@ -102,7 +97,6 @@ void ndmpd_log(int level, const char *fmt,...){
 	va_end(arg);
 }
 
-
 /*
  * ndmpd_worker thread
  *
@@ -113,8 +107,8 @@ void ndmpd_log(int level, const char *fmt,...){
  *   0 - successful connection.
  *  -1 - error.
  */
-void *
-ndmpd_worker(void *ptarg)
+void
+*ndmpd_worker(void *ptarg)
 {
 	int sock;
 	ndmp_connection_t *connection;
@@ -157,7 +151,8 @@ ndmpd_worker(void *ptarg)
  *   This function normally never returns unless there's error.
  *   -1 : error
  */
-int ndmp_run(u_long port, ndmp_con_handler_func_t con_handler_func)
+int
+ndmp_run(u_long port, ndmp_con_handler_func_t con_handler_func)
 {
 	int ns;
 	int on, tmp;
@@ -171,7 +166,6 @@ int ndmp_run(u_long port, ndmp_con_handler_func_t con_handler_func)
 	(void) memset((void *) &sin, 0, sizeof (sin));
 	sin.sin_family = AF_INET;
 
-
 	listenIP = getIPfromNIC(ndmpd_get_prop(NDMP_LISTEN_NIC));
 	printf("listen on IP: %s\n",listenIP);
 	if(strcmp(ndmpd_get_prop(NDMP_SERVE_NIC),"")==0)
@@ -179,14 +173,8 @@ int ndmp_run(u_long port, ndmp_con_handler_func_t con_handler_func)
 	else
 		printf(" Serve on IP: %s\n",getIPfromNIC(ndmpd_get_prop(NDMP_SERVE_NIC)));
 
-
-	//sin.sin_addr.s_addr = INADDR_ANY;
 	sin.sin_addr.s_addr = inet_addr(listenIP);
-
 	sin.sin_port = htons(port);
-
-
-
 	
 	if ((server_socket = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
 		ndmpd_log(LOG_ERR, "Socket error: %m");
@@ -196,7 +184,6 @@ int ndmp_run(u_long port, ndmp_con_handler_func_t con_handler_func)
 	on = 1;
 	(void) setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR,
 	    (char *)&on, sizeof (on));
-
 
 	if (bind(server_socket, (struct sockaddr *)&sin, sizeof (sin)) < 0) {
 		ndmpd_log(LOG_ERR, "bind error: %m");
@@ -211,7 +198,7 @@ int ndmp_run(u_long port, ndmp_con_handler_func_t con_handler_func)
 	
 	signal(SIGCHLD, SIG_IGN); // <-- ignore child fate, don't let it become zombie
 	pid_t childPID;
-	for (; ; ) {
+	for (;;) {
 		if ((ns = tcp_accept(server_socket, &ipaddr)) < 0) {
 			ndmpd_log(LOG_ERR, "tcp_accept error: %m");
 			exit(1);
@@ -222,7 +209,6 @@ int ndmp_run(u_long port, ndmp_con_handler_func_t con_handler_func)
 		 *  use process can save a lot of trouble.
 		 *
 		 * */
-
 		childPID = fork();
 		if(childPID >= 0) // fork was successful
 		{
@@ -245,16 +231,9 @@ int ndmp_run(u_long port, ndmp_con_handler_func_t con_handler_func)
 					close(ns);
 			}
 		}
-
-	}/*	end of listening	*/
-	
-	
+	}/* end of listening */
 	return 0;
 }
-
-
-
-
 
 /*
  * connection_handler
@@ -272,26 +251,22 @@ int ndmp_run(u_long port, ndmp_con_handler_func_t con_handler_func)
 void
 connection_handler(ndmp_connection_t *connection)
 {
-
 	ndmpd_log(LOG_DEBUG, " - connection_handler: handle the connection START - %d",
 						connection->conn_sock);
-	
 	static int conn_id = 1;
 	ndmpd_session_t session;
 	ndmp_notify_connected_request req;
 	int connection_fd;
 	
-
 	(void) memset(&session, 0, sizeof (session));
 	session.ns_connection = connection;
 	session.ns_eof = FALSE;
-	 /*
-	  * The 'protocol_version' must be 1 at first, since the client talks
-	  * to the server in version 1 then they can move to a higher
-	  * protocol version.
-	  */
+	/*
+	 * The 'protocol_version' must be 1 at first, since the client talks
+	 * to the server in version 1 then they can move to a higher
+	 * protocol version.
+	 */
 	session.ns_protocol_version = ndmp_ver;
-
 	session.ns_file_handler_list = 0;
 
 	// no malloc inside
@@ -302,16 +277,16 @@ connection_handler(ndmp_connection_t *connection)
 	 if (ndmpd_mover_init(&session) < 0)
 		 return;
 
-	if (ndmp_lbr_init(&session) < 0){
+	if (ndmp_lbr_init(&session) < 0) {
 		ndmpd_mover_cleanup(&session);
 		return;
 	}
 
-	 /*
-	  * Setup defaults here. The init functions can not set defaults
-	  * since the init functions are called by the stop request handlers
-	  * and client set variables need to persist across data operations.
-	  */
+	/*
+	 * Setup defaults here. The init functions can not set defaults
+	 * since the init functions are called by the stop request handlers
+	 * and client set variables need to persist across data operations.
+	 */
 	session.ns_mover.md_record_size = MAX_RECORD_SIZE;
 
 	ndmp_set_client_data(connection, (void *)&session);
@@ -320,7 +295,7 @@ connection_handler(ndmp_connection_t *connection)
 	req.protocol_version = ndmp_ver;
 	req.text_reason = "";
 
-	/*	Send request to tell the client that we're ready for connection	*/
+	/* Send request to tell the client that we're ready for connection */
 	if (ndmp_send_request_lock(connection, 
 			NDMP_NOTIFY_CONNECTION_STATUS,
 			NDMP_NO_ERR, (void *)&req, 0) == NDMP_PROC_ERR) {
@@ -335,12 +310,12 @@ connection_handler(ndmp_connection_t *connection)
 	connection_fd = ndmp_get_fd(connection);
 
 	/*
-	 * Add the handler function for the connection. This is the main function to retain the session and
-	 * keep it running on the background.
+	 * Add the handler function for the connection. This is the main 
+	 * function to retain the session and keep it running on the
+	 * background.
 	 */
 	if (ndmpd_add_file_handler(&session, (void *)&session, connection_fd,
-								NDMPD_SELECT_MODE_READ, HC_CLIENT, connection_file_handler) != 0)
-	{
+		NDMPD_SELECT_MODE_READ, HC_CLIENT, connection_file_handler) != 0) {
 		ndmpd_log(LOG_DEBUG, "Could not register session handler.");
 		ndmp_lbr_cleanup(&session);
 		ndmpd_mover_cleanup(&session);
@@ -365,9 +340,9 @@ connection_handler(ndmp_connection_t *connection)
 	/*
 	 * wait for connection_file_hanlder to be finished.
 	 *
-	 * */
-	while (session.ns_eof == FALSE){
-		if(ndmpd_select(&session, TRUE, HC_ALL)<0)
+	 */
+	while (session.ns_eof == FALSE) {
+		if(ndmpd_select(&session, TRUE, HC_ALL) < 0)
 			break; // connection broken. terminate this process.
 	}
 
@@ -383,48 +358,43 @@ connection_handler(ndmp_connection_t *connection)
 	 ndmpd_file_history_cleanup(&session, FALSE);
 	 ndmpd_mover_cleanup(&session);
 
-
 	 (void) ndmp_connect_list_del(connection);
 
-	ndmpd_log(LOG_DEBUG, "- connection_handler: handle the connection END - %d",connection_fd);
+	 ndmpd_log(LOG_DEBUG, "- connection_handler: handle the connection END - %d",connection_fd);
 }
 
-int startNDMPD(){	
+int
+startNDMPD()
+{	
 	return ndmp_run(NDMPPORT, connection_handler);
 }
 
 
-bool_t file_exists(const char * filename)
+bool_t
+file_exists(const char * filename)
 {
 	FILE  *file;
-    if ((file = fopen(filename, "r"))) //I'm sure, you meant for READING =)
-    {
-        fclose(file);
-        return TRUE;
-    }
-    return FALSE;
+
+    	if (file = fopen(filename, "r")) {
+        	fclose(file);
+        	return TRUE;
+    	}
+
+    	return FALSE;
 }
 
 int 
 main(int argc, char *argv[])
 {
 	char c;
-
 	struct stat st = {0};
 	char *configFile="/usr/local/etc/ndmpd.conf";
 
-	// check if log folder exist.
-#ifdef QNAP_TS
-	if (stat("./log/", &st) == -1) {
-		mkdir("./log/", 0755);
-		fprintf(stderr, "./log/ created.\n");
-	}
-#else
 	if (stat("/var/log/ndmp", &st) == -1) {
 		mkdir("/var/log/ndmp", 0755);
 		fprintf(stderr, "/var/log/ndmp created.\n");
 	}
-#endif
+
 	PRINT_DEBUG_LOG=0;
 	while ((c = getopt(argc, argv, "df:")) != -1) {
 		switch (c) {
@@ -442,8 +412,7 @@ main(int argc, char *argv[])
 		}
 	}
 
-
-	// check if /etc/ndmpd.conf exists
+	/* check if /usr/local/etc/ndmpd.conf exists */
 	if (stat(configFile, &st) == -1) {
 		fprintf(stderr, "configuration file \"%s\" does not exist.\n",configFile);
 		exit(1);
@@ -455,7 +424,6 @@ main(int argc, char *argv[])
 		exit(1);
 	}
 	ndmp_load_params();
-
 
 	startNDMPD();
 	
