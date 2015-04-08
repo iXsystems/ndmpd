@@ -79,6 +79,7 @@ ndmp_error start_recover_v3(ndmpd_session_t *session, char *bu_type, ndmp_pval *
 void nlp_release_job_stat(ndmpd_session_t *session);
 int ndmpd_data_init(ndmpd_session_t *session);
 void ndmpd_data_cleanup(ndmpd_session_t *session);
+u_longlong_t ndmpd_data_get_info(ndmpd_session_t *session);
 
 /******************** info *****************/
 /*
