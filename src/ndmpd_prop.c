@@ -144,7 +144,7 @@ void setup(char *line){
 }
 
 int
-ndmpd_load_prop(char *filename)
+ndmpd_load_prop(const char *filename)
 {
 	FILE *fp=NULL;
 	char str[128];
