@@ -55,7 +55,7 @@ char *ndmp_base64_decode(char *);
 
 static int ndmp_is_base64(unsigned char);
 
-static char *b64_data =
+static char b64_data[64] =
 	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 static int
@@ -89,7 +89,7 @@ ndmp_base64_encode(char *str_to_encode)
 			arr_4[3] = arr_3[2] & 0x3f;
 
 			for (i = 0; i < 4; i++)
-				ret[ret_cnt++] = b64_data[arr_4[i]];
+				ret[ret_cnt++] = b64_data[(unsigned char)arr_4[i]];
 			i = 0;
 		}
 	}
@@ -106,7 +106,7 @@ ndmp_base64_encode(char *str_to_encode)
 		arr_4[3] = arr_3[2] & 0x3f;
 
 		for (j = 0; j < (i + 1); j++)
-			ret[ret_cnt++] = b64_data[arr_4[j]];
+			ret[ret_cnt++] = b64_data[(unsigned char)arr_4[j]];
 
 		while (i++ < 3)
 			ret[ret_cnt++] = '=';
