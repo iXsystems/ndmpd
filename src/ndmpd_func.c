@@ -463,7 +463,7 @@ ndmp_writeit(void *connection_handle, void *buf, int len)
 	register int n;
 	register int cnt;
 	
-	for (cnt = len; cnt > 0; cnt -= n, buf += n) {
+	for (cnt = len; cnt > 0; cnt -= n, buf = (int *)buf + n) {
 		if ((n = write(connection->conn_sock, buf, cnt)) < 0) {
 			connection->conn_eof = TRUE;
 			return (-1);
