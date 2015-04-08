@@ -87,6 +87,12 @@ void nlp_event_rv_set(ndmpd_session_t *session,int rv);
 void ndmp_send_reply(ndmp_connection_t *connection, void *reply, char *msg);
 int ndmp_mtioctl(int fd, int cmd, int count);
 int  ndmpd_remove_file_handler(ndmpd_session_t *session, int fd);
+int ndmp_connection_closed(int fd);
+void ndmp_check_mover_state(ndmpd_session_t *session);
+void nlp_ref_nw(ndmpd_session_t *session);
+void nlp_unref_nw(ndmpd_session_t *session);
+void nlp_wait_nw(ndmpd_session_t *session);
+
 char *getIPfromNIC(char *nicname);
 int ndmp_create_socket(u_long *addr, u_short *port);
 
