@@ -48,7 +48,6 @@
 #include <ndmpd_func.h>
 #include <ndmpd_session.h>
 
-
 #include <sys/ioctl.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -64,242 +63,8 @@
 #include <string.h>
 #include <sys/mtio.h>
 
-
-
-static int	discard_data_v3(ndmpd_session_t *session, u_long length);
-
+static int discard_data_v3(ndmpd_session_t *session, u_long length);
 int ndmp_max_mover_recsize = MAX_MOVER_RECSIZE; /* patchable */
-
-
-
-/*
- * ************************************************************************
- * NDMP V3 HANDLERS
- * ************************************************************************
- */
-
-/*
- * ndmpd_mover_get_state_v3
- *
- * This handler handles the ndmp_mover_get_state_request.
- * Status information for the mover state machine is returned.
- *
- * Parameters:
- *   connection (input) - connection handle.
- *   body       (input) - request message body.
- *
- * Returns:
- *   void
- */
-///*ARGSUSED*/
-//void
-//ndmpd_mover_get_state_v3(ndmp_connection_t *connection, void *body)
-//{
-//}
-//
-//
-///*
-// * ndmpd_mover_listen_v3
-// *
-// * This handler handles ndmp_mover_listen_requests.
-// * A TCP/IP socket is created that is used to listen for
-// * and accept data connections initiated by a remote
-// * data server.
-// *
-// * Parameters:
-// *   connection (input) - connection handle.
-// *   body       (input) - request message body.
-// *
-// * Returns:
-// *   void
-// */
-//void
-//ndmpd_mover_listen_v3(ndmp_connection_t *connection, void *body)
-//{
-//}
-//
-//
-///*
-// * ndmpd_mover_continue_v3
-// *
-// * This handler handles ndmp_mover_continue_requests.
-// *
-// * Parameters:
-// *   connection (input) - connection handle.
-// *   body       (input) - request message body.
-// *
-// * Returns:
-// *   void
-// */
-///*ARGSUSED*/
-//void
-//ndmpd_mover_continue_v3(ndmp_connection_t *connection, void *body)
-//{
-//}
-//
-//
-///*
-// * ndmpd_mover_abort_v3
-// *
-// * This handler handles mover_abort requests.
-// *
-// * Parameters:
-// *   connection (input) - connection handle.
-// *   body       (input) - request message body.
-// *
-// * Returns:
-// *   void
-// */
-///*ARGSUSED*/
-//void
-//ndmpd_mover_abort_v3(ndmp_connection_t *connection, void *body)
-//{
-//}
-//
-//
-///*
-// * ndmpd_mover_set_window_v3
-// *
-// * This handler handles mover_set_window requests.
-// *
-// *
-// * Parameters:
-// *   connection (input) - connection handle.
-// *   body       (input) - request message body.
-// *
-// * Returns:
-// *   void
-// */
-//void
-//ndmpd_mover_set_window_v3(ndmp_connection_t *connection, void *body)
-//{
-//}
-//
-//
-///*
-// * ndmpd_mover_read_v3
-// *
-// * This handler handles ndmp_mover_read_requests.
-// * If the requested offset is outside of the current window, the mover
-// * is paused and a notify_mover_paused request is sent notifying the
-// * client that a seek is required. If the requested offest is within
-// * the window but not within the current record, then the tape is
-// * positioned to the record containing the requested offest. The requested
-// * amount of data is then read from the tape device and written to the
-// * data connection.
-// *
-// * Parameters:
-// *   connection (input) - connection handle.
-// *   body       (input) - request message body.
-// *
-// * Returns:
-// *   void
-// */
-//void
-//ndmpd_mover_read_v3(ndmp_connection_t *connection, void *body)
-//{
-//}
-//
-//
-///*
-// * ndmpd_mover_set_record_size_v3
-// *
-// * This handler handles mover_set_record_size requests.
-// *
-// * Parameters:
-// *   connection (input) - connection handle.
-// *   body       (input) - request message body.
-// *
-// * Returns:
-// *   void
-// */
-//void
-//ndmpd_mover_set_record_size_v3(ndmp_connection_t *connection, void *body)
-//{
-//}
-//
-//
-///*
-// * ndmpd_mover_connect_v3
-// *   Request handler. Connects the mover to either a local
-// *   or remote data server.
-// *
-// * Parameters:
-// *   connection (input) - connection handle.
-// *   body       (input) - request message body.
-// *
-// * Returns:
-// *   void
-// */
-//void
-//ndmpd_mover_connect_v3(ndmp_connection_t *connection, void *body)
-//{
-//}
-//
-//
-///*
-// * ************************************************************************
-// * NDMP V4 HANDLERS
-// * ************************************************************************
-// */
-//
-///*
-// * ndmpd_mover_get_state_v4
-// *
-// * This handler handles the ndmp_mover_get_state_request.
-// * Status information for the mover state machine is returned.
-// *
-// * Parameters:
-// *   connection (input) - connection handle.
-// *   body       (input) - request message body.
-// *
-// * Returns:
-// *   void
-// */
-///*ARGSUSED*/
-//void
-//ndmpd_mover_get_state_v4(ndmp_connection_t *connection, void *body)
-//{
-//}
-//
-//
-///*
-// * ndmpd_mover_listen_v4
-// *
-// * This handler handles ndmp_mover_listen_requests.
-// * A TCP/IP socket is created that is used to listen for
-// * and accept data connections initiated by a remote
-// * data server.
-// *
-// * Parameters:
-// *   connection (input) - connection handle.
-// *   body       (input) - request message body.
-// *
-// * Returns:
-// *   void
-// */
-//void
-//ndmpd_mover_listen_v4(ndmp_connection_t *connection, void *body)
-//{
-//}
-//
-///*
-// * ndmpd_mover_connect_v4
-// *   Request handler. Connects the mover to either a local
-// *   or remote data server.
-// *
-// * Parameters:
-// *   connection (input) - connection handle.
-// *   body       (input) - request message body.
-// *
-// * Returns:
-// *   void
-// */
-//void
-//ndmpd_mover_connect_v4(ndmp_connection_t *connection, void *body)
-//{
-//}
-
 
 /*
  * ndmpd_local_write
@@ -354,9 +119,7 @@ ndmpd_remote_write(ndmpd_session_t *session, char *data, u_long length)
 			return (-1);
 		}
 		count += n;
-
 	}
-
 
 	return (0);
 }
@@ -385,8 +148,7 @@ ndmpd_local_read(ndmpd_session_t *session, char *data, u_long length)
 
 
 
-/* *** ndmpd internal functions ***************************************** */
-
+/**** ndmpd internal functions **************/
 /*
  * ndmpd_mover_init
  *
@@ -434,7 +196,6 @@ ndmpd_mover_init(ndmpd_session_t *session)
 	return (0);
 }
 
-
 /*
  * ndmpd_mover_shut_down
  *
@@ -465,7 +226,6 @@ ndmpd_mover_shut_down(ndmpd_session_t *session)
 	}
 }
 
-
 /*
  * ndmpd_mover_cleanup
  *
@@ -480,8 +240,6 @@ ndmpd_mover_cleanup(ndmpd_session_t *session)
 {
 	NDMP_FREE(session->ns_mover.md_buf);
 }
-
-
 
 /*
  * ndmpd_mover_error_send
@@ -507,7 +265,6 @@ ndmpd_mover_error_send(ndmpd_session_t *session, ndmp_mover_halt_reason reason)
 	    NDMP_NOTIFY_MOVER_HALTED, NDMP_NO_ERR, (void *)&req, 0));
 }
 
-
 /*
  * ndmpd_mover_error_send_v4
  *
@@ -531,7 +288,6 @@ ndmpd_mover_error_send_v4(ndmpd_session_t *session,
 	return (ndmp_send_request(session->ns_connection,
 	    NDMP_NOTIFY_MOVER_HALTED, NDMP_NO_ERR, (void *)&req, 0));
 }
-
 
 /*
  * ndmpd_mover_error
@@ -606,8 +362,6 @@ ndmpd_local_write_v3(ndmpd_session_t *session, char *data, u_long length)
 	return (0);
 }
 
-
-
 /*
  * ndmpd_local_read_v3
  *
@@ -627,7 +381,6 @@ ndmpd_local_write_v3(ndmpd_session_t *session, char *data, u_long length)
 int
 ndmpd_local_read_v3(ndmpd_session_t *session, char *data, u_long length)
 {
-
 	return (0);
 }
 
@@ -664,7 +417,6 @@ discard_data_v3(ndmpd_session_t *session, u_long length)
 	return (n);
 }
 
-
 /*
  * ndmpd_remote_read_v3
  *
@@ -689,12 +441,9 @@ ndmpd_remote_read_v3(ndmpd_session_t *session, char *data, u_long length)
 	tlm_job_stats_t *jstat;
 	longlong_t fsize;
 
-
 	count = 0;
 	while (count < length) {
-
 		len = length - count;
-
 		/*
 		 * If the end of the seek window has been reached then
 		 * send an ndmp_read request to the client.
@@ -795,4 +544,3 @@ ndmpd_remote_read_v3(ndmpd_session_t *session, char *data, u_long length)
 	}
 	return (0);
 }
-

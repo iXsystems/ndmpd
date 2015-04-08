@@ -62,43 +62,27 @@
 /* close */
 #include <unistd.h>
 
-
 #include <signal.h>
-
 #include <sys/acl.h>
-
-#ifdef QNAP_TS
-	#include <attr/xattr.h>
-//	#include <snapshot_ts.h>
-#else
-	/*	getmntinfo	*/
-	#include <sys/mount.h>
-#endif
-
 #include <assert.h>
 
-extern int ndmp_force_bk_dirs;
+/* getmntinfo */
+#include <sys/mount.h>
 
+extern int ndmp_force_bk_dirs;
 extern bool_t ndmp_ignore_ctime;
 extern bool_t ndmp_include_lmtime;
-
 extern tm_ops_t tm_tar_ops;
-
-
-extern int	ndmpd_put_dumptime(char *path, int level, time_t ddate);
-extern int	ndmpd_get_dumptime(char *path, int *level, time_t *ddate);
-
-
+extern int ndmpd_put_dumptime(char *path, int level, time_t ddate);
+extern int ndmpd_get_dumptime(char *path, int *level, time_t *ddate);
 
 /*
  * Maximum length of the string-representation of u_longlong_t type.
  */
 #define	QUAD_DECIMAL_LEN	20
 
-
 /* IS 'Y' OR "T' */
 #define	IS_YORT(c)	(strchr("YT", toupper(c)))
-
 
 /*
  * If path is defined.
@@ -126,14 +110,12 @@ typedef struct bk_param_v3 {
 	char *bp_unchkpnm;
 } bk_param_v3_t;
 
-
 /*
  * Multiple destination restore mode
  */
 #define	MULTIPLE_DEST_DIRS 128
 
 int multiple_dest_restore = 0;
-
 
 /*
  * split_env
@@ -240,7 +222,6 @@ split_env(char *envp, char sep)
 	return (cpp);
 }
 
-
 /*
  * prl
  *
@@ -263,7 +244,6 @@ prl(char **lpp)
 	while (*lpp)
 		ndmpd_log(LOG_DEBUG, "\"%s\"", *lpp++);
 }
-
 
 /*
  * inlist
@@ -309,33 +289,6 @@ inlist(char **lpp, char *ent)
 	return (FALSE);
 }
 
-
-///*
-// * inexl
-// *
-// * Checks if the entry is in the list.  This is used for exclusion
-// * list.  If the exclusion list is empty, FALSE should be returned
-// * showing that nothing should be excluded by default.
-// *
-// * Parameters:
-// *   lpp (input) - pointer to the array of strings
-// *   ent (input) - the entry to be matched
-// *
-// * Returns:
-// *   TRUE: if there is a match
-// *   FALSE: invalid argument or no match
-// *
-// */
-//static bool_t
-//inexl(char **lpp, char *ent)
-//{
-//	if (!lpp || !ent)
-//		return (FALSE);
-//
-//	return (inlist(lpp, ent));
-//}
-
-
 /*
  * ininc
  *
@@ -359,7 +312,6 @@ ininc(char **lpp, char *ent)
 
 	return (inlist(lpp, ent));
 }
-
 
 /*
  * setupsels
@@ -444,7 +396,6 @@ setupsels(ndmpd_session_t *session, ndmpd_module_params_t *params,
 	return (save);
 }
 
-
 /*
  * mkrsp
  *
@@ -514,7 +465,6 @@ mkrsp(char *bp, char *pp, char *sp, char *np)
 	return (bp);
 }
 
-
 /*
  * mknewname
  *
@@ -583,7 +533,6 @@ mknewname(const struct rs_name_maker *rnp, char *buf, int idx, char *path)
 	return (rv);
 }
 
-
 /*
  * chopslash
  *
@@ -604,7 +553,6 @@ chopslash(char *cp)
 		ln--;
 	}
 }
-
 
 /*
  * joinpath
@@ -629,7 +577,6 @@ joinpath(char *bp, char *pp, char *np)
 	return (bp);
 }
 
-
 /*
  * voliswr
  *
@@ -640,9 +587,7 @@ voliswr(char *path)
 {
 	ndmpd_log(LOG_DEBUG, "voliswr");
 	return 1;
-
 }
-
 
 /*
  * get_bk_path_v3
@@ -668,7 +613,6 @@ get_bk_path_v3(ndmpd_module_params_t *params)
 	if (!bkpath)
 		bkpath = MOD_GETENV(params, "FILESYSTEM");
 
-
 	if (!bkpath) {
 		MOD_LOGV3(params, NDMP_LOG_ERROR,
 				    "Backup path not defined.\n");
@@ -677,15 +621,14 @@ get_bk_path_v3(ndmpd_module_params_t *params)
 	}
 
 	// remove the tailing "/"
-    len = strlen(bkpath);
-    for(itr=len-1;itr>=0;itr--)
-    	if(bkpath[itr]=='/')
-    		bkpath[itr]='\0';
-    	else
-    		break;
+	len = strlen(bkpath);
+	for(itr=len-1;itr>=0;itr--)
+		if(bkpath[itr]=='/')
+			bkpath[itr]='\0';
+		else
+    			break;
 	return (bkpath);
 }
-
 
 /*
  * is_valid_backup_dir_v3
@@ -714,7 +657,8 @@ is_valid_backup_dir_v3(ndmpd_module_params_t *params, char *bkpath)
 	struct stat st;
 
 	if (*bkpath != '/') {
-		MOD_LOGV3(params, NDMP_LOG_ERROR, "Relative backup path not allowed \"%s\".\n", bkpath);
+		MOD_LOGV3(params, NDMP_LOG_ERROR,
+			"Relative backup path not allowed \"%s\".\n", bkpath);
 
 		return (FALSE);
 	}
@@ -733,8 +677,6 @@ is_valid_backup_dir_v3(ndmpd_module_params_t *params, char *bkpath)
 
 	return (TRUE);
 }
-
-
 
 /*
  * log_level_v3
@@ -764,7 +706,6 @@ log_level_v3(ndmpd_module_params_t *params, ndmp_lbr_params_t *nlp)
 	MOD_LOGV3(params, NDMP_LOG_NORMAL, "Update: %s.\n",
 	    NDMP_TORF(NLP_ISSET(nlp, NLPF_UPDATE)));
 }
-
 
 /*
  * log_bk_params_v3
@@ -805,7 +746,6 @@ log_bk_params_v3(ndmpd_session_t *session, ndmpd_module_params_t *params,
 	}
 }
 
-
 /*
  * get_update_env_v3
  *
@@ -839,7 +779,6 @@ get_update_env_v3(ndmpd_module_params_t *params, ndmp_lbr_params_t *nlp)
 	}
 }
 
-
 /*
  * get_hist_env_v3
  *
@@ -872,7 +811,6 @@ get_hist_env_v3(ndmpd_module_params_t *params, ndmp_lbr_params_t *nlp)
 	}
 }
 
-
 /*
  * get_exc_env_v3
  *
@@ -896,24 +834,6 @@ get_exc_env_v3(ndmpd_module_params_t *params, ndmp_lbr_params_t *nlp)
 	char *envp;
 	char env_parameter[13]; // QNAP_EFILE99, QNAP_EDIR99
 	char tmpenv[1024];
-	/*
-	 * We're going to use exactly the same format with EMC here.
-	 *
-	 * We used to use "EXCLUDE" parameter, but we're going to change it to QNAP_FILE01,QNAP_FILE02 ...
-	 * Just like how EMC does.
-	 *
-	 * This is the old code
-			envp = MOD_GETENV(params, "EXCLUDE");
-			if (!envp) {
-				ndmpd_log(LOG_DEBUG, "env(EXCLUDE) not defined, default to \"\"");
-				nlp->nlp_exl = NULL;
-			}else {
-				ndmpd_log(LOG_DEBUG, "env(EXCLUDE) found", envp);
-				nlp->nlp_exl = split_env(envp, ',');
-				prl(nlp->nlp_exl);
-			}
-	 *
-	 * */
 
 	/*
 	 * we support only 99 exclude file name patterns
@@ -976,7 +896,6 @@ get_exc_env_v3(ndmpd_module_params_t *params, ndmp_lbr_params_t *nlp)
 
 }
 
-
 /*
  * get_inc_env_v3
  *
@@ -1008,7 +927,6 @@ get_inc_env_v3(ndmpd_module_params_t *params, ndmp_lbr_params_t *nlp)
 	}
 }
 
-
 /*
  * get_snap_env_v3
  *
@@ -1032,24 +950,8 @@ get_snap_env_v3(ndmpd_module_params_t *params, ndmp_lbr_params_t *nlp)
 		NLP_UNSET(nlp, NLPF_SNAP);
 	} else {
 		ndmpd_log(LOG_DEBUG, "env(SNAPSURE): \"%s\"", envp);
-
-//#ifdef QNAP_TS
-//		Snapshot_Feature snap_feature;
-//		NAS_Get_Snapshot_Feature(&snap_feature);
-//
-//		if(snap_feature.support==1){
-//#endif
-//			if (IS_YORT(*envp))
-//				NLP_SET(nlp, NLPF_SNAP);
-//			else
-//				NLP_UNSET(nlp, NLPF_SNAP);
-//#ifdef QNAP_TS
-//
-//		}else{
-			ndmpd_log(LOG_DEBUG, "Do not support SNAPSURE on this machine", envp);
-			NLP_UNSET(nlp, NLPF_SNAP);
-//		}
-//#endif
+		ndmpd_log(LOG_DEBUG, "Do not support SNAPSURE on this machine", envp);
+		NLP_UNSET(nlp, NLPF_SNAP);
 	}
 }
 
@@ -1089,9 +991,8 @@ get_backup_level_v3(ndmpd_module_params_t *params, ndmp_lbr_params_t *nlp)
 	 * LEVEL environment variable can hold only one character.
 	 * If its length is longer than 1, an error is returned.
 	 */
+
 	// we will just use level backup.
-
-
 	envp = MOD_GETENV(params, "LEVEL");
 	if (!envp) {
 		ndmpd_log(LOG_DEBUG, "env(LEVEL) not defined, default to 0");
@@ -1111,7 +1012,6 @@ get_backup_level_v3(ndmpd_module_params_t *params, ndmp_lbr_params_t *nlp)
 		    "Invalid backup level \"%s\".\n", envp);
 		return (NDMP_ILLEGAL_ARGS_ERR);
 	}
-
 
 	if (!isdigit(*envp)) {
 		MOD_LOGV3(params, NDMP_LOG_ERROR,
@@ -1141,7 +1041,6 @@ get_backup_level_v3(ndmpd_module_params_t *params, ndmp_lbr_params_t *nlp)
 	return (rv);
 }
 
-
 /*
  * save_level_v3
  *
@@ -1168,7 +1067,6 @@ save_level_v3(ndmpd_module_params_t *params, ndmp_lbr_params_t *nlp)
 		MOD_LOGV3(params, NDMP_LOG_ERROR, "Logging backup date.\n");
 	}
 }
-
 
 /*
  * save_backup_date_v3
@@ -1198,7 +1096,6 @@ save_backup_date_v3(ndmpd_module_params_t *params, ndmp_lbr_params_t *nlp)
 		    nlp->nlp_backup_path);
 	}
 }
-
 
 /*
  * backup_alloc_structs_v3
@@ -1275,7 +1172,6 @@ backup_alloc_structs_v3(ndmpd_session_t *session, char *jname)
 	return (0);
 }
 
-
 /*
  * restore_alloc_structs_v3
  *
@@ -1337,7 +1233,6 @@ restore_alloc_structs_v3(ndmpd_session_t *session, char *jname)
 	return (0);
 }
 
-
 /*
  * free_structs_v3
  *
@@ -1385,10 +1280,12 @@ free_structs_v3(ndmpd_session_t *session, char *jname)
 		ndmpd_log(LOG_DEBUG, "COMMAND == NULL");
 
 }
+
 /*
  * Dump the memory value in HEX.
- * */
-void mem_dump(const char *value, size_t size)
+ */
+void 
+mem_dump(const char *value, size_t size)
 {
 	static char *encoded;
 	static size_t encoded_size;
@@ -1397,15 +1294,13 @@ void mem_dump(const char *value, size_t size)
 
 	static const char *digits = "0123456789abcdef";
 
-
-		for (n = 0; n < size; n++, value++) {
-			printf("%c",digits[((unsigned char)*value >> 4)]);
-			printf("%c",digits[((unsigned char)*value & 0x0F)]);
-		}
-
+	for (n = 0; n < size; n++, value++) {
+		printf("%c",digits[((unsigned char)*value >> 4)]);
+		printf("%c",digits[((unsigned char)*value & 0x0F)]);
+	}
 	printf("\nend\n");
-
 }
+
 /*
  * backup_dirv3
  *
@@ -1444,67 +1339,32 @@ backup_dirv3(bk_param_v3_t *bpp, fst_node_t *pnp,
 	if (lstat(bpp->bp_tmp, &st) != 0)
 		return (0);
 
+	acl = acl_get_file(bpp->bp_tmp, ACL_TYPE_NFS4);
+     	int acl_len=0;
+     	int xattr_len=0;
+     	int acl_all_len=0;
 
-#ifdef QNAP_TS
-                acl = acl_get_file(bpp->bp_tmp, ACL_TYPE_ACCESS);
-#else
-                acl = acl_get_file(bpp->bp_tmp, ACL_TYPE_NFS4);
-#endif
-
-     int acl_len=0;
-     int xattr_len=0;
-     int acl_all_len=0;
-
-	if (acl && (acltp = acl_to_text(acl, 0)) != NULL) {
+	if (acl && (acltp = acl_to_text(acl, 0)) != NULL)
 		acl_len= strlen(acltp);
-	}
-	if(acl!=NULL)
+	if (acl != NULL)
 		acl_free(acl);
 
-//#ifdef QNAP_TS
-//	// add extended attributes as part of ACL.
-//	char *aclname="security.NTACL";
-//	xattr_len = getxattr(bpp->bp_tmp, aclname, NULL, 0);
-//	if(xattr_len<0)
-//		xattr_len=0;
-//#endif
-
 	bpp->bp_tlmacl->acl_info.attr_len = acl_len;
-//#ifdef QNAP_TS
-//	bpp->bp_tlmacl->acl_info.xattr_len = xattr_len;
-//#endif
-
 	bpp->bp_tlmacl->acl_info.attr_info = NULL;
 
-
 	acl_all_len =acl_len+xattr_len;
-	if(acl_all_len>0){
-
+	if (acl_all_len > 0) {
 		bpp->bp_tlmacl->acl_info.attr_info = (char*)malloc(acl_all_len);
-
-		if(bpp->bp_tlmacl->acl_info.attr_info!=NULL){
-
-			if(acl_len>0){
+		if (bpp->bp_tlmacl->acl_info.attr_info != NULL) {
+			if (acl_len > 0)
 				(void) strlcpy(bpp->bp_tlmacl->acl_info.attr_info,acltp, acl_len);
-			}
-
-//#ifdef QNAP_TS
-//			// add extended attributes as part of ACL.
-//			if(xattr_len>0){
-//				char *xattr_buf = (char*)malloc(xattr_len);
-//				getxattr(bpp->bp_tmp, aclname, xattr_buf, xattr_len);
-//				memcpy(bpp->bp_tlmacl->acl_info.attr_info+acl_len,xattr_buf, xattr_len);
-//				free(xattr_buf);
-//			}
-//#endif
-
 		}
 	}
+
 	if(acltp!=NULL)
 		acl_free(acltp);
 
 	bpos = tlm_get_data_offset(bpp->bp_lcmd);
-
 	p = bpp->bp_tmp + strlen(bpp->bp_chkpnm);
 	if (*p == '/')
 		(void) snprintf(fullpath, TLM_MAX_PATH_NAME, "%s%s",
@@ -1523,7 +1383,6 @@ backup_dirv3(bk_param_v3_t *bpp, fst_node_t *pnp,
 
 	return (0);
 }
-
 
 /*
  * backup_filev3
@@ -1566,69 +1425,38 @@ backup_filev3(bk_param_v3_t *bpp, fst_node_t *pnp,
 		return (0);
 
 	if (!S_ISLNK(bpp->bp_tlmacl->acl_attr.st_mode)) {
-
-#ifdef QNAP_TS
-		acl = acl_get_file(bpp->bp_tmp, ACL_TYPE_ACCESS);
-#else
 		acl = acl_get_file(bpp->bp_tmp, ACL_TYPE_NFS4);
-#endif
-
-	     int acl_len=0;
-	     int xattr_len=0;
-	     int acl_all_len=0;
+	     	int acl_len=0;
+	     	int xattr_len=0;
+	     	int acl_all_len=0;
 
 		if (acl && (acltp = acl_to_text(acl, 0)) != NULL) {
 			acl_len= strlen(acltp);
 		}
-		if(acl!=NULL)
+
+		if (acl != NULL)
 			acl_free(acl);
-//	#ifdef QNAP_TS
-//		// add extended attributes as part of ACL.
-//		char *aclname="security.NTACL";
-//		xattr_len = getxattr(bpp->bp_tmp, aclname, NULL, 0);
-//		ndmpd_log(LOG_DEBUG, "saving xattr_len for TS. xattr_len=%d",xattr_len);
-//		if(xattr_len<0)
-//			xattr_len=0;
-//	#endif
 
 		bpp->bp_tlmacl->acl_info.attr_len = acl_len;
-//	#ifdef QNAP_TS
-//		bpp->bp_tlmacl->acl_info.xattr_len = xattr_len;
-//	#endif
-
 		bpp->bp_tlmacl->acl_info.attr_info = NULL;
 
-
 		acl_all_len =acl_len+xattr_len;
-		if(acl_all_len>0){
-
+		if (acl_all_len > 0) {
 			bpp->bp_tlmacl->acl_info.attr_info = (char*)malloc(acl_all_len);
-
-			if(bpp->bp_tlmacl->acl_info.attr_info!=NULL){
-
-				if(acl_len>0){
-					(void) strlcpy(bpp->bp_tlmacl->acl_info.attr_info,acltp, acl_len);
+			if (bpp->bp_tlmacl->acl_info.attr_info != NULL) {
+				if (acl_len > 0) {
+					(void) strlcpy(bpp->bp_tlmacl->acl_info.attr_info,acltp,
+						acl_len);
 				}
-
-//	#ifdef QNAP_TS
-//				// add extended attributes as part of ACL.
-//				if(xattr_len>0){
-//					char *xattr_buf = (char*)malloc(xattr_len);
-//					getxattr(bpp->bp_tmp, aclname, xattr_buf, xattr_len);
-//					memcpy(bpp->bp_tlmacl->acl_info.attr_info+acl_len,xattr_buf, xattr_len);
-//					free(xattr_buf);
-//				}
-//	#endif
 			}
 		}
 	}
+
 	if(acltp!=NULL)
 		acl_free(acltp);
 
 	bpos = tlm_get_data_offset(bpp->bp_lcmd);
-
 	ent = enp->tn_path ? enp->tn_path : "";
-
 
 	p = pnp->tn_path + strlen(bpp->bp_chkpnm);
 	if (*p == '/')
@@ -1653,10 +1481,8 @@ backup_filev3(bk_param_v3_t *bpp, fst_node_t *pnp,
 	bpp->bp_session->ns_data.dd_module.dm_stats.ms_bytes_processed +=
 	    apos - bpos;
 
-
 	return (rv < 0 ? rv : 0);
 }
-
 
 /*
  * check_bk_args
@@ -1705,7 +1531,6 @@ check_bk_args(bk_param_v3_t *bpp)
 	return (rv);
 }
 
-
 /*
  * shouldskip
  *
@@ -1752,14 +1577,7 @@ shouldskip(bk_param_v3_t *bpp, fst_node_t *pnp,
 		rv = TRUE;
 		*errp = S_ISDIR(estp->st_mode) ? FST_SKIP : 0;
 		ndmpd_log(LOG_DEBUG, "excl %d \"%s/%s\"", *errp, pnp->tn_path, ent);
-	}
-//	else if (inexl(bpp->bp_nlp->nlp_exl, ent)) {
-//		rv = TRUE;
-//		*errp = S_ISDIR(estp->st_mode) ? FST_SKIP : 0;
-//		ndmpd_log(LOG_DEBUG, "excl %d \"%s/%s\"", *errp, pnp->tn_path, ent);
-//
-//	}
-	else if (!S_ISDIR(estp->st_mode) &&
+	} else if (!S_ISDIR(estp->st_mode) &&
 	    !ininc(bpp->bp_nlp->nlp_inc, ent)) {
 		rv = TRUE;
 		*errp = 0;
@@ -1770,7 +1588,6 @@ shouldskip(bk_param_v3_t *bpp, fst_node_t *pnp,
 	ndmpd_log(LOG_DEBUG, "--------------shouldskip--------- path=%s rv=%d",ent,rv);
 	return (rv);
 }
-
 
 /*
  * ischngd
@@ -1813,12 +1630,10 @@ ischngd(struct stat *stp, time_t t, ndmp_lbr_params_t *nlp)
 		 */
 		rv = TRUE;
 		ndmpd_log(LOG_DEBUG, "Base Backup");
-	}
-	else if (S_ISDIR(stp->st_mode) && ndmp_force_bk_dirs) {
+	} else if (S_ISDIR(stp->st_mode) && ndmp_force_bk_dirs) {
 		rv = TRUE;
 		ndmpd_log(LOG_DEBUG, "d(%u)", (u_int)stp->st_ino);
-	}
-	else if (stp->st_mtime > t) {
+	} else if (stp->st_mtime > t) {
 		rv = TRUE;
 		ndmpd_log(LOG_DEBUG, "m(%u): %u > %u",
 		    (u_int)stp->st_ino, (u_int)stp->st_mtime, (u_int)t);
@@ -1844,7 +1659,6 @@ ischngd(struct stat *stp, time_t t, ndmp_lbr_params_t *nlp)
 	return (rv);
 }
 
-
 /*
  * iscreated
  *
@@ -1867,62 +1681,34 @@ int iscreated(ndmp_lbr_params_t *nlp, char *name, tlm_acls_t *tacl,
 	if (NLP_INCLMTIME(nlp) == FALSE)
 		return (0);
 
+        acl = acl_get_file(name, ACL_TYPE_NFS4);
+	int acllen= -1;
+	if (acl && (acltp = acl_to_text(acl, 0)) != NULL) {
+		acllen= strlen(acltp);
+	}
+	if (acl != NULL)
+		acl_free(acl);
 
-#ifdef QNAP_TS
-                acl = acl_get_file(name, ACL_TYPE_ACCESS);
-#else
-                acl = acl_get_file(name, ACL_TYPE_NFS4);
-#endif
+	ndmpd_log(LOG_DEBUG, "strlen of ACL=%d",acllen);
 
-		int acllen= -1;
-		if (acl && (acltp = acl_to_text(acl, 0)) != NULL) {
-			acllen= strlen(acltp);
+	if (acllen > 0) {
+		tacl->acl_info.attr_info = (char*)malloc(acllen);
+		if (tacl->acl_info.attr_info != NULL) {
+			tacl->acl_info.attr_len = acllen;
+			(void) strlcpy(tacl->acl_info.attr_info,acltp, acllen);
 		}
-		if(acl!=NULL)
-			acl_free(acl);
+	} else {
+		tacl->acl_info.attr_len = 0;
+		tacl->acl_info.attr_info = NULL;
+	}
 
-		ndmpd_log(LOG_DEBUG, "strlen of ACL=%d",acllen);
-
-		if(acllen>0){
-			tacl->acl_info.attr_info = (char*)malloc(acllen);
-
-			if(tacl->acl_info.attr_info!=NULL){
-
-				tacl->acl_info.attr_len = acllen;
-				(void) strlcpy(tacl->acl_info.attr_info,acltp, acllen);
-			}
-
-		} else {
-			tacl->acl_info.attr_len = 0;
-			tacl->acl_info.attr_info = NULL;
-		}
-	if(acltp!=NULL)
+	if (acltp != NULL)
 		acl_free(acltp);
 
 	ndmpd_log(LOG_DEBUG, "tacl->acl_info.attr_info = %s",tacl->acl_info.attr_info);
 
 	return (0);
 }
-
-#ifdef QNAP_TS
-/*
- * size_cb
- *
- * The callback function for calculating the size of
- * the backup path. This is used to get an estimate
- * of the progress of backup during NDMP backup
- */
-static int
-size_cb(void *arg, fst_node_t *pnp, fst_node_t *enp)
-{
-	struct stat *stp;
-
-	stp = enp->tn_path ? enp->tn_st : pnp->tn_st;
-	*((u_longlong_t *)arg) += stp->st_size;
-
-	return (0);
-}
-#endif
 
 /*
  * timebk_v3
@@ -1948,7 +1734,6 @@ timebk_v3(void *arg, fst_node_t *pnp, fst_node_t *enp)
 {
 	ndmpd_log(LOG_DEBUG, "timebk_v3 - callback.");
 
-
 	char *ent;
 	int rv;
 	time_t t;
@@ -1963,14 +1748,10 @@ timebk_v3(void *arg, fst_node_t *pnp, fst_node_t *enp)
 	if (rv != 0)
 		return (rv);
 
-
 	stp = enp->tn_path ? enp->tn_st : pnp->tn_st;
-
 
 	if (shouldskip(bpp, pnp, enp, &rv))
 		return (rv);
-
-
 
 	if (enp->tn_path) {
 		ent = enp->tn_path;
@@ -1981,7 +1762,6 @@ timebk_v3(void *arg, fst_node_t *pnp, fst_node_t *enp)
 		stp = pnp->tn_st;
 		fhp = pnp->tn_fh;
 	}
-
 
 	if (!tlm_cat_path(bpp->bp_tmp, pnp->tn_path, ent)) {
 		ndmpd_log(LOG_DEBUG, "Path too long %s/%s.", pnp->tn_path, ent);
@@ -1996,7 +1776,6 @@ timebk_v3(void *arg, fst_node_t *pnp, fst_node_t *enp)
 		return (-1);
 	}
 
-
 	if (S_ISDIR(stp->st_mode)) {
 		ndmpd_log(LOG_DEBUG, "backup folder");
 
@@ -2007,34 +1786,25 @@ timebk_v3(void *arg, fst_node_t *pnp, fst_node_t *enp)
 		    bpp->bp_tmp, stp);
 
 		if (ischngd(stp, t, bpp->bp_nlp)) {
-
 			(void) memcpy(&bpp->bp_tlmacl->acl_attr, stp,
 			    sizeof (struct stat));
-
 			rv = backup_dirv3(bpp, pnp, enp);
-
 		}
 	} else {
-
 		if (ischngd(stp, t, bpp->bp_nlp) ||
 		    iscreated(bpp->bp_nlp, bpp->bp_tmp, bpp->bp_tlmacl, t)) {
 			rv = 0;
 			(void) memcpy(&bpp->bp_tlmacl->acl_attr, stp, sizeof (struct stat));
-
 			bpp->bp_tlmacl->acl_fil_fh = *fhp;
 
 			ndmpd_log(LOG_DEBUG, "backup file");
 
 			(void) backup_filev3(bpp, pnp, enp);
-
 		}
 	}
 
 	return (rv);
 }
-
-
-
 
 /*
  * backup_reader_v3
@@ -2072,11 +1842,9 @@ backup_reader_v3(backup_reader_arg_t *argp)
 	if (!argp)
 		return (-1);
 
-
 	jname = argp->br_jname;
 	nlp = argp->br_nlp;
 	cmds = argp->br_cmds;
-
 	rv = 0;
 	lcmd = cmds->tcs_command;
 	lcmd->tc_ref++;
@@ -2119,12 +1887,10 @@ backup_reader_v3(backup_reader_arg_t *argp)
 		ndmpd_log(LOG_DEBUG, "NOT using SNAPSURE");
 	}
 
-
 	ndmpd_log(LOG_DEBUG, " nlp->nlp_backup_path = %s", nlp->nlp_backup_path);
 
 	bp.bp_excls = ndmpd_make_exc_list();
 	ft.ft_path = bp.bp_chkpnm;
-
 
 	ndmpd_log(LOG_DEBUG, "path %s", ft.ft_path);
 
@@ -2132,12 +1898,11 @@ backup_reader_v3(backup_reader_arg_t *argp)
 		ndmpd_log(LOG_DEBUG, "backup using timebk_v3");
 		ft.ft_callbk = timebk_v3;
 		tlm_acls.acl_clear_archive = FALSE;
-
-	}
-	else {
+	} else {
 		rv = -1;
 		MOD_LOGV3(nlp->nlp_params, NDMP_LOG_ERROR, "Unknow backup type.\n");
 	}
+
 	ft.ft_arg = &bp;
 	ft.ft_flags = FST_VERBOSE;	/* Solaris */
 
@@ -2158,7 +1923,6 @@ backup_reader_v3(backup_reader_arg_t *argp)
 		}
 	}
 
-
 	NDMP_FREE(bp.bp_tmp);
 	NDMP_FREE(bp.bp_excls);
 
@@ -2168,9 +1932,7 @@ backup_reader_v3(backup_reader_arg_t *argp)
 	tlm_un_ref_job_stats(jname);
 
 	return (rv);
-
 }
-
 
 /*
  * ndmp_tar_reader_v3
@@ -2193,7 +1955,6 @@ ndmp_tar_reader_v3(ndmp_tar_reader_arg_t *argp)
 	ndmpd_log(LOG_DEBUG, "++++++++ndmp_tar_reader_v3++++++++");
 	if (!argp)
 		return (-1);
-
 
 	session = argp->tr_session;
 	mod_params = argp->tr_mod_params;
@@ -2221,12 +1982,10 @@ ndmp_tar_reader_v3(ndmp_tar_reader_arg_t *argp)
 	/* release the parent thread, after referencing the job stats */
 	(void) pthread_barrier_wait(&argp->br_barrier);
 
-
 	buf = tlm_buffer_in_buf(bufs, &bidx);
 	while (cmds->tcs_reader == TLM_RESTORE_RUN &&
 	    lcmd->tc_reader == TLM_RESTORE_RUN) {
 		(void)pthread_yield();
-
 		if (buf->tb_full) {
 			/*
 			 * The buffer is still full, wait for the consumer
@@ -2237,13 +1996,13 @@ ndmp_tar_reader_v3(ndmp_tar_reader_arg_t *argp)
 		} else {
 
 			if(buf->tb_read_buf_read){
-
 				(void) mutex_lock(&bufs->tbs_mtx);
-
 				if ((err = MOD_READ(mod_params, buf->tb_buffer_data,
 						bufs->tbs_data_transfer_size)) != 0){
 					if (err < 0) {
-						ndmpd_log(LOG_DEBUG, "Reading buffer %d, pos: %lld", bidx, session->ns_mover.md_position);
+						ndmpd_log(LOG_DEBUG, 
+							"Reading buffer %d, pos: %lld",
+							bidx, session->ns_mover.md_position);
 
 						/* Force the writer to stop. */
 						buf->tb_eot = buf->tb_eof = TRUE;
@@ -2251,15 +2010,15 @@ ndmp_tar_reader_v3(ndmp_tar_reader_arg_t *argp)
 						ndmpd_log(LOG_DEBUG,
 							"operation aborted or session terminated");
 						err = 0;
-					}
-					else{
+					} else {
 						ndmpd_log(LOG_DEBUG, "force terminated");
 						err = 0;
 					}
 
 					(void) mutex_unlock(&bufs->tbs_mtx);
 
-					MOD_LOGV3(mod_params, NDMP_LOG_ERROR, "Read from remote error. Restore stopped.\n");
+					MOD_LOGV3(mod_params, NDMP_LOG_ERROR,
+						"Read from remote error. Restore stopped.\n");
 					// gracefully stop
 					cmds->tcs_reader = TLM_STOP;
 					lcmd->tc_reader = TLM_STOP;
@@ -2276,7 +2035,6 @@ ndmp_tar_reader_v3(ndmp_tar_reader_arg_t *argp)
 				buf->tb_full = TRUE;
 				(void) mutex_unlock(&bufs->tbs_mtx);
 
-
 				(void) tlm_buffer_advance_in_idx(bufs);
 
 				buf = tlm_buffer_in_buf(bufs, &bidx);
@@ -2292,13 +2050,11 @@ ndmp_tar_reader_v3(ndmp_tar_reader_arg_t *argp)
 	lcmd->tc_writer = TLM_STOP;
 	tlm_buffer_release_in_buf(bufs);
 
-
 	/*
 	 * Clean up.
 	 */
 	cmds->tcs_reader_count--;
 	lcmd->tc_ref--;
-
 
 	ndmpd_log(LOG_DEBUG, "--------ndmp_tar_reader_v3--------");
 
@@ -2321,7 +2077,8 @@ int FORCE_STOP_TRAVEL;
  *   != 0: otherwise
  */
 static int
-ndmp_tar_writer_v3(ndmpd_session_t *session, ndmpd_module_params_t *mod_params, tlm_commands_t *cmds)
+ndmp_tar_writer_v3(ndmpd_session_t *session,
+	ndmpd_module_params_t *mod_params, tlm_commands_t *cmds)
 {
 	int bidx, nw;
 	int err;
@@ -2329,9 +2086,8 @@ ndmp_tar_writer_v3(ndmpd_session_t *session, ndmpd_module_params_t *mod_params, 
 	tlm_buffers_t *bufs;
 
 	tlm_cmd_t *lcmd;	/* Local command */
-	ndmpd_log(LOG_DEBUG, "ndmp_tar_writer_v3 --------------  write to socket using data in the output buffer");
-
-
+	ndmpd_log(LOG_DEBUG,
+		"ndmp_tar_writer_v3 --------------  write to socket using data in the output buffer");
 	err = 0;
 	if (session == NULL) {
 		ndmpd_log(LOG_DEBUG, "session == NULL");
@@ -2360,12 +2116,9 @@ ndmp_tar_writer_v3(ndmpd_session_t *session, ndmpd_module_params_t *mod_params, 
 	    lcmd->tc_writer != (int)TLM_ABORT) {
 		(void)pthread_yield();
 		if (buf->tb_full) {
-
 			// we will only do really write if the content of buffer is filled.
-			if(buf->tb_write_buf_filled){
-
+			if (buf->tb_write_buf_filled) {
 				(void) mutex_lock(&bufs->tbs_mtx);
-
 				if (MOD_WRITE(mod_params, buf->tb_buffer_data,
 					buf->tb_buffer_size) != 0) {
 					ndmpd_log(LOG_DEBUG,
@@ -2377,9 +2130,8 @@ ndmp_tar_writer_v3(ndmpd_session_t *session, ndmpd_module_params_t *mod_params, 
 					// gracefully stop,
 					cmds->tcs_writer = (int)TLM_ABORT;
 					lcmd->tc_writer = (int)TLM_ABORT;
-
-					MOD_LOGV3(mod_params, NDMP_LOG_ERROR, "Write to remote error. Backup stopped.\n");
-
+					MOD_LOGV3(mod_params, NDMP_LOG_ERROR,
+						"Write to remote error. Backup stopped.\n");
 					continue;
 				}
 
@@ -2389,10 +2141,8 @@ ndmp_tar_writer_v3(ndmpd_session_t *session, ndmpd_module_params_t *mod_params, 
 
 				(void) mutex_unlock(&bufs->tbs_mtx);
 
-
 				(void) tlm_buffer_advance_out_idx(bufs);
 				buf = tlm_buffer_out_buf(bufs, &bidx);
-
 
 				tlm_buffer_release_out_buf(bufs);
 				nw++;
@@ -2414,7 +2164,6 @@ ndmp_tar_writer_v3(ndmpd_session_t *session, ndmpd_module_params_t *mod_params, 
 	lcmd->tc_ref--;
 	return (err);
 }
-
 
 void setWriteBufDone(tlm_buffers_t *bufs){
 	(void) mutex_lock(&bufs->tbs_mtx);
@@ -2464,8 +2213,6 @@ ndmp_write_utf8magic_v3(tlm_cmd_t *cmd)
 	return (0);
 }
 
-
-
 /*
  * tar_backup_v3
  *
@@ -2488,7 +2235,6 @@ tar_backup_v3(ndmpd_session_t *session, ndmpd_module_params_t *params,
 {
 
 	ndmpd_log(LOG_DEBUG, "***********tar_backup_v3******************************");
-
 
 	tlm_commands_t *cmds;
 	backup_reader_arg_t arg;
@@ -2531,13 +2277,10 @@ tar_backup_v3(ndmpd_session_t *session, ndmpd_module_params_t *params,
 		ndmpd_log(LOG_DEBUG,
 		    "Backing up \"%s\" started.", nlp->nlp_backup_path);
 
-
-
 		(void) memset(&arg, 0, sizeof (backup_reader_arg_t));
 		arg.br_jname = jname;
 		arg.br_nlp = nlp;
 		arg.br_cmds = cmds;
-
 
 		(void) pthread_barrier_init(&arg.br_barrier, 0, 2);
 
@@ -2551,7 +2294,6 @@ tar_backup_v3(ndmpd_session_t *session, ndmpd_module_params_t *params,
 			ndmpd_log(LOG_DEBUG, "Launch backup_reader_v3 fail");
 			return (-1);
 		}
-
 
 		if ((err = ndmp_tar_writer_v3(session, params, cmds)) != 0)
 			result = EIO;
@@ -2584,7 +2326,6 @@ tar_backup_v3(ndmpd_session_t *session, ndmpd_module_params_t *params,
 	}
 
 	if (session->ns_data.dd_abort) {
-
 		ndmpd_log(LOG_DEBUG,
 		    "Backing up \"%s\" aborted.", nlp->nlp_backup_path);
 		err = -1;
@@ -2592,9 +2333,7 @@ tar_backup_v3(ndmpd_session_t *session, ndmpd_module_params_t *params,
 
 	free_structs_v3(session, jname);
 	return (err);
-
 }
-
 
 /*
  * get_backup_size
@@ -2605,7 +2344,6 @@ tar_backup_v3(ndmpd_session_t *session, ndmpd_module_params_t *params,
 void
 get_backup_size(ndmpd_session_t *session, char *path)
 {
-
 	fs_traverse_t ft;
 	u_longlong_t bk_size;
 	int rv;
@@ -2615,22 +2353,6 @@ get_backup_size(ndmpd_session_t *session, char *path)
 
 	bk_size = 0;
 
-
-#ifdef QNAP_TS
-	ft.ft_path = path;
-
-	ft.ft_callbk = size_cb;
-	ft.ft_arg = &bk_size;
-
-	ft.ft_flags = FST_VERBOSE;
-
-	if ((rv = traverse_level(&ft, FALSE)) != 0) {
-		ndmpd_log(LOG_DEBUG, "bksize err=%d", rv);
-		bk_size = 0;
-	}
-	// for test, skip this part will be faster.
-	// bk_size=1000000;
-#else
 	/*
 	 * Because every share folder in ES is a volume.
 	 * we can just use the size information from the volume.
@@ -2644,11 +2366,10 @@ get_backup_size(ndmpd_session_t *session, char *path)
 			continue;
 		bk_size = mnt.f_bsize*mnt.f_blocks-mnt.f_bfree;
 	}
-#endif
 
 	session->ns_data.dd_data_size = bk_size;
-
-	ndmpd_log(LOG_DEBUG, "bksize %lld, %lldKB, %lldMB\n",  bk_size, bk_size / 1024, bk_size /(1024 * 1024));
+	ndmpd_log(LOG_DEBUG, "bksize %lld, %lldKB, %lldMB\n",
+		bk_size, bk_size / 1024, bk_size /(1024 * 1024));
 }
 
 /*
@@ -2722,7 +2443,6 @@ get_rs_path_v3(ndmpd_module_params_t *params, ndmp_lbr_params_t *nlp)
 
 	return (rv);
 }
-
 
 /*
  * fix_nlist_v3
@@ -2876,7 +2596,6 @@ fix_nlist_v3(ndmpd_session_t *session, ndmpd_module_params_t *params,
 	return (rv);
 }
 
-
 /*
  * log_rs_params_v3
  *
@@ -2907,7 +2626,6 @@ log_rs_params_v3(ndmpd_session_t *session, ndmpd_module_params_t *params,
 		MOD_LOGV3(params, NDMP_LOG_NORMAL,
 		    "Direct Access Restore.\n");
 }
-
 
 /*
  * send_unrecovered_list_v3
@@ -2940,8 +2658,6 @@ send_unrecovered_list_v3(ndmpd_module_params_t *params, ndmp_lbr_params_t *nlp)
 
 	return (rv);
 }
-
-
 
 /*
  * restore_dar_alloc_structs_v3
@@ -2983,9 +2699,6 @@ restore_dar_alloc_structs_v3(ndmpd_session_t *session, char *jname)
 
 	return (0);
 }
-
-
-
 
 /*
  * ndmpd_rs_sar_tar_v3
@@ -3049,7 +2762,6 @@ ndmpd_rs_sar_tar_v3(ndmpd_session_t *session, ndmpd_module_params_t *params,
 		arg.tr_mod_params = params;
 		arg.tr_cmds = cmds;
 
-
 		(void) pthread_barrier_init(&arg.br_barrier, 0, 2);
 
 		err = pthread_create(&rdtp, NULL, (funct_t)ndmp_tar_reader_v3,
@@ -3069,7 +2781,6 @@ ndmpd_rs_sar_tar_v3(ndmpd_session_t *session, ndmpd_module_params_t *params,
 			ndmpd_log(LOG_DEBUG, "UTF8Magic found");
 		}
 
-
 		cmds->tcs_command->tc_ref++;
 		cmds->tcs_writer_count++;
 
@@ -3077,7 +2788,6 @@ ndmpd_rs_sar_tar_v3(ndmpd_session_t *session, ndmpd_module_params_t *params,
 			err = (tm_tar_ops.tm_getdir)(cmds, cmds->tcs_command,
 			    nlp->nlp_jstat, &rn, 1, 1, sels, &excl, flags, 0,
 			    session->hardlink_q);
-
 
 		cmds->tcs_writer_count--;
 		cmds->tcs_command->tc_ref--;
@@ -3089,7 +2799,6 @@ ndmpd_rs_sar_tar_v3(ndmpd_session_t *session, ndmpd_module_params_t *params,
 
 		ndmp_stop_local_reader(session, cmds);
 
-
 		ndmpd_log(LOG_DEBUG, "waiting for reader to stop");
 
 		(void) pthread_join(rdtp, NULL);
@@ -3100,7 +2809,9 @@ ndmpd_rs_sar_tar_v3(ndmpd_session_t *session, ndmpd_module_params_t *params,
 		ndmp_stop_remote_reader(session);
 
 		/* exit as if there was an internal error */
-		ndmpd_log(LOG_DEBUG, "err=%d, session->ns_eof = %d session->ns_data.dd_abort=%d",err, session->ns_eof,session->ns_data.dd_abort);
+		ndmpd_log(LOG_DEBUG,
+			"err=%d, session->ns_eof = %d session->ns_data.dd_abort=%d",
+			err, session->ns_eof,session->ns_data.dd_abort);
 
 		if (session->ns_eof)
 			err = -1;
@@ -3109,7 +2820,6 @@ ndmpd_rs_sar_tar_v3(ndmpd_session_t *session, ndmpd_module_params_t *params,
 	}
 
 	(void) send_unrecovered_list_v3(params, nlp); /* nothing restored. */
-
 
 	if (session->ns_data.dd_abort) {
 		ndmpd_log(LOG_DEBUG, "Restoring to \"%s\" aborted.",
@@ -3122,8 +2832,6 @@ ndmpd_rs_sar_tar_v3(ndmpd_session_t *session, ndmpd_module_params_t *params,
 		ndmpd_log(LOG_DEBUG, "Restoring to \"%s\" finished. (%d)",
 		    (nlp->nlp_restore_path) ? nlp->nlp_restore_path : "NULL",
 		    err);
-
-
 	}
 
 	NDMP_FREE(sels);
@@ -3131,7 +2839,6 @@ ndmpd_rs_sar_tar_v3(ndmpd_session_t *session, ndmpd_module_params_t *params,
 	ndmpd_log(LOG_DEBUG, "--------ndmpd_rs_sar_tar_v3--------");
 	return (err);
 }
-
 
 /*
  * ndmpd_rs_dar_tar_v3
@@ -3208,7 +2915,6 @@ ndmp_backup_get_params_v3(ndmpd_session_t *session,
 		NLP_UNSET(nlp, NLPF_IGNCTIME);
 	}
 
-
 	if (ndmp_include_lmtime == TRUE) {
 		ndmpd_log(LOG_DEBUG, "including st_lmtime");
 		NLP_SET(nlp, NLPF_INCLMTIME);
@@ -3227,9 +2933,6 @@ ndmp_backup_get_params_v3(ndmpd_session_t *session,
 
 	return (rv);
 }
-
-
-
 
 /*
  * ndmpd_tar_backup_starter_v3
@@ -3264,70 +2967,17 @@ ndmpd_tar_backup_starter_v3(ndmpd_module_params_t *params)
 
 	session = (ndmpd_session_t *)(params->mp_daemon_cookie);
 
-	// use nlp to save the information of session, this will be prettier then use *(params->mp_module_cookie)
+	/* use nlp to save the information of session, 
+	 * this will be prettier then use *(params->mp_module_cookie)
+	 */
 	*(params->mp_module_cookie) = nlp = ndmp_get_nlp(session);
 
 	ndmp_session_ref(session);
 	(void) ndmp_new_job_name(jname);
 
 	ndmpd_log(LOG_DEBUG, "snapshot %c", err, NDMP_YORN(NLP_ISSNAP(nlp)));
-//	if (NLP_ISSNAP(nlp)){
-//		MOD_LOGV3(params, NDMP_LOG_NORMAL,"Creating snapshot on \"%s\".\n",nlp->nlp_backup_path);
-//		ndmpd_log(LOG_DEBUG, "Creating checkpoint on \"%s\".\n",nlp->nlp_backup_path);
-//
-//
-//		// take snapshot
-//		snapshot_id = ndmpd_take_snapshot(nlp->nlp_backup_path, jname,nlp->nlp_snap_backup_path);
-//#ifdef QNAP_TS
-//		if( snapshot_id <= 0) {
-//#else
-//		if( snapshot_id < 0) {
-//#endif
-//			MOD_LOGV3(params, NDMP_LOG_ERROR,"Creating snapshot on \"%s\" Fail.\n",
-//						nlp->nlp_backup_path);
-//
-//			ndmpd_log(LOG_DEBUG, "Creating checkpoint on \"%s\" Fail\n",nlp->nlp_backup_path);
-//
-//			err = -1;
-//		}else{
-//			ndmpd_log(LOG_DEBUG, "ndmpd_tar_backup_starter_v3 snapshot path=%s, doing SNAPSURE Backup.",snapshot_path);
-//			MOD_LOGV3(params, NDMP_LOG_ERROR,"Create snapshot on \"%s\" success.\n", nlp->nlp_backup_path);
-//
-//			/* Get an estimate of the data size */
-//			get_backup_size(session, nlp->nlp_snap_backup_path);
-//		}
-//
-//	}else{
-		/* Get an estimate of the data size */
-		get_backup_size(session, nlp->nlp_backup_path);
-//	}
+	get_backup_size(session, nlp->nlp_backup_path);
 
-//#if 0
-//	/*
-//	 *
-//	 * start create files for the snapshot test.
-//	 *
-//	 */
-//
-//	// create 10000 files after take snapshot.
-//	int fileCnt=10000;
-//	char tmpfilename[256];
-//	while(fileCnt-->0){
-//
-//		if(fileCnt%2==0)
-//			sprintf(tmpfilename, "/share/dv1_1/dir1_1/newfileAfterSnapshot_%d",fileCnt);
-//		else
-//			sprintf(tmpfilename, "/share/dv1_1/newfileAfterSnapshot_%d",fileCnt);
-//
-//		FILE *fp=fopen(tmpfilename, "w");
-//		fprintf(fp, "testinging whiel filename=%s~~~\n",tmpfilename);
-//		fclose(fp);
-//	}
-//	/*
-//	 * End of create files for the snapshot test
-//	 *
-//	 * */
-//#endif
 	if (err == 0) {
 		err = ndmp_get_cur_bk_time(nlp, &nlp->nlp_cdate, jname);
 		if (err != 0) {
@@ -3338,14 +2988,6 @@ ndmpd_tar_backup_starter_v3(ndmpd_module_params_t *params)
 			err = tar_backup_v3(session, params, nlp, jname);
 		}
 	}
-
-//	if (NLP_ISSNAP(nlp)){
-//#ifdef QNAP_TS
-//		(void) ndmpd_delete_snapshot(snapshot_id);
-//#else
-//		(void) ndmpd_delete_snapshot(nlp->nlp_backup_path, jname);
-//#endif
-//	}
 
 	if (err == 0)
 		save_backup_date_v3(params, nlp);
@@ -3359,9 +3001,7 @@ ndmpd_tar_backup_starter_v3(ndmpd_module_params_t *params)
 	pthread_exit(NULL);
 
 	return (err);
-
 }
-
 
 /*
  * ndmpd_tar_backup_abort_v3
@@ -3392,7 +3032,6 @@ ndmpd_tar_backup_abort_v3(void *module_cookie)
 
 	return (0);
 }
-
 
 /*
  * ndmp_restore_get_params_v3
@@ -3435,7 +3074,6 @@ ndmp_restore_get_params_v3(ndmpd_session_t *session,
 	return (rv);
 }
 
-
 /*
  * ndmpd_tar_restore_starter_v3
  *
@@ -3457,8 +3095,6 @@ ndmpd_tar_restore_starter_v3(ndmpd_module_params_t *params)
 	ndmp_lbr_params_t *nlp;
 	ndmpd_log(LOG_DEBUG, "++++++++ndmpd_tar_restore_starter_v3++++++++");
 
-
-
 	session = (ndmpd_session_t *)(params->mp_daemon_cookie);
 	*(params->mp_module_cookie) = nlp = ndmp_get_nlp(session);
 	ndmp_session_ref(session);
@@ -3478,9 +3114,7 @@ ndmpd_tar_restore_starter_v3(ndmpd_module_params_t *params)
 	ndmpd_log(LOG_DEBUG, "--------ndmpd_tar_restore_starter_v3--------");
 
 	return (err);
-
 }
-
 
 /*
  * ndmp_tar_restore_abort_v3
@@ -3510,7 +3144,5 @@ ndmpd_tar_restore_abort_v3(void *module_cookie)
 		ndmp_stop_writer_thread(nlp->nlp_session);
 	}
 
-
 	return (0);
-
 }

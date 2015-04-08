@@ -41,11 +41,7 @@
  */
 
 #include <ndmpd_table.h>
-
-
-
 #include <ndmp.h>
-
 
 /*
  * The following macros construct the message handler.
@@ -54,12 +50,11 @@
  * ver and mver are not necessarily the same, specially when
  * there are different structures and there is one handler
  * for all of them.
+ *
+ * function start with ndmp_ will be defined in ndmp.h	which is the XDR definition	
+ * in another case, the function starts with ndmpd_ will be defined in ndmpd_table.h which
+ * is our implementation of the function.
  */
-
-/* function start with ndmp_ will be defined in ndmp.h	which is the XDR definition	
-	in another case, the function starts with ndmpd_ will be defined in ndmpd_table.h which
-	is our implementation of the function.
-*/
  
 /*
  * The handler function
@@ -125,7 +120,6 @@
  * for LINT.
  */
 #ifndef	lint
-
 
 /*
 	Totally 11 handlers.
@@ -844,6 +838,3 @@ ndmp_handler_t ndmp_msghdl_tab[] = {
 	0
 };
 #endif	/* !lint */
-
-
-

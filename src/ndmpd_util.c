@@ -106,7 +106,6 @@ bool_t ndmp_include_lmtime = FALSE;
  */
 bool_t ndmp_fhinode = FALSE;
 
-
 /*
  * Force backup directories in incremental backups.  If the
  * directory is not modified itself, it's not backed up by
@@ -114,10 +113,7 @@ bool_t ndmp_fhinode = FALSE;
  */
 int ndmp_force_bk_dirs = 1;
 
-
-
 mutex_t ol_mutex = PTHREAD_MUTEX_INITIALIZER;
-
 
 /*
  * List of things to be exluded from backup.
@@ -128,7 +124,6 @@ static char *exls[] = {
 	NULL, /* reserved for a copy of the "backup.directory" */
 	NULL
 };
-
 
 /*
  * ndmpd_add_file_handler
@@ -162,7 +157,6 @@ ndmpd_add_file_handler(ndmpd_session_t *session, void *cookie, int fd,
 	if (new == 0)
 		return (-1);
 
-
 	ndmpd_log(LOG_DEBUG, "ndmpd_add_file_handler, fd=%d",fd);
 
 	new->fh_cookie = cookie;
@@ -173,10 +167,8 @@ ndmpd_add_file_handler(ndmpd_session_t *session, void *cookie, int fd,
 	new->fh_next = session->ns_file_handler_list;
 	session->ns_file_handler_list = new;
 
-
 	return (0);
 }
-
 
 /*
  * ndmpd_remove_file_handler
@@ -200,7 +192,6 @@ ndmpd_remove_file_handler(ndmpd_session_t *session, int fd)
 	last = &session->ns_file_handler_list;
 	while (*last != 0) {
 		handler = *last;
-
 		if (handler->fh_fd == fd) {
 			*last = handler->fh_next;
 			(void) free(handler);
@@ -211,7 +202,6 @@ ndmpd_remove_file_handler(ndmpd_session_t *session, int fd)
 
 	return (0);
 }
-
 
 /*
  * ndmp_connection_closed
@@ -242,9 +232,7 @@ ndmp_connection_closed(int fd)
 	FD_ZERO(&fds);
 	FD_SET(fd, &fds);
 
-
 	ret = select(FD_SETSIZE, &fds, NULL, NULL, &timeout);
-
 	closed = (ret == -1 && errno == EBADF);
 
 	return (closed);
@@ -278,7 +266,6 @@ ndmp_check_mover_state(ndmpd_session_t *session)
 	if (moverfd >= 0 &&
 	    session->ns_mover.md_mode == NDMP_MOVER_MODE_WRITE) {
 		int closed, reason;
-
 		closed = ndmp_connection_closed(moverfd);
 		if (closed) {
 			/* Connection closed or internal error */
@@ -296,7 +283,6 @@ ndmp_check_mover_state(ndmpd_session_t *session)
 		}
 	}
 }
-
 
 /*
  * ndmpd_select
@@ -332,13 +318,10 @@ ndmpd_select(ndmpd_session_t *session, bool_t block, u_long class_mask)
 	struct timeval timeout;
 	struct timeval time_base,time_exit;
 
-
-
 	nlp_event_rv_set(session, 0);
 
 	if (session->ns_file_handler_list == 0)
 		return (0);
-
 
 	/*
 	 * If select should be blocked, then we poll every ten seconds.
@@ -369,10 +352,8 @@ ndmpd_select(ndmpd_session_t *session, bool_t block, u_long class_mask)
 
 		for (handler = session->ns_file_handler_list; handler != 0;
 		    handler = handler->fh_next) {
-
 			if ((handler->fh_class & class_mask) == 0)
 				continue;
-
 			if (handler->fh_mode & NDMPD_SELECT_MODE_READ)
 				FD_SET(handler->fh_fd, &rfds);
 			if (handler->fh_mode & NDMPD_SELECT_MODE_WRITE)
@@ -382,7 +363,6 @@ ndmpd_select(ndmpd_session_t *session, bool_t block, u_long class_mask)
 		}
 		ndmp_check_mover_state(session);
 
-
 		// if n == 0, means no data with in the timeout.
 		n = select(FD_SETSIZE, &rfds, &wfds, &efds, &timeout);
 		if(block){
@@ -391,14 +371,11 @@ ndmpd_select(ndmpd_session_t *session, bool_t block, u_long class_mask)
 				return (-1);
 		}
 
-
 	} while (n == 0 && block == TRUE);
 
 	if (n < 0) {
 		int connection_fd = ndmp_get_fd(session->ns_connection);
-
 		ndmpd_log(LOG_DEBUG, "Select error: %m");
-
 		if (errno == EINTR)
 			return (0);
 
@@ -406,12 +383,10 @@ ndmpd_select(ndmpd_session_t *session, bool_t block, u_long class_mask)
 
 		for (handler = session->ns_file_handler_list; handler != 0;
 		    handler = handler->fh_next) {
-
 			ndmpd_log(LOG_DEBUG, "handler = next handler");
 
 			if ((handler->fh_class & class_mask) == 0)
 				continue;
-
 			if (handler->fh_mode & NDMPD_SELECT_MODE_READ) {
 				if (FD_ISSET(handler->fh_fd, &rfds) &&
 				    connection_fd == handler->fh_fd)
@@ -487,15 +462,12 @@ ndmpd_select(ndmpd_session_t *session, bool_t block, u_long class_mask)
 			nlp_event_nw(session);
 		} else
 			handler = handler->fh_next;
-
-
 	}
 
 	nlp_event_rv_set(session, 1);
 
 	return (1);
 }
-
 
 /*
  * ndmpd_save_env
@@ -551,7 +523,6 @@ ndmpd_save_env(ndmpd_session_t *session, ndmp_pval *env, u_long envlen)
 	return (NDMP_NO_ERR);
 }
 
-
 /*
  * ndmpd_free_tcp
  *
@@ -603,8 +574,6 @@ ndmpd_free_env(ndmpd_session_t *session)
 	(void) mutex_unlock(&session->ns_lock);
 }
 
-
-
 /*
  * ndmpd_free_nlist_v3
  *
@@ -632,7 +601,6 @@ ndmpd_free_nlist_v3(ndmpd_session_t *session)
 	NDMP_FREE(session->ns_data.dd_nlist_v3);
 	session->ns_data.dd_nlist_len = 0;
 }
-
 
 /*
  * ndmpd_save_nlist_v3
@@ -712,7 +680,6 @@ ndmpd_save_nlist_v3(ndmpd_session_t *session, ndmp_name_v3 *nlist,
 	return (rv);
 }
 
-
 /*
  * ndmpd_free_nlist
  *
@@ -740,7 +707,6 @@ ndmpd_free_nlist(ndmpd_session_t *session)
 		    session->ns_protocol_version);
 	}
 }
-
 
 /*
  * fh_cmpv3
@@ -773,7 +739,6 @@ fh_cmpv3(const void *p,
 #undef FH_INFOV3
 }
 
-
 /*
  * ndmp_sort_nlist_v3
  *
@@ -796,7 +761,6 @@ ndmp_sort_nlist_v3(ndmpd_session_t *session)
 	    session->ns_data.dd_nlist_len,
 	    sizeof (mem_ndmp_name_v3_t), fh_cmpv3);
 }
-//
 
 /*
  * ndmp_send_reply
@@ -843,7 +807,6 @@ ndmp_mtioctl(int fd, int cmd, int count)
 	return (0);
 }
 
-
 /*
  * quad_to_long_long
  *
@@ -857,7 +820,6 @@ quad_to_long_long(ndmp_u_quad q)
 	ull = ((u_longlong_t)q.high << 32) + q.low;
 	return (ull);
 }
-
 
 /*
  * long_long_to_quad
@@ -874,7 +836,6 @@ long_long_to_quad(u_longlong_t ull)
 	return (q);
 }
 
-
 /*
  * ndmp_set_socket_nodelay
  *
@@ -884,10 +845,8 @@ void
 ndmp_set_socket_nodelay(int sock)
 {
 	int flag = 1;
-
 	(void) setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, &flag, sizeof (flag));
 }
-
 
 /*
  * ndmp_set_socket_snd_buf
@@ -901,7 +860,6 @@ ndmp_set_socket_snd_buf(int sock, int size)
 		ndmpd_log(LOG_DEBUG, "SO_SNDBUF failed errno=%d", errno);
 }
 
-
 /*
  * ndmp_set_socket_rcv_buf
  *
@@ -913,7 +871,6 @@ ndmp_set_socket_rcv_buf(int sock, int size)
 	if (setsockopt(sock, SOL_SOCKET, SO_RCVBUF, &size, sizeof (size)) < 0)
 		ndmpd_log(LOG_DEBUG, "SO_RCVBUF failed errno=%d", errno);
 }
-
 
 /*
  * ndmp_buffer_get_size
@@ -950,9 +907,9 @@ ndmp_buffer_get_size(ndmpd_session_t *session)
 	}
 
 	ndmpd_log(LOG_DEBUG, "xfer_size: %ld", xfer_size);
+
 	return (xfer_size);
 }
-
 
 /*
  * ndmp_lbr_init
@@ -987,9 +944,9 @@ ndmp_lbr_init(ndmpd_session_t *session)
 	(void) cond_init(&session->ns_ndmp_lbr_params->nlp_cv, 0, NULL);
 	(void) mutex_init(&session->ns_lock, 0, NULL);
 	session->ns_nref = 0;
+
 	return (0);
 }
-
 
 /*
  * ndmp_lbr_cleanup
@@ -1018,17 +975,14 @@ ndmp_lbr_cleanup(ndmpd_session_t *session)
 	ndmp_waitfor_op(session);
 	ndmp_free_reader_writer_ipc(session);
 	if (session->ns_ndmp_lbr_params) {
-
 		tlm_release_list(session->ns_ndmp_lbr_params->nlp_exl);
 		tlm_release_list(session->ns_ndmp_lbr_params->nlp_inc);
 		(void) cond_destroy(&session->ns_ndmp_lbr_params->nlp_cv);
 		(void) mutex_destroy(&session->ns_lock);
-
 	}
 
 	NDMP_FREE(session->ns_ndmp_lbr_params);
 }
-
 
 /*
  * nlp_ref_nw
@@ -1056,7 +1010,6 @@ nlp_ref_nw(ndmpd_session_t *session)
 	(void) mutex_unlock(&nlp_mtx);
 }
 
-
 /*
  * nlp_unref_nw
  *
@@ -1083,7 +1036,6 @@ nlp_unref_nw(ndmpd_session_t *session)
 		ndmpd_log(LOG_DEBUG, "nlp == NULL");
 	(void) mutex_unlock(&nlp_mtx);
 }
-
 
 /*
  * nlp_wait_nw
@@ -1115,7 +1067,6 @@ nlp_wait_nw(ndmpd_session_t *session)
 	(void) mutex_unlock(&nlp_mtx);
 }
 
-
 /*
  * nlp_event_nw
  *
@@ -1145,7 +1096,6 @@ nlp_event_nw(ndmpd_session_t *session)
 	(void) mutex_unlock(&nlp_mtx);
 }
 
-
 /*
  * nlp_event_rv_get
  *
@@ -1169,7 +1119,6 @@ nlp_event_rv_get(ndmpd_session_t *session)
 
 	return (nlp->nlp_rv);
 }
-
 
 /*
  * nlp_event_rv_set
@@ -1200,7 +1149,6 @@ nlp_event_rv_set(ndmpd_session_t *session,
 	(void) mutex_unlock(&nlp_mtx);
 }
 
-
 /*
  * ndmp_stop_local_reader
  *
@@ -1230,7 +1178,6 @@ ndmp_stop_local_reader(ndmpd_session_t *session, tlm_commands_t *cmds)
 	}
 }
 
-
 /*
  * Stops a mover reader thread (for remote backup only)
  *
@@ -1246,16 +1193,12 @@ ndmp_stop_remote_reader(ndmpd_session_t *session)
 {
 	if (session != NULL) {
 		if (session->ns_data.dd_sock >= 0) {
-			/*
-			 * 3-way restore.
-			 */
+			 /* 3-way restore. */
 			(void) close(session->ns_data.dd_sock);
 			session->ns_data.dd_sock = -1;
 		}
 	}
 }
-
-
 
 /*
  * ndmp_stop_buffer_worker
@@ -1288,13 +1231,10 @@ ndmp_stop_buffer_worker(ndmpd_session_t *session)
 			while (cmds->tcs_reader_count > 0 ||
 			    cmds->tcs_writer_count > 0) {
 				(void)pthread_yield();
-//				ndmpd_log(LOG_DEBUG,
-//				    "trying to stop buffer worker");
 			}
 		}
 	}
 }
-
 
 /*
  * ndmp_stop_reader_thread
@@ -1332,7 +1272,6 @@ ndmp_stop_reader_thread(ndmpd_session_t *session)
 	}
 }
 
-
 /*
  * ndmp_stop_reader_thread
  *
@@ -1350,25 +1289,21 @@ ndmp_stop_writer_thread(ndmpd_session_t *session)
 	ndmp_lbr_params_t *nlp;
 	tlm_commands_t *cmds;
 
-	if ((nlp = ndmp_get_nlp(session)) == NULL) {
+	if ((nlp = ndmp_get_nlp(session)) == NULL)
 		ndmpd_log(LOG_DEBUG, "nlp == NULL");
-	} else {
+	else {
 		cmds = &nlp->nlp_cmds;
-		if (cmds->tcs_command == NULL) {
+		if (cmds->tcs_command == NULL)
 			ndmpd_log(LOG_DEBUG, "cmds->tcs_command == NULL");
-		} else {
+		else {
 			cmds->tcs_writer = TLM_ABORT;
 			cmds->tcs_command->tc_writer = TLM_ABORT;
 			while (cmds->tcs_writer_count > 0) {
 				(void)pthread_yield();
-//				ndmpd_log(LOG_DEBUG,
-//				    "trying to stop writer thread");
-				//(void) sleep(1);
 			}
 		}
 	}
 }
-
 
 /*
  * ndmp_free_reader_writer_ipc
@@ -1398,7 +1333,6 @@ ndmp_free_reader_writer_ipc(ndmpd_session_t *session)
 	}
 }
 
-
 /*
  * ndmp_waitfor_op
  *
@@ -1422,7 +1356,6 @@ ndmp_waitfor_op(ndmpd_session_t *session)
 	}
 }
 
-
 /*
  * ndmp_session_ref
  *
@@ -1442,7 +1375,6 @@ ndmp_session_ref(ndmpd_session_t *session)
 	(void) mutex_unlock(&session->ns_lock);
 }
 
-
 /*
  * ndmp_session_unref
  *
@@ -1461,7 +1393,6 @@ ndmp_session_unref(ndmpd_session_t *session)
 	session->ns_nref--;
 	(void) mutex_unlock(&session->ns_lock);
 }
-
 
 /*
  * ndmp_valid_v3addr_type
@@ -1495,7 +1426,6 @@ ndmp_valid_v3addr_type(ndmp_addr_type type)
 	return (rv);
 }
 
-
 /*
  * ndmp_copy_addr_v3
  *
@@ -1526,7 +1456,6 @@ ndmp_copy_addr_v3(ndmp_addr_v3 *dst, ndmp_addr_v3 *src)
 		break;
 	}
 }
-
 
 /*
  * ndmp_copy_addr_v4
@@ -1571,7 +1500,6 @@ ndmp_copy_addr_v4(ndmp_addr_v4 *dst, ndmp_addr_v4 *src)
 		break;
 	}
 }
-
 
 /*
  * ndmp_connect_sock_v3
@@ -1624,7 +1552,6 @@ ndmp_connect_sock_v3(u_long addr, u_short port)
 
 	return (sock);
 }
-
 
 char *getIPfromNIC(char *nicname){
 	// IPv4
@@ -1716,7 +1643,6 @@ ndmp_create_socket(u_long *addr, u_short *port)
 	return (sd);
 }
 
-
 /*
  * cctime
  *
@@ -1750,7 +1676,6 @@ cctime(time_t *t)
 	return (bp);
 }
 
-
 /*
  * ndmp_new_job_name
  *
@@ -1777,7 +1702,6 @@ ndmp_new_job_name(char *jname)
 	return (jname);
 }
 
-
 /*
  * fs_is_valid_logvol
  *
@@ -1800,7 +1724,6 @@ fs_is_valid_logvol(char *path)
 
 	return (TRUE);
 }
-
 
 /*
  * ndmpd_mk_temp
@@ -1849,7 +1772,6 @@ ndmpd_mk_temp(char *buf)
 	return (rv);
 }
 
-
 /*
  * ndmpd_make_bk_dir_path
  *
@@ -1888,7 +1810,6 @@ ndmpd_make_bk_dir_path(char *buf, char *fname)
 	return (buf);
 }
 
-
 /*
  * ndmpd_make_exc_list
  *
@@ -1922,7 +1843,6 @@ ndmpd_make_exc_list(void)
 	return (cpp);
 }
 
-
 /*
  * ndmp_get_bk_dir_ino
  *
@@ -1945,7 +1865,6 @@ ndmp_get_bk_dir_ino(ndmp_lbr_params_t *nlp)
 
 	return (rv);
 }
-
 
 /*
  * ndmp_check_utf8magic
@@ -1999,8 +1918,6 @@ ndmp_check_utf8magic(tlm_cmd_t *cmd)
 	return bt;
 }
 
-
-
 /*
  * ndmp_get_cur_bk_time
  *
@@ -2016,13 +1933,8 @@ ndmp_get_cur_bk_time(ndmp_lbr_params_t *nlp, time_t *tp, char *jname)
 		return (-1);
 	}
 
-	// get the snapshot create time from it's name. This can avoid incorrect time
-	// because the time elapsed after taking snapshot
-	if(NLP_ISSNAP(nlp)){
-//		err = tlm_get_chkpnt_time(nlp->nlp_backup_path, NLP_ISSNAP(nlp), tp, jname);
-	}else{
-		*tp = time(NULL);
-	}
+	*tp = time(NULL);
+
 	if (err != 0) {
 		ndmpd_log(LOG_DEBUG, "Can't checkpoint time");
 	} else {
@@ -2030,7 +1942,6 @@ ndmp_get_cur_bk_time(ndmp_lbr_params_t *nlp, time_t *tp, char *jname)
 	}
 
 	return (err);
-
 }
 
 /*
@@ -2056,7 +1967,6 @@ ndmp_get_relative_path(char *base, char *fullpath)
 	return ((*base) ? fullpath : p);
 }
 
-
 /*
  * ndmp_get_nlp
  *
@@ -2078,8 +1988,6 @@ ndmp_get_nlp(void *cookie)
 
 	return (((ndmpd_session_t *)cookie)->ns_ndmp_lbr_params);
 }
-
-
 
 /*
  * ndmp_load_params
@@ -2108,7 +2016,6 @@ ndmp_load_params(void)
 	    TRUE : FALSE;
 
 	ndmp_fhinode = ndmpd_get_prop_yorn(NDMP_FHIST_INCR_ENV) ? TRUE : FALSE;
-
 
 	if ((ndmp_ver = atoi(ndmpd_get_prop(NDMP_VERSION_ENV))) == 0)
 		ndmp_ver = NDMPVER;
@@ -2184,4 +2091,3 @@ ndmpd_get_file_entry_type(int mode, ndmp_file_type *ftype)
 		break;
 	}
 }
-

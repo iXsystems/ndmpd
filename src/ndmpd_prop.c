@@ -45,19 +45,16 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
-
 #include <ctype.h>
-
 #include <strings.h>
+
 #include "ndmpd_prop.h"
 #include "ndmpd.h"
-
 
 typedef struct ndmpd_cfg_param {
 	char		*name;
 	char		value[64+1];
 } ndmpd_cfg_param_t;
-
 
 /*
  * programmable argument.
@@ -68,55 +65,46 @@ typedef struct ndmpd_cfg_param {
  * 4. serve-ip
  *
  * */
-
 ndmpd_cfg_param_t ndmpd_cfg_table[] =
 {
-	{"listen-nic",					""			},
-	{"serve-nic",					""			},
-	{"dump-pathnode",				"true" 		},
-	{"tar-pathnode",				"true" 		},
-	{"fh-inode",					"true" 		},
-	{"ignore-ctime",				"false"		},
-	{"include-lmtime",				"false"		},
-	{"version",						"4"			},
-	{"restore-fullpath",			"false"		},
-#ifdef QNAP_TS
-	{"debug-path",					"./log"	},
-	{"plugin-path",					"./log"	},
-#else
-	{"debug-path",					"/var/log/ndmp"	},
-	{"plugin-path",					"/var/log/ndmp"	},
-#endif
-	{"socket-css",					"65" 		},
-	{"socket-crs",					"80" 		},
-	{"mover-recordsize",			"60" 		},
-	{"restore-wildcard-enable",		"false" 	},
-	{"cram-md5-username",			""			},
-	{"cram-md5-password",			""	 		},
-	{"cleartext-username",			""			},
-	{"cleartext-password",			""			},
-	{"tcp-port",					"10000" 	},
-	{"backup-quarantine",			"false" 	},
-	{"restore-quarantine",			"false" 	},
-	{"overwrite-quarantine",		"false" 	},
+	{"listen-nic", ""},
+	{"serve-nic", ""},
+	{"dump-pathnode", "true"},
+	{"tar-pathnode", "true"},
+	{"fh-inode", "true"},
+	{"ignore-ctime", "false"},
+	{"include-lmtime", "false"},
+	{"version", "4"},
+	{"restore-fullpath", "false"},
+	{"debug-path", "/var/log/ndmp"},
+	{"plugin-path", "/var/log/ndmp"},
+	{"socket-css", "65"},
+	{"socket-crs", "80"},
+	{"mover-recordsize", "60"},
+	{"restore-wildcard-enable", "false"},
+	{"cram-md5-username", ""},
+	{"cram-md5-password", ""},
+	{"cleartext-username", ""},
+	{"cleartext-password", ""},
+	{"tcp-port", "10000"},
+	{"backup-quarantine", "false"},
+	{"restore-quarantine",	"false"},
+	{"overwrite-quarantine", "false"},
 };
-
 
 void print_prop(){
 	ndmpd_cfg_id_t id;
 	ndmpd_cfg_param_t *cfg;
 	for (id = 0; id < NDMP_MAXALL; id++) {
 		cfg = &ndmpd_cfg_table[id];
-		printf("ndmpd_prop- key=%30s	value=%20s\n",cfg->name,cfg->value);
+		printf("ndmpd_prop- key=%30s value=%20s\n",cfg->name,cfg->value);
 	}
 }
-
 
 /*
  * Loads all the NDMP configuration parameters and sets up the
  * config table.
  */
-
 void setup(char *line){
 	int ki,vi,idx,iskey;
 	char key[64];
@@ -124,17 +112,17 @@ void setup(char *line){
 	ndmpd_cfg_id_t id;
 	ndmpd_cfg_param_t *cfg;
 
-	if(strlen(line)==0 || line[0]=='#' || line[0]=='\n')
+	if (strlen(line)==0 || line[0]=='#' || line[0]=='\n')
 		return ;
 
-	for(ki=0,vi=0,idx=0,iskey=1;idx<strlen(line);idx++){
-		if(line[idx]<33 || line[idx]>126)
+	for (ki=0, vi=0, idx=0, iskey=1; idx < strlen(line); idx++){
+		if (line[idx]<33 || line[idx]>126)
 			continue;
-		if(line[idx]=='=' && iskey){
+		if (line[idx]=='=' && iskey) {
 			key[ki++]='\0';
 			iskey=0;
-		}else{
-			if(iskey)
+		} else {
+			if (iskey)
 				key[ki++]=tolower(line[idx]);
 			else
 				value[vi++]=line[idx];
@@ -143,7 +131,7 @@ void setup(char *line){
 
 	value[vi]='\0';
 	// we only support maximum 64 characters.
-	if(vi>64)
+	if (vi > 64)
 		return ;
 
 	for (id = 0; id < NDMP_MAXALL; id++) {
@@ -153,13 +141,11 @@ void setup(char *line){
 			break;
 		}
 	}
-
 }
 
 int
 ndmpd_load_prop(char *filename)
 {
-
 	FILE *fp=NULL;
 	char str[128];
 
@@ -210,11 +196,10 @@ ndmpd_get_prop_default(ndmpd_cfg_id_t id, char *dflt)
 
 	env = ndmpd_get_prop(id);
 
-	if (env && *env != 0) {
+	if (env && *env != 0)
 		return (env);
-	} else {
+	else
 		return (dflt);
-	}
 }
 
 /*
