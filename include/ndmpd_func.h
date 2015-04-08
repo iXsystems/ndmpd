@@ -71,6 +71,7 @@ ndmp_connection_t *ndmp_create_xdr_connection(void);
 void ndmp_destroy_xdr_connection(ndmp_connection_t *connection_handle);
 int ndmp_process_requests(ndmp_connection_t *connection_handle);
 void connection_file_handler(void *cookie, int fd, u_long mode);
+//void connection_file_handler(void *cookie);
 int ndmp_process_messages(ndmp_connection_t *connection, bool_t reply_expected);
 int tcp_accept(int listen_sock, unsigned int *inaddr_p);
 int tcp_get_peer(int sock, unsigned int *inaddr_p, int *port_p);
