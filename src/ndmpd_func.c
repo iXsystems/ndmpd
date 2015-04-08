@@ -663,6 +663,15 @@ ndmp_process_requests(ndmp_connection_t *connection_handle)
 void
 connection_file_handler(void *cookie, int fd, u_long mode)
 {
+	if (fd) {
+		printf("=========================================> CHECK HERE\n");
+		printf("fd ndmpd_func.c line 668\n");
+	}
+	if (mode) {
+		printf("=========================================> CHECK HERE\n");
+		printf("mode ndmpd_func.c line 672\n");
+	}
+
 	ndmpd_session_t *session = (ndmpd_session_t *)cookie;
 
 	if (ndmp_process_requests(session->ns_connection) < 0)
