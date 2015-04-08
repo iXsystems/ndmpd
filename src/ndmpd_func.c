@@ -114,8 +114,8 @@ printXDR(ndmp_connection_t *chanlde,
 }
 
 /* Debug Function END	*/
-void
-*ndmp_malloc(size_t size)
+void *
+ndmp_malloc(size_t size)
 {
 	void *data;
 
@@ -551,9 +551,8 @@ ndmp_free_message(ndmp_connection_t *connection_handle)
  *   The returned connection should be destroyed using
  *   ndmp_destroy_xdr_connection().
  */
-
-ndmp_connection_t
-*ndmp_create_xdr_connection(void)
+ndmp_connection_t *
+ndmp_create_xdr_connection(void)
 {
 	ndmp_connection_t *connection;
 
@@ -820,7 +819,8 @@ ndmp_process_messages(ndmp_connection_t *connection, bool_t reply_expected)
 			ndmpd_log(LOG_DEBUG, "No handler for message 0x%x",
 				connection->conn_msginfo.mi_hdr.message);
 
-			(void) ndmp_send_response((ndmp_connection_t *)connection, NDMP_NOT_SUPPORTED_ERR, NULL);
+			(void) ndmp_send_response((ndmp_connection_t *)connection,
+				NDMP_NOT_SUPPORTED_ERR, NULL);
 			/* free allocated memory before leave the function */
 			ndmp_free_message((ndmp_connection_t *)connection);
 			continue;
@@ -977,8 +977,8 @@ ndmp_set_client_data(ndmp_connection_t *connection_handle, void *client_data)
  * Returns:
  *   client data pointer.
  */
-void
-*ndmp_get_client_data(ndmp_connection_t *connection_handle)
+void *
+ndmp_get_client_data(ndmp_connection_t *connection_handle)
 {
 	return (((ndmp_connection_t *)connection_handle)->conn_client_data);
 }
@@ -1075,8 +1075,8 @@ ndmp_check_auth_required(ndmp_message message)
  *   NULL - message not found.
  *   pointer to handler info.
  */
-ndmp_handler_t
-*ndmp_get_interface(ndmp_message message)
+ndmp_handler_t *
+ndmp_get_interface(ndmp_message message)
 {
 	ndmp_handler_t *ni = &ndmp_msghdl_tab[(message >> 8) % INT_MAXCMD];
 

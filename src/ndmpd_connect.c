@@ -396,8 +396,8 @@ create_md5_digest(unsigned char *digest, char *passwd, unsigned char *challenge)
  *   NULL - error
  *   connection list element pointer
  */
-static struct conn_list
-*ndmp_connect_list_find(ndmp_connection_t *connection)
+static struct conn_list *
+ndmp_connect_list_find(ndmp_connection_t *connection)
 {
 	struct conn_list *clp;
 

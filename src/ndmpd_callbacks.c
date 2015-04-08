@@ -242,8 +242,8 @@ ndmpd_api_read_v3(void *client_data, char *data, u_long length)
  *   Pointer to name entry.
  *   0 if requested entry does not exist.
  */
-void
-*ndmpd_api_get_name_v3(void *cookie, u_long name_index)
+void *
+ndmpd_api_get_name_v3(void *cookie, u_long name_index)
 {
 	ndmpd_session_t *session = (ndmpd_session_t *)cookie;
 
@@ -463,8 +463,8 @@ ndmpd_api_file_recovered_v4(void *cookie, char *name, int error)
  *   NULL if variable not found.
  *
  */
-ndmp_pval
-*ndmpd_api_find_env(void *cookie, char *name)
+ndmp_pval *
+ndmpd_api_find_env(void *cookie, char *name)
 {
 	ndmpd_session_t *session = (ndmpd_session_t *)cookie;
 	u_long i;
@@ -495,8 +495,8 @@ ndmp_pval
  *   0 if variable not found.
  *
  */
-char
-*ndmpd_api_get_env(void *cookie, char *name)
+char *
+ndmpd_api_get_env(void *cookie, char *name)
 {
 	ndmp_pval *envp;
 

@@ -107,8 +107,8 @@ ndmpd_log(int level, const char *fmt,...)
  *   0 - successful connection.
  *  -1 - error.
  */
-void
-*ndmpd_worker(void *ptarg)
+void *
+ndmpd_worker(void *ptarg)
 {
 	int sock;
 	ndmp_connection_t *connection;

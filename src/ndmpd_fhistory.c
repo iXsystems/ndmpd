@@ -898,8 +898,8 @@ ndmpd_file_history_cleanup(ndmpd_session_t *session, bool_t send_flag)
  *
  * Callbacks from LBR.
  */
-static ndmpd_module_params_t
-*get_params(void *cookie)
+static ndmpd_module_params_t *
+get_params(void *cookie)
 {
 	ndmp_lbr_params_t *nlp;
 

@@ -1159,7 +1159,8 @@ start_backup_v3(ndmpd_session_t *session, char *bu_type, ndmp_pval *env_val,
 	pthread_t thread;
 	(void) pthread_attr_init(&tattr);
 	(void) pthread_attr_setdetachstate(&tattr, PTHREAD_CREATE_DETACHED);
-	err = pthread_create(&thread, &tattr,  (funct_t)session->ns_data.dd_module.dm_start_func,params);
+	err = pthread_create(&thread, &tattr,
+		(funct_t)session->ns_data.dd_module.dm_start_func,params);
 	(void) pthread_attr_destroy(&tattr);
 
 	if (err != 0) {
