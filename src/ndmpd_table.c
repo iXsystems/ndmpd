@@ -141,6 +141,7 @@
 	We don't support NDMPv2.
 	
 */
+extern ndmp_handler_t ndmp_msghdl_tab[];
 ndmp_handler_t ndmp_msghdl_tab[] = {
 	{
 		/* NONE - 0x000 */
@@ -687,10 +688,14 @@ ndmp_handler_t ndmp_msghdl_tab[] = {
 			}
 		}
 	},
+	/* XXX: Do we really need it?
+	 * src/cmd/ndmpd/ndmp/ndmpd_handler.c
 	{
-		/* NONE - 0x800 */
+		//NONE - 0x800
 		0,
+
 	},
+	*/
 	{
 		/* CONNECT - 0x900 */
 		4,
@@ -830,8 +835,6 @@ ndmp_handler_t ndmp_msghdl_tab[] = {
 		}
 	}
 };
-
-
 
 #else	/* !lint */
 ndmp_handler_t ndmp_msghdl_tab[] = {
