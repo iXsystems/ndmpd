@@ -77,7 +77,7 @@ extern void ndmpd_file_history_init(ndmpd_session_t *session);
 extern void ndmpd_file_history_cleanup(ndmpd_session_t *session, bool_t send_flag);
 extern void ndmpd_mover_shut_down(ndmpd_session_t *session);
 
-extern int PRINT_DEBUG_LOG;
+static int PRINT_DEBUG_LOG = 0;
 
 void
 ndmpd_log(int level, const char *fmt,...)
