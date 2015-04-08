@@ -51,6 +51,7 @@
 
 #include <sys/types.h>
 #include <sys/socket.h>
+
 /*	snprintf	*/
 #include <stdio.h>
 
@@ -75,14 +76,14 @@ mutex_t nlp_mtx;
  * Force to backup all the intermediate directories leading to an object
  * to be backed up in 'dump' format backup.
  */
-bool_t ndmp_dump_path_node = FALSE;
+static bool_t ndmp_dump_path_node = FALSE;
 
 
 /*
  * Force to backup all the intermediate directories leading to an object
  * to be backed up in 'tar' format backup.
  */
-bool_t ndmp_tar_path_node = FALSE;
+static bool_t ndmp_tar_path_node = FALSE;
 
 
 /*
@@ -104,23 +105,22 @@ bool_t ndmp_include_lmtime = FALSE;
  * which expects to get the FH ADD NODES for all upper directories which
  * contain the changed files in incremental backup along with the FH ADD DIRS.
  */
-bool_t ndmp_fhinode = FALSE;
+static bool_t ndmp_fhinode = FALSE;
 
 /*
  * Force backup directories in incremental backups.  If the
  * directory is not modified itself, it's not backed up by
  * default.
  */
-int ndmp_force_bk_dirs = 1;
-
-mutex_t ol_mutex = PTHREAD_MUTEX_INITIALIZER;
+extern int ndmp_force_bk_dirs;
+int ndmp_force_bk_dirs  = 1;
 
 /*
  * List of things to be exluded from backup.
  */
 static char *exls[] = {
-	EXCL_PROC,
-	EXCL_TMP,
+	(char *)EXCL_PROC,
+	(char *)EXCL_TMP,
 	NULL, /* reserved for a copy of the "backup.directory" */
 	NULL
 };
@@ -559,7 +559,7 @@ ndmpd_free_tcp(ndmpd_session_t *session)
 void
 ndmpd_free_env(ndmpd_session_t *session)
 {
-	u_long i;
+	int i;
 	int count = session->ns_data.dd_env_len;
 
 	(void) mutex_lock(&session->ns_lock);
@@ -893,7 +893,7 @@ ndmp_buffer_get_size(ndmpd_session_t *session)
 
 	if (session->ns_data.dd_mover.addr_type == NDMP_ADDR_TCP) {
 		xfer_size = atoi(ndmpd_get_prop_default(NDMP_MOVER_RECSIZE,
-		    "60"));
+		    (char *)"60"));
 		if (xfer_size > 0)
 			xfer_size *= KB;
 		else
@@ -1473,7 +1473,7 @@ ndmp_copy_addr_v3(ndmp_addr_v3 *dst, ndmp_addr_v3 *src)
 void
 ndmp_copy_addr_v4(ndmp_addr_v4 *dst, ndmp_addr_v4 *src)
 {
-	int i;
+	unsigned int i;
 
 	dst->addr_type = src->addr_type;
 	dst->tcp_len_v4 = src->tcp_len_v4;
@@ -1553,7 +1553,8 @@ ndmp_connect_sock_v3(u_long addr, u_short port)
 	return (sock);
 }
 
-char *getIPfromNIC(char *nicname){
+char *
+getIPfromNIC(char *nicname) {
 	// IPv4
 	char *ip;
 
@@ -1570,7 +1571,7 @@ char *getIPfromNIC(char *nicname){
 	close(fd);
 
 	//sprintf(ip, "%s", inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr));
-	ip= inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr);
+	ip = inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr);
 
 	return ip;
 }
