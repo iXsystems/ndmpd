@@ -120,7 +120,7 @@ typedef enum {
  * Loads all the NDMP configuration parameters and sets up the
  * config table.
  */
-int ndmpd_load_prop(char*);
+int ndmpd_load_prop(const char *);
 char *ndmpd_get_prop(ndmpd_cfg_id_t id);
 char *ndmpd_get_prop_default(ndmpd_cfg_id_t id, char *dflt);
 int ndmpd_get_prop_yorn(ndmpd_cfg_id_t id);

@@ -457,7 +457,7 @@ ndmp_recv_msg(ndmp_connection_t *connection)
  *   -1 - error.
  */
 int
-ndmp_writeit(void *connection_handle, void* buf, int len)
+ndmp_writeit(void *connection_handle, void *buf, int len)
 {
 	ndmp_connection_t *connection = (ndmp_connection_t *)connection_handle;
 	register int n;

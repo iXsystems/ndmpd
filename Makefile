@@ -1,7 +1,6 @@
 
 PROG = ndmpd
-
-SRCS=   src/ndmpd.c \
+SRCS =  src/ndmpd.c \
         src/ndmp_xdr.c \
 	$(NDMPD_SRCS) \
 	$(HANDLER_SRCS) \
@@ -31,13 +30,13 @@ TLM_SRCS = tlm/tlm_util.c \
 		  tlm/tlm_info.c \
 		  tlm/tlm_hardlink.c
 
-
-LDADD=	-lmd -lpthread -lc
+LDADD =	-lmd -lpthread -lc
 MAN=
 CFLAGS += -I. -I./include 
 		   
 PREFIX ?= /usr/local
-DSTDIR  = ${PREFIX}/sbin 
+DSTDIR = ${PREFIX}/sbin 
+ETCDIR = ${PREFIX}/etc
 
 .c.o:
 	$(CC) ${STATIC_CFLAGS}  $(CFLAGS)  -c $< -o $@	
@@ -45,7 +44,7 @@ DSTDIR  = ${PREFIX}/sbin
 install: ${PROG}
 	@mkdir -p ${DSTDIR}
 	@cp $(PROG) ${DSTDIR}/
-	@cp ndmpd.conf /usr/local/etc/
+	@cp ndmpd.conf ${ETCDIR}/ndmpd.conf.example 
 
 plist:
 	@echo "@comment files"

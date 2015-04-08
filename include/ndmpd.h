@@ -312,4 +312,11 @@ extern int ndmp_connect_list_del(ndmp_connection_t *connection);
 /* define a print log function */
 void ndmpd_log(int level, const char *fmt,...);
 
+/* functions prototype */
+void * ndmpd_worker(void *ptarg);
+int ndmp_run(u_long port, ndmp_con_handler_func_t con_handler_func);
+void connection_handler(ndmp_connection_t *connection);
+bool_t file_exists(const char * filename);
+int startNDMPD(void);
+
 #endif /* _NDMPD_H_ */

@@ -54,6 +54,7 @@
 #define	VOL_MAXNAMELEN	256
 
 extern ndmp_handler_t ndmp_msghdl_tab[];
+extern int ndmp_port;
 
 int  ndmp_send_response(ndmp_connection_t *connection_handle, ndmp_error err, void *reply);
 int  ndmp_send_request(ndmp_connection_t *connection_handle,
@@ -83,5 +84,6 @@ bool_t ndmp_check_auth_required(ndmp_message message);
 ndmp_handler_t *ndmp_get_interface(ndmp_message message);
 ndmp_msg_handler_t *ndmp_get_handler(ndmp_connection_t *connection, ndmp_message message);
 void ndmp_close(ndmp_connection_t *connection_handle);
+void printXDR(ndmp_connection_t *chanlde, ndmp_notify_connected_request *request_data);
 
 #endif /* _NDMPD_FUNC_H_ */

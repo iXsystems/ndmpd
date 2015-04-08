@@ -75,10 +75,9 @@ extern int ndmp_ver;
 /* defined in hist */
 extern void ndmpd_file_history_init(ndmpd_session_t *session);
 extern void ndmpd_file_history_cleanup(ndmpd_session_t *session, bool_t send_flag);
-
 extern void ndmpd_mover_shut_down(ndmpd_session_t *session);
 
-int PRINT_DEBUG_LOG;
+extern int PRINT_DEBUG_LOG;
 
 void
 ndmpd_log(int level, const char *fmt,...)
@@ -155,7 +154,7 @@ int
 ndmp_run(u_long port, ndmp_con_handler_func_t con_handler_func)
 {
 	int ns;
-	int on, tmp;
+	int on;
 	int server_socket;
 	unsigned int ipaddr;
 	struct sockaddr_in sin;
@@ -293,7 +292,7 @@ connection_handler(ndmp_connection_t *connection)
 
 	req.reason = NDMP_CONNECTED;
 	req.protocol_version = ndmp_ver;
-	req.text_reason = "";
+	req.text_reason = 0; 
 
 	/* Send request to tell the client that we're ready for connection */
 	if (ndmp_send_request_lock(connection, 
@@ -387,8 +386,8 @@ int
 main(int argc, char *argv[])
 {
 	char c;
-	struct stat st = {0};
-	char *configFile="/usr/local/etc/ndmpd.conf";
+	struct stat st;
+	const char *configFile = "/usr/local/etc/ndmpd.conf";
 
 	if (stat("/var/log/ndmp", &st) == -1) {
 		mkdir("/var/log/ndmp", 0755);
