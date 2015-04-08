@@ -1080,8 +1080,7 @@ ndmp_get_interface(ndmp_message message)
 {
 	ndmp_handler_t *ni = &ndmp_msghdl_tab[(message >> 8) % INT_MAXCMD];
 
-
-	if ((message & 0xff) >= ni->hd_cnt)
+	if ((message & 0xff) >= (unsigned int)ni->hd_cnt)
 		return (NULL);
 
 	/* Sanity check */
