@@ -292,7 +292,7 @@ connection_handler(ndmp_connection_t *connection)
 
 	req.reason = NDMP_CONNECTED;
 	req.protocol_version = ndmp_ver;
-	req.text_reason = 0; 
+	req.text_reason = ""; 
 
 	/* Send request to tell the client that we're ready for connection */
 	if (ndmp_send_request_lock(connection, 
@@ -385,6 +385,7 @@ file_exists(const char * filename)
 int 
 main(int argc, char *argv[])
 {
+
 	char c;
 	struct stat st;
 	const char *configFile = "/usr/local/etc/ndmpd.conf";
