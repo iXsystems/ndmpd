@@ -273,7 +273,7 @@ connection_handler(ndmp_connection_t *connection)
 
 	ndmpd_file_history_init(&session);
 
-	 if (ndmpd_mover_init(&session) < 0)
+	if (ndmpd_mover_init(&session) < 0)
 		 return;
 
 	if (ndmp_lbr_init(&session) < 0) {
@@ -292,7 +292,7 @@ connection_handler(ndmp_connection_t *connection)
 
 	req.reason = NDMP_CONNECTED;
 	req.protocol_version = ndmp_ver;
-	req.text_reason = ""; 
+	req.text_reason = (char *)""; 
 
 	/* Send request to tell the client that we're ready for connection */
 	if (ndmp_send_request_lock(connection, 
@@ -351,15 +351,17 @@ connection_handler(ndmp_connection_t *connection)
 
 	(void) ndmpd_remove_file_handler(&session, connection_fd);
 
-	 ndmpd_mover_shut_down(&session);
-	 ndmp_lbr_cleanup(&session);
-	 ndmpd_data_cleanup(&session);
-	 ndmpd_file_history_cleanup(&session, FALSE);
-	 ndmpd_mover_cleanup(&session);
+	ndmpd_mover_shut_down(&session);
+	ndmp_lbr_cleanup(&session);
+	ndmpd_data_cleanup(&session);
+	ndmpd_file_history_cleanup(&session, FALSE);
+	ndmpd_mover_cleanup(&session);
 
-	 (void) ndmp_connect_list_del(connection);
+	(void) ndmp_connect_list_del(connection);
 
-	 ndmpd_log(LOG_DEBUG, "- connection_handler: handle the connection END - %d",connection_fd);
+	ndmpd_log(LOG_DEBUG, "- connection_handler: handle the connection END - %d",
+		connection_fd);
+
 }
 
 int
