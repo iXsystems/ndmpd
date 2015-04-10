@@ -169,6 +169,8 @@ ndmpd_connect_client_auth_v3(ndmp_connection_t *connection, void *body)
 	char *uname;
 	char *type;
 
+	print_prop();
+
 	request = (ndmp_connect_client_auth_request_v3 *)body;
 	ndmpd_log(LOG_DEBUG, "auth_type %s",
 	    request->auth_data.auth_type == NDMP_AUTH_NONE ? "None" :
@@ -181,14 +183,13 @@ ndmpd_connect_client_auth_v3(ndmp_connection_t *connection, void *body)
 	case NDMP_AUTH_NONE:
 		type = "none";
 		reply.error = NDMP_NOT_SUPPORTED_ERR;
-		//ndmpd_audit_connect(connection, ENOTSUP);
 		break;
 	case NDMP_AUTH_TEXT:
 		/* Check authorization.  */
 		if ((uname = ndmpd_get_prop(NDMP_CLEARTEXT_USERNAME)) == NULL ||
 		    *uname == 0) {
 			ndmpd_log(LOG_ERR, "Authorization denied.");
-			ndmpd_log(LOG_ERR, "User name is not set at server.");
+			ndmpd_log(LOG_ERR, "Text: User name is not set at server.");
 			reply.error = NDMP_NOT_AUTHORIZED_ERR;
 			ndmp_set_authorized(connection, FALSE);
 			ndmp_send_reply(connection, (void *) &reply,
@@ -206,7 +207,7 @@ ndmpd_connect_client_auth_v3(ndmp_connection_t *connection, void *body)
 		if ((uname = ndmpd_get_prop(NDMP_CRAM_MD5_USERNAME)) == NULL ||
 		    *uname == 0) {
 			ndmpd_log(LOG_ERR, "Authorization denied.");
-			ndmpd_log(LOG_ERR, "User name is not set at server.");
+			ndmpd_log(LOG_ERR, "MD5: User name is not set at server.");
 			reply.error = NDMP_NOT_AUTHORIZED_ERR;
 			ndmp_set_authorized(connection, FALSE);
 			ndmp_send_reply(connection, (void *) &reply,
@@ -493,7 +494,7 @@ ndmp_connect_list_del(ndmp_connection_t *connection)
 int
 ndmpd_connect_auth_text(char *uname, char *auth_id, char *auth_password)
 {
-	char *passwd, *dec_passwd;
+	char *passwd;
 	int rv;
 
 	if (strcmp(uname, auth_id) != 0) {
@@ -503,22 +504,21 @@ ndmpd_connect_auth_text(char *uname, char *auth_id, char *auth_password)
 		if (!passwd || !*passwd) {
 			rv = NDMP_NOT_AUTHORIZED_ERR;
 		} else {
-			dec_passwd = ndmp_base64_decode(passwd);
-			if (dec_passwd == NULL || *dec_passwd == 0)
+			if (passwd == NULL || *passwd == 0)
 				rv = NDMP_NOT_AUTHORIZED_ERR;
-			else if (strcmp(auth_password, dec_passwd) != 0)
+			else if (strcmp(auth_password, passwd) != 0) {
 				rv = NDMP_NOT_AUTHORIZED_ERR;
-			else
+			} else {
 				rv = NDMP_NO_ERR;
-
-			free(dec_passwd);
+			}
 		}
 	}
 
-	if (rv == NDMP_NO_ERR)
+	if (rv == NDMP_NO_ERR) {
 		ndmpd_log(LOG_DEBUG, "Authorization granted.");
-	else
+	} else {
 		ndmpd_log(LOG_ERR, "Authorization denied.");
+	}
 
 	return (rv);
 }
