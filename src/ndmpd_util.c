@@ -2038,7 +2038,7 @@ void
 randomize(unsigned char *buffer, int size)
 {
 	/* LINTED improper alignment */
-	unsigned int *p = (unsigned int *)buffer;
+	unsigned int *p = (unsigned int *)(void *)buffer;
 	unsigned int dwlen = size / sizeof (unsigned int);
 	unsigned int remlen = size % sizeof (unsigned int);
 	unsigned int tmp;
