@@ -1557,6 +1557,7 @@ char *
 getIPfromNIC(char *nicname) {
 	// IPv4
 	char *ip;
+	struct sockaddr_in *ipaddr;
 
 	int fd=0;
 	struct ifreq ifr;
@@ -1570,8 +1571,9 @@ getIPfromNIC(char *nicname) {
 	ioctl(fd, SIOCGIFADDR, &ifr);
 	close(fd);
 
-	//sprintf(ip, "%s", inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr));
-	ip = inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr);
+	//ip = inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr);
+	ipaddr = (struct sockaddr_in *)(void *)&ifr.ifr_addr;
+	ip = inet_ntoa(ipaddr->sin_addr);
 
 	return ip;
 }
