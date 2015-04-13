@@ -66,9 +66,9 @@
 
 #include <ndmpd_tar_v3.h>
 
-/*
- * Mutex to protect Nlp
- */
+/* 
+ * Mutex to protect Nlp 
+ */ 
 mutex_t nlp_mtx;
 
 
@@ -1659,7 +1659,7 @@ ndmp_create_socket(u_long *addr, u_short *port)
  *     "the epoch": if time is 0.
  *     string format of the time.
  */
-char *
+const char *
 cctime(time_t *t)
 {
 	char *bp, *cp;
@@ -1927,7 +1927,7 @@ ndmp_check_utf8magic(tlm_cmd_t *cmd)
  * Get the backup checkpoint time.
  */
 int
-ndmp_get_cur_bk_time(ndmp_lbr_params_t *nlp, time_t *tp, char *jname)
+ndmp_get_cur_bk_time(ndmp_lbr_params_t *nlp, time_t *tp)
 {
 	int err=0;
 
