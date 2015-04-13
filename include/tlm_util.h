@@ -70,7 +70,6 @@ int cstack_pop(cstack_t *stk, void **data, int *len);
 int cstack_top(cstack_t *stk, void **data, int *len);
 bool_t match(char *patn, char *str);
 int match_ci(char *patn, char *str);
-static bool_t parse_match(char line, char *seps);
 char *parse(char **line, char *seps);
 int oct_atoi(char *p);
 char *strupr(char *s);
