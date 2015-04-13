@@ -66,6 +66,11 @@
 #define	IN_ADDR(x) \
 	(*(struct in_addr *)&x)
 
+/* 
+ * Mutex to protect Nlp 
+ */ 
+extern mutex_t nlp_mtx;
+
 /* defined in ndmpd_func */
 extern int ndmp_full_restore_path;
 extern int ndmp_ver;
@@ -104,7 +109,7 @@ void ndmp_session_ref(ndmpd_session_t *session);
 void ndmp_session_unref(ndmpd_session_t *session);
 
 char *ndmp_new_job_name(char *jname);
-int ndmp_get_cur_bk_time(ndmp_lbr_params_t *nlp, time_t *tp, char *jname);
+int ndmp_get_cur_bk_time(ndmp_lbr_params_t *nlp, time_t *tp);
 long ndmp_buffer_get_size(ndmpd_session_t *session);
 void ndmpd_get_file_entry_type(int mode, ndmp_file_type *ftype);
 char *ndmp_get_relative_path(char *base, char *fullpath);
@@ -145,7 +150,7 @@ void ndmp_copy_addr_v4(ndmp_addr_v4 *dst, ndmp_addr_v4 *src);
 int ndmp_lbr_init(ndmpd_session_t *session);
 void ndmp_copy_addr_v3(ndmp_addr_v3 *dst, ndmp_addr_v3 *src);
 
-char *cctime(time_t *t);
+const char *cctime(time_t *t);
 
 char *ndmp_base64_encode(char *);
 char *ndmp_base64_decode(char *);
