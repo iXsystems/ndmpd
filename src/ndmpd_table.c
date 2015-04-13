@@ -691,8 +691,8 @@ ndmp_handler_t ndmp_msghdl_tab[] = {
 	{
 		//NONE - 0x800
 		0,
-                {
-                }
+		{
+		}
 
 	},
 	{
