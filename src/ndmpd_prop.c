@@ -52,7 +52,7 @@
 #include "ndmpd.h"
 
 typedef struct ndmpd_cfg_param {
-	char		*name;
+	const char		*name;
 	char		value[64+1];
 } ndmpd_cfg_param_t;
 
@@ -65,6 +65,7 @@ typedef struct ndmpd_cfg_param {
  * 4. serve-ip
  *
  * */
+static
 ndmpd_cfg_param_t ndmpd_cfg_table[] =
 {
 	{"listen-nic", ""},
@@ -106,7 +107,8 @@ void print_prop(){
  * config table.
  */
 void setup(char *line){
-	int ki,vi,idx,iskey;
+	int ki,vi,iskey;
+	unsigned long idx;
 	char key[64];
 	char value[64+1];
 	ndmpd_cfg_id_t id;
@@ -175,7 +177,6 @@ char *
 ndmpd_get_prop(ndmpd_cfg_id_t id)
 {
 	char *env_val;
-	int i=0;
 
 	if (id < NDMP_MAXALL) {
 		env_val = ndmpd_cfg_table[id].value;
