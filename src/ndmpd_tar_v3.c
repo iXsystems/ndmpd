@@ -2979,7 +2979,7 @@ ndmpd_tar_backup_starter_v3(ndmpd_module_params_t *params)
 	get_backup_size(session, nlp->nlp_backup_path);
 
 	if (err == 0) {
-		err = ndmp_get_cur_bk_time(nlp, &nlp->nlp_cdate, jname);
+		err = ndmp_get_cur_bk_time(nlp, &nlp->nlp_cdate);
 		if (err != 0) {
 			ndmpd_log(LOG_DEBUG, "err %d", err);
 		} else {
