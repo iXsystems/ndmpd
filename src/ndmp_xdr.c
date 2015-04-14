@@ -1729,7 +1729,7 @@ xdr_ndmp_notify_connected_request(XDR *xdrs, ndmp_notify_connected_request *objp
 		return (FALSE);
 	if (!xdr_u_short(xdrs, &objp->protocol_version))
 		return (FALSE);
-	if (!xdr_string(xdrs, &objp->text_reason, ~0))
+	if (!xdr_string(xdrs, (void *)&objp->text_reason, ~0))
 		return (FALSE);
 	return (TRUE);
 }
