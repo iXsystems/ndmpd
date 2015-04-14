@@ -124,6 +124,8 @@ int ndmpd_load_prop(const char *);
 char *ndmpd_get_prop(ndmpd_cfg_id_t id);
 char *ndmpd_get_prop_default(ndmpd_cfg_id_t id, char *dflt);
 int ndmpd_get_prop_yorn(ndmpd_cfg_id_t id);
+void print_prop(void);
+void setup(char *line);
 
 #ifdef	__cplusplus
 }

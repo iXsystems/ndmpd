@@ -66,9 +66,9 @@
 
 #include <ndmpd_tar_v3.h>
 
-/*
- * Mutex to protect Nlp
- */
+/* 
+ * Mutex to protect Nlp 
+ */ 
 mutex_t nlp_mtx;
 
 
@@ -1557,6 +1557,7 @@ char *
 getIPfromNIC(char *nicname) {
 	// IPv4
 	char *ip;
+	struct sockaddr_in *ipaddr;
 
 	int fd=0;
 	struct ifreq ifr;
@@ -1570,8 +1571,9 @@ getIPfromNIC(char *nicname) {
 	ioctl(fd, SIOCGIFADDR, &ifr);
 	close(fd);
 
-	//sprintf(ip, "%s", inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr));
-	ip = inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr);
+	//ip = inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr);
+	ipaddr = (struct sockaddr_in *)(void *)&ifr.ifr_addr;
+	ip = inet_ntoa(ipaddr->sin_addr);
 
 	return ip;
 }
@@ -1657,7 +1659,7 @@ ndmp_create_socket(u_long *addr, u_short *port)
  *     "the epoch": if time is 0.
  *     string format of the time.
  */
-char *
+const char *
 cctime(time_t *t)
 {
 	char *bp, *cp;
@@ -1925,7 +1927,7 @@ ndmp_check_utf8magic(tlm_cmd_t *cmd)
  * Get the backup checkpoint time.
  */
 int
-ndmp_get_cur_bk_time(ndmp_lbr_params_t *nlp, time_t *tp, char *jname)
+ndmp_get_cur_bk_time(ndmp_lbr_params_t *nlp, time_t *tp)
 {
 	int err=0;
 
@@ -2038,7 +2040,7 @@ void
 randomize(unsigned char *buffer, int size)
 {
 	/* LINTED improper alignment */
-	unsigned int *p = (unsigned int *)buffer;
+	unsigned int *p = (unsigned int *)(void *)buffer;
 	unsigned int dwlen = size / sizeof (unsigned int);
 	unsigned int remlen = size % sizeof (unsigned int);
 	unsigned int tmp;
