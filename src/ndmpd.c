@@ -41,6 +41,8 @@
  */
 
 #include <stdio.h>
+#include <signal.h>
+#include <assert.h>
 
 /* getopt */
 #include <unistd.h>
@@ -53,14 +55,10 @@
 #include <ndmpd_table.h>
 #include <ndmpd_prop.h>
 
-#include <signal.h>
-#include <assert.h>
-
 /* for print log function */
 #include <stdarg.h>
 
 extern void ndmpd_mover_cleanup(ndmpd_session_t *session);
-
 extern ndmp_connection_t *ndmp_create_xdr_connection(void);
 extern void ndmp_destroy_xdr_connection(ndmp_connection_t *);
 extern void *ndmp_malloc(size_t size);
@@ -84,11 +82,12 @@ ndmpd_log(int level, const char *fmt,...)
 {
 	va_list arg;
 	va_start(arg, fmt);
-	if (PRINT_DEBUG_LOG){
+
+	if (PRINT_DEBUG_LOG) {
 		vfprintf(stderr, fmt, arg);
 		fprintf(stderr, "\n");
-	}else{
-		if(level!=LOG_DEBUG){
+	} else {
+		if (level != LOG_DEBUG) {
 			vfprintf(stderr, fmt, arg);
 			fprintf(stderr, "\n");
 		}
@@ -166,11 +165,11 @@ ndmp_run(u_long port, ndmp_con_handler_func_t con_handler_func)
 	sin.sin_family = AF_INET;
 
 	listenIP = getIPfromNIC(ndmpd_get_prop(NDMP_LISTEN_NIC));
-	printf("listen on IP: %s\n",listenIP);
-	if(strcmp(ndmpd_get_prop(NDMP_SERVE_NIC),"")==0)
-		printf(" Serve on IP: %s\n",getIPfromNIC(ndmpd_get_prop(NDMP_LISTEN_NIC)));
+	printf("Management on IP: %s\n", listenIP);
+	if (strcmp(ndmpd_get_prop(NDMP_SERVE_NIC),"") == 0)
+		printf("Data Transfer on IP: %s\n",getIPfromNIC(ndmpd_get_prop(NDMP_LISTEN_NIC)));
 	else
-		printf(" Serve on IP: %s\n",getIPfromNIC(ndmpd_get_prop(NDMP_SERVE_NIC)));
+		printf("Data Transfer on IP: %s\n",getIPfromNIC(ndmpd_get_prop(NDMP_SERVE_NIC)));
 
 	sin.sin_addr.s_addr = inet_addr(listenIP);
 	sin.sin_port = htons(port);
@@ -209,9 +208,9 @@ ndmp_run(u_long port, ndmp_con_handler_func_t con_handler_func)
 		 *
 		 * */
 		childPID = fork();
-		if(childPID >= 0) // fork was successful
+		if (childPID >= 0) // fork was successful
 		{
-			if(childPID == 0) {
+			if (childPID == 0) {
 				close(server_socket);
 
 				ndmpd_log(LOG_DEBUG, "connection fd: %d, got socket, start to process", ns);
@@ -222,7 +221,7 @@ ndmp_run(u_long port, ndmp_con_handler_func_t con_handler_func)
 				if ((argp = ndmp_malloc(sizeof (ndmpd_worker_arg_t))) != NULL) {
 					argp->nw_sock = ns;
 					argp->nw_ipaddr = ipaddr;
-					/*	assign handler function 	*/
+					/* assign handler function  */
 					argp->nw_con_handler_func = con_handler_func;
 					ndmpd_worker(argp);
 				}
@@ -251,7 +250,7 @@ void
 connection_handler(ndmp_connection_t *connection)
 {
 	ndmpd_log(LOG_DEBUG, " - connection_handler: handle the connection START - %d",
-						connection->conn_sock);
+		connection->conn_sock);
 	static int conn_id = 1;
 	ndmpd_session_t session;
 	ndmp_notify_connected_request req;
@@ -431,5 +430,3 @@ main(int argc, char *argv[])
 	
 	return 0;
 }
-
-
