@@ -1889,7 +1889,7 @@ backup_reader_v3(backup_reader_arg_t *argp)
 
 	ndmpd_log(LOG_DEBUG, " nlp->nlp_backup_path = %s", nlp->nlp_backup_path);
 
-	bp.bp_excls = ndmpd_make_exc_list();
+	bp.bp_excls = (char **)ndmpd_make_exc_list();
 	ft.ft_path = bp.bp_chkpnm;
 
 	ndmpd_log(LOG_DEBUG, "path %s", ft.ft_path);

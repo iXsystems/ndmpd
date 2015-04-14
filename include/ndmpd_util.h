@@ -121,7 +121,7 @@ void ndmp_lbr_cleanup(ndmpd_session_t *session);
 
 bool_t ndmp_valid_v3addr_type(ndmp_addr_type type);
 int ndmp_connect_sock_v3(u_long addr, u_short port);
-char **ndmpd_make_exc_list(void);
+const char **ndmpd_make_exc_list(void);
 
 bool_t fs_is_valid_logvol(char *path);
 char *ndmpd_mk_temp(char *buf);
