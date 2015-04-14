@@ -118,9 +118,9 @@ int ndmp_force_bk_dirs  = 1;
 /*
  * List of things to be exluded from backup.
  */
-static char *exls[] = {
-	(char *)EXCL_PROC,
-	(char *)EXCL_TMP,
+static const char *exls[] = {
+	EXCL_PROC,
+	EXCL_TMP,
 	NULL, /* reserved for a copy of the "backup.directory" */
 	NULL
 };
@@ -1824,13 +1824,14 @@ ndmpd_make_bk_dir_path(char *buf, char *fname)
  * Returns:
  *   list - array of character strings
  */
-char **
+const char **
 ndmpd_make_exc_list(void)
 {
-	char *val, **cpp;
+	char *val;
+	const char  **cpp;
 	int i, n;
 
-	n = sizeof (exls);
+	n = sizeof(exls);
 	if ((cpp = ndmp_malloc(n)) != NULL) {
 		for (i = 0; exls[i] != NULL; i++)
 			cpp[i] = exls[i];

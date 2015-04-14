@@ -1260,7 +1260,7 @@ typedef enum ndmp_connect_reason ndmp_connect_reason;
 struct ndmp_notify_connected_request {
 	ndmp_connect_reason reason;
 	u_short protocol_version;
-	char *text_reason;
+	const char *text_reason;
 };
 typedef struct ndmp_notify_connected_request ndmp_notify_connected_request;
 

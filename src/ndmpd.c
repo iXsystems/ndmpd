@@ -292,7 +292,7 @@ connection_handler(ndmp_connection_t *connection)
 
 	req.reason = NDMP_CONNECTED;
 	req.protocol_version = ndmp_ver;
-	req.text_reason = (char *)""; 
+	req.text_reason = ""; 
 
 	/* Send request to tell the client that we're ready for connection */
 	if (ndmp_send_request_lock(connection, 
