@@ -420,7 +420,7 @@ setupsels(ndmpd_session_t *session, ndmpd_module_params_t *params,
  *   pointer to the bp: on success
  *   NULL: otherwise
  */
-char *
+static char *
 mkrsp(char *bp, char *pp, char *sp, char *np)
 {
 	if (!bp || !pp)
@@ -475,7 +475,7 @@ mkrsp(char *bp, char *pp, char *sp, char *np)
  * based on nm3_opath and nm3_dpath.  path should have matched nm3_opath
  * in some way.
  */
-char *
+static char *
 mknewname(const struct rs_name_maker *rnp, char *buf, int idx, char *path)
 {
 	char *rv;
