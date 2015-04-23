@@ -360,9 +360,9 @@ setupsels(ndmpd_session_t *session, ndmpd_module_params_t *params,
 		 */
 		for (i = 0; i < n; ++i)
 			*(lpp+i) = " ";
-		n = 1;
-		start = index-1;
-		end = start+1;
+
+		start = index - 1;
+		end = start + 1;
 		lpp += start; /* Next selection entry will be in lpp[start] */
 	} else {
 		start = 0;
@@ -1748,8 +1748,6 @@ timebk_v3(void *arg, fst_node_t *pnp, fst_node_t *enp)
 	if (rv != 0)
 		return (rv);
 
-	stp = enp->tn_path ? enp->tn_st : pnp->tn_st;
-
 	if (shouldskip(bpp, pnp, enp, &rv))
 		return (rv);
 
@@ -2314,10 +2312,9 @@ tar_backup_v3(ndmpd_session_t *session, ndmpd_module_params_t *params,
 		(void) pthread_barrier_destroy(&arg.br_barrier);
 
 		//exit as if there was an internal error
-		if (session->ns_eof) {
-			result = EPIPE;
+		if (session->ns_eof)
 			err = -1;
-		}
+
 		if (!session->ns_data.dd_abort) {
 
 			ndmpd_log(LOG_DEBUG, "Backing up \"%s\" Finished.",
