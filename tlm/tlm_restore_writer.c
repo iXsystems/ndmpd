@@ -1423,13 +1423,9 @@ is_file_wanted(char *name,
  * Returns the number of bytes actually read.  On error returns -1.
  */
 static int
-input_mem(int l,
-    int d,
-    tlm_cmd_t *lcmds,
-    char *mem,
-    int len)
+input_mem(int l, int d, tlm_cmd_t *lcmds, char *mem, int len)
 {
-	int err;
+	int err = 0;
 	int toread, actual_size, rec_size;
 	char *rec;
 
