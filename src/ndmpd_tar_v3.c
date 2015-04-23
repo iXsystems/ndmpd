@@ -2239,14 +2239,12 @@ tar_backup_v3(ndmpd_session_t *session, ndmpd_module_params_t *params,
 	pthread_t rdtp;
 
 	char info[256];
-	int result;
-
 	int err;
 
 	if (ndmp_get_bk_dir_ino(nlp))
 		return (-1);
 
-	result = err = 0;
+	err = 0;
 
 	// exit as if there was an internal error
 	if (session->ns_eof)
@@ -2292,9 +2290,6 @@ tar_backup_v3(ndmpd_session_t *session, ndmpd_module_params_t *params,
 			ndmpd_log(LOG_DEBUG, "Launch backup_reader_v3 fail");
 			return (-1);
 		}
-
-		if ((err = ndmp_tar_writer_v3(session, params, cmds)) != 0)
-			result = EIO;
 
 		nlp->nlp_jstat->js_stop_time = time(NULL);
 
@@ -2725,10 +2720,9 @@ ndmpd_rs_sar_tar_v3(ndmpd_session_t *session, ndmpd_module_params_t *params,
 	struct rs_name_maker rn;
 	ndmp_tar_reader_arg_t arg;
 	pthread_t rdtp;
-	int result;
 
 	ndmpd_log(LOG_DEBUG, "++++++++ndmpd_rs_sar_tar_v3++++++++");
-	result = err = 0;
+	err = 0;
 	(void) ndmp_new_job_name(jname);
 	if (restore_alloc_structs_v3(session, jname) < 0)
 		return (-1);
@@ -2812,8 +2806,6 @@ ndmpd_rs_sar_tar_v3(ndmpd_session_t *session, ndmpd_module_params_t *params,
 
 		if (session->ns_eof)
 			err = -1;
-		if (err == -1)
-			result = EIO;
 	}
 
 	(void) send_unrecovered_list_v3(params, nlp); /* nothing restored. */
@@ -2821,8 +2813,6 @@ ndmpd_rs_sar_tar_v3(ndmpd_session_t *session, ndmpd_module_params_t *params,
 	if (session->ns_data.dd_abort) {
 		ndmpd_log(LOG_DEBUG, "Restoring to \"%s\" aborted.",
 		    (nlp->nlp_restore_path) ? nlp->nlp_restore_path : "NULL");
-		result = EINTR;
-
 		err = -1;
 	} else {
 
