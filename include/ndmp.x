@@ -1,7 +1,6 @@
 /*
  * Copyright 1996, 1997 PDC, Network Appliance.
  * Copyright 2009 Sun Microsystems, Inc.  
- * Copyright 2015 Marcelo Araujo <araujo@FreeBSD.org>.
  * All rights reserved.
  *
  * Use is subject to license terms.
