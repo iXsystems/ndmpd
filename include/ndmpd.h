@@ -47,6 +47,7 @@
 #include <sys/socket.h>
 #include <string.h> /* memset */
 #include <unistd.h> /* close */
+#include <stdio.h>
 
 /* free() */
 #include <stdlib.h>
@@ -318,5 +319,6 @@ int ndmp_run(u_long port, ndmp_con_handler_func_t con_handler_func);
 void connection_handler(ndmp_connection_t *connection);
 bool_t file_exists(const char * filename);
 int startNDMPD(void);
+static char * getline_ndmpd(FILE *fp, char *line, int llen);
 
 #endif /* _NDMPD_H_ */
