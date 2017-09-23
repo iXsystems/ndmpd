@@ -1,9 +1,9 @@
 # Devel Project #
 
-Originally this project used to live at: https://bitbucket.org/araujobsd/ndmp-freebsd/
-Now we migrate it to: https://github.com/araujobsd/ndmpd
+* Originally this project used to live at: https://bitbucket.org/araujobsd/ndmp-freebsd/
+* Now we migrate it to: https://github.com/araujobsd/ndmpd
 
-Current version is: 1.2 
+* Current version is: **1.2**
 
 # NDMPD for FreeBSD #
 
