@@ -1,3 +1,6 @@
+[![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/araujobsd/ndmpd.svg)](http://isitmaintained.com/project/araujobsd/ndmpd "Average time to resolve an issue")
+[![Percentage of issues still open](http://isitmaintained.com/badge/open/araujobsd/ndmpd.svg)](http://isitmaintained.com/project/araujobsd/ndmpd "Percentage of issues still open")
+
 # Devel Project #
 
 * Originally this project used to live at: https://bitbucket.org/araujobsd/ndmp-freebsd/
