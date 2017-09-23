@@ -56,6 +56,7 @@ vm-cl # java -jar ndmpcopy.jar -srchost <HOST1> -srcuser marcelo -srcpass marcel
 * Make the proper documentation as well as man pages.
 
 ### Contributors  ###
+* Marcelo Araujo <araujo@FreeBSD.org> (Developer)
 * Nikolai Lifanov <lifanov __at__ mail.lifanov.com> (Tests)
 
 ### Vendors tested and OK ###
