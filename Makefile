@@ -30,9 +30,11 @@ TLM_SRCS = tlm/tlm_util.c \
 		  tlm/tlm_info.c \
 		  tlm/tlm_hardlink.c
 
-LDADD =	-lmd -lpthread -lc
+#LDADD =	-lmd -lpthread -lc
+LDADD =	-lmd -lpthread -lc -lzfs -lzfs_core -lnvpair -lumem -lbsm
 MAN=
 CFLAGS += -I. -I./include 
+CFLAGS+= -DEMC_MODEL
 		   
 PREFIX ?= /usr/local
 DSTDIR = ${PREFIX}/sbin 
