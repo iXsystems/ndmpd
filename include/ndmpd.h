@@ -101,7 +101,7 @@
 	#define	PRODUCT_NAME	"FreeBSD"
 	#define OS_TYPE         "BSD"
 	#define OS_VERSION      "FreeBSD"
-	#define SOFTWARE_REV    "XXX"
+	#define SOFTWARE_REV    "1.2"
 #endif
 
 /*
