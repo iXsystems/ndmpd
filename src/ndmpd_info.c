@@ -246,6 +246,8 @@ ndmpd_config_get_butype_info_v3(ndmp_connection_t *connection, void *body)
 	NDMP_SETENV(envp, "FILESYSTEM", "");
 	NDMP_SETENV(envp, "UPDATE", "");
 	NDMP_SETENV(envp, "HIST", "n");
+	NDMP_SETENV(envp, "BSD_EFILE0", "");
+	NDMP_SETENV(envp, "BSD_EDIR0", "");
 	NDMP_SETENV(envp, "FILES", "");
 	NDMP_SETENV(envp, "SNAPSURE", "NO");
 	NDMP_SETENV(envp, "LEVEL", "0");
@@ -552,7 +554,6 @@ ndmpd_config_get_butype_info_v4(ndmp_connection_t *connection, void *body)
 {
 	ndmp_config_get_butype_info_reply_v4 reply;
 	ndmp_butype_info info[1];
-	//ndmp_pval envs[13];
 	ndmp_pval envs[9];
 	u_long attrs;
 	ndmp_pval *envp = envs;
@@ -570,6 +571,8 @@ ndmpd_config_get_butype_info_v4(ndmp_connection_t *connection, void *body)
 	NDMP_SETENV(envp, "FILESYSTEM", "");
 	NDMP_SETENV(envp, "UPDATE", "");
 	NDMP_SETENV(envp, "HIST", "n");
+	NDMP_SETENV(envp, "BSD_EFILE0", "");
+	NDMP_SETENV(envp, "BSD_EDIR0", "");
 	NDMP_SETENV(envp, "FILES", "");
 	NDMP_SETENV(envp, "SNAPSURE", "NO");
 	NDMP_SETENV(envp, "LEVEL", "0");
