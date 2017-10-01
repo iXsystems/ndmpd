@@ -1,5 +1,6 @@
 /*
  * Copyright 2009 Sun Microsystems, Inc.  
+ * Copyright 2017 Marcelo Araujo <araujo@FreeBSD.org>.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -55,7 +56,6 @@
 
 extern bool_t ndmp_ignore_ctime;
 extern bool_t ndmp_include_lmtime;
-extern int multiple_dest_restore;
 
 /* Defined */
 ndmp_error ndmp_restore_get_params_v3(ndmpd_session_t *session,
@@ -67,7 +67,5 @@ int ndmp_send_recovery_stat_v3(ndmpd_module_params_t *params,
 
 void setWriteBufDone(tlm_buffers_t *bufs);
 void setReadBufDone(tlm_buffers_t *bufs);
-char ** setupsels(ndmpd_session_t *session, ndmpd_module_params_t *params,
-	ndmp_lbr_params_t *nlp, int index);
 
 #endif /* _NDMPD_TAR_V3_ */

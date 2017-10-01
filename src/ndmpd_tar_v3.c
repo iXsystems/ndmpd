@@ -1,5 +1,6 @@
 /*
  * Copyright 2009 Sun Microsystems, Inc.  
+ * Copyright 2017 Marcelo Araujo <araujo@FreeBSD.org>.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -359,9 +360,9 @@ setupsels(ndmpd_session_t *session, ndmpd_module_params_t *params,
 		 */
 		for (i = 0; i < n; ++i)
 			*(lpp+i) = " ";
-
-		start = index - 1;
-		end = start + 1;
+		n = 1;
+		start = index-1;
+		end = start+1;
 		lpp += start; /* Next selection entry will be in lpp[start] */
 	} else {
 		start = 0;
@@ -419,7 +420,7 @@ setupsels(ndmpd_session_t *session, ndmpd_module_params_t *params,
  *   pointer to the bp: on success
  *   NULL: otherwise
  */
-static char *
+char *
 mkrsp(char *bp, char *pp, char *sp, char *np)
 {
 	if (!bp || !pp)
@@ -474,7 +475,7 @@ mkrsp(char *bp, char *pp, char *sp, char *np)
  * based on nm3_opath and nm3_dpath.  path should have matched nm3_opath
  * in some way.
  */
-static char *
+char *
 mknewname(const struct rs_name_maker *rnp, char *buf, int idx, char *path)
 {
 	char *rv;
@@ -817,9 +818,6 @@ get_hist_env_v3(ndmpd_module_params_t *params, ndmp_lbr_params_t *nlp)
  * into strings.  The separator of the EXCLUDE environment
  * variable is the ',' character.
  *
- * For QNAP version, we change this to match EMC behavior.
- * Exclude will be sperate to exclude file and folder.
- *
  * Parameters:
  *   params (input) - pointer to the parameters structure
  *   nlp (input) - pointer to the nlp structure
@@ -831,67 +829,16 @@ static void
 get_exc_env_v3(ndmpd_module_params_t *params, ndmp_lbr_params_t *nlp)
 {
 	char *envp;
-	char env_parameter[13]; // QNAP_EFILE99, QNAP_EDIR99
-	char tmpenv[1024];
-
-	/*
-	 * we support only 99 exclude file name patterns
-	 * */
-	int idx,max_count=100, exclude_count=0;
-
-
-	for(idx=1,exclude_count=0;idx<max_count;idx++){
-#ifdef EMC_MODEL
-		sprintf(env_parameter,"EMC_EFILE%02d",idx);
-#else
-		sprintf(env_parameter,"QNAP_EFILE%02d",idx);
-#endif
-		envp = MOD_GETENV(params, env_parameter);
-		if(envp)
-			exclude_count++;
-
-#ifdef EMC_MODEL
-		sprintf(env_parameter,"EMC_EDIR%02d",idx);
-#else
-		sprintf(env_parameter,"QNAP_EDIR%02d",idx);
-#endif
-		envp = MOD_GETENV(params, env_parameter);
-		if(envp)
-			exclude_count++;
+	
+	envp = MOD_GETENV(params, "EXCLUDE");
+	if (!envp) {
+		ndmpd_log(LOG_DEBUG, "env(EXCLUDE) not defined");
+		nlp->nlp_exl = NULL;
+	} else {
+		ndmpd_log(LOG_DEBUG, "env(EXCLUDE): \"%s\"", envp);
+		nlp->nlp_exl = split_env(envp, ',');
+		prl(nlp->nlp_exl);
 	}
-
-	exclude_count+=1; // and an end directive.
-
-	nlp->nlp_exl=malloc(sizeof(char*)*exclude_count);
-
-	for(idx=1,exclude_count=0;idx<max_count;idx++){
-#ifdef EMC_MODEL
-		sprintf(env_parameter,"EMC_EFILE%02d",idx);
-#else
-		sprintf(env_parameter,"QNAP_EFILE%02d",idx);
-#endif
-		envp = MOD_GETENV(params, env_parameter);
-		if(envp){
-			sprintf(tmpenv, "f_%s",envp);
-			nlp->nlp_exl[exclude_count]=strdup(tmpenv);
-			exclude_count++;
-		}
-
-#ifdef EMC_MODEL
-		sprintf(env_parameter,"EMC_EDIR%02d",idx);
-#else
-		sprintf(env_parameter,"QNAP_EDIR%02d",idx);
-#endif
-		envp = MOD_GETENV(params, env_parameter);
-		if(envp){
-			sprintf(tmpenv, "d_%s",envp);
-			nlp->nlp_exl[exclude_count]=strdup(tmpenv);
-			exclude_count++;
-		}
-	}
-
-	nlp->nlp_exl[exclude_count]=NULL;
-	prl(nlp->nlp_exl);
 
 }
 
@@ -1747,6 +1694,8 @@ timebk_v3(void *arg, fst_node_t *pnp, fst_node_t *enp)
 	if (rv != 0)
 		return (rv);
 
+	stp = enp->tn_path ? enp->tn_st : pnp->tn_st;
+
 	if (shouldskip(bpp, pnp, enp, &rv))
 		return (rv);
 
@@ -1886,7 +1835,7 @@ backup_reader_v3(backup_reader_arg_t *argp)
 
 	ndmpd_log(LOG_DEBUG, " nlp->nlp_backup_path = %s", nlp->nlp_backup_path);
 
-	bp.bp_excls = (char **)ndmpd_make_exc_list();
+	bp.bp_excls = ndmpd_make_exc_list();
 	ft.ft_path = bp.bp_chkpnm;
 
 	ndmpd_log(LOG_DEBUG, "path %s", ft.ft_path);
@@ -2238,12 +2187,14 @@ tar_backup_v3(ndmpd_session_t *session, ndmpd_module_params_t *params,
 	pthread_t rdtp;
 
 	char info[256];
+	int result;
+
 	int err;
 
 	if (ndmp_get_bk_dir_ino(nlp))
 		return (-1);
 
-	err = 0;
+	result = err = 0;
 
 	// exit as if there was an internal error
 	if (session->ns_eof)
@@ -2290,6 +2241,9 @@ tar_backup_v3(ndmpd_session_t *session, ndmpd_module_params_t *params,
 			return (-1);
 		}
 
+		if ((err = ndmp_tar_writer_v3(session, params, cmds)) != 0)
+			result = EIO;
+
 		nlp->nlp_jstat->js_stop_time = time(NULL);
 
 		(void) snprintf(info, sizeof (info),
@@ -2306,9 +2260,10 @@ tar_backup_v3(ndmpd_session_t *session, ndmpd_module_params_t *params,
 		(void) pthread_barrier_destroy(&arg.br_barrier);
 
 		//exit as if there was an internal error
-		if (session->ns_eof)
+		if (session->ns_eof) {
+			result = EPIPE;
 			err = -1;
-
+		}
 		if (!session->ns_data.dd_abort) {
 
 			ndmpd_log(LOG_DEBUG, "Backing up \"%s\" Finished.",
@@ -2719,9 +2674,10 @@ ndmpd_rs_sar_tar_v3(ndmpd_session_t *session, ndmpd_module_params_t *params,
 	struct rs_name_maker rn;
 	ndmp_tar_reader_arg_t arg;
 	pthread_t rdtp;
+	int result;
 
 	ndmpd_log(LOG_DEBUG, "++++++++ndmpd_rs_sar_tar_v3++++++++");
-	err = 0;
+	result = err = 0;
 	(void) ndmp_new_job_name(jname);
 	if (restore_alloc_structs_v3(session, jname) < 0)
 		return (-1);
@@ -2805,6 +2761,8 @@ ndmpd_rs_sar_tar_v3(ndmpd_session_t *session, ndmpd_module_params_t *params,
 
 		if (session->ns_eof)
 			err = -1;
+		if (err == -1)
+			result = EIO;
 	}
 
 	(void) send_unrecovered_list_v3(params, nlp); /* nothing restored. */
@@ -2812,6 +2770,8 @@ ndmpd_rs_sar_tar_v3(ndmpd_session_t *session, ndmpd_module_params_t *params,
 	if (session->ns_data.dd_abort) {
 		ndmpd_log(LOG_DEBUG, "Restoring to \"%s\" aborted.",
 		    (nlp->nlp_restore_path) ? nlp->nlp_restore_path : "NULL");
+		result = EINTR;
+
 		err = -1;
 	} else {
 
@@ -2965,7 +2925,7 @@ ndmpd_tar_backup_starter_v3(ndmpd_module_params_t *params)
 	get_backup_size(session, nlp->nlp_backup_path);
 
 	if (err == 0) {
-		err = ndmp_get_cur_bk_time(nlp, &nlp->nlp_cdate);
+		err = ndmp_get_cur_bk_time(nlp, &nlp->nlp_cdate, jname);
 		if (err != 0) {
 			ndmpd_log(LOG_DEBUG, "err %d", err);
 		} else {

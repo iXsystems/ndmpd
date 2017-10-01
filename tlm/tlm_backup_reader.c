@@ -1,5 +1,6 @@
 /*
  * Copyright 2009 Sun Microsystems, Inc.  
+ * Copyright 2017 Marcelo Araujo <araujo@FreeBSD.org>.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -174,13 +175,8 @@ output_acl_header(sec_attr_t *acl_info,
 	tar_hdr->th_linkflag = LF_ACL;
 	acl_info->attr_type = UFSD_ACL;
 
-	//(void) snprintf(acl_info->attr_len, sizeof (acl_info->attr_len), "%06zo", acl_info->attr_info);
 
-//#ifdef QNAP_TS
-//	acl_size = sizeof (*acl_info)+acl_info->attr_len+acl_info->xattr_len;
-//#else
 	acl_size = sizeof (*acl_info)+acl_info->attr_len;
-//#endif
 
 	(void) strlcpy(tar_hdr->th_name, "UFSACL", TLM_NAME_SIZE);
 	(void) snprintf(tar_hdr->th_size, sizeof (tar_hdr->th_size), "%011lo ", acl_size);
@@ -199,11 +195,6 @@ output_acl_header(sec_attr_t *acl_info,
 
 	memcpy(tmpbuf,acl_info,sizeof (*acl_info));
 	memcpy(tmpbuf+sizeof (*acl_info),acl_info->attr_info,acl_info->attr_len);
-//#ifdef QNAP_TS
-//	memcpy(tmpbuf+sizeof (*acl_info)+acl_info->attr_len,
-//			acl_info->attr_info+acl_info->attr_len,
-//			acl_info->xattr_len);
-//#endif
 
 	(void) output_mem(local_commands, (void *)tmpbuf, acl_size);
 

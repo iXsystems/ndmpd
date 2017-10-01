@@ -1,5 +1,6 @@
 /*
  * Copyright 2009 Sun Microsystems, Inc.  
+ * Copyright 2017 Marcelo Araujo <araujo@FreeBSD.org>.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -184,6 +185,9 @@ tlm_get_write_buffer(long want, long *actual_size,
 			 * tell the writer that a buffer is available
 			 */
 			tlm_buffer_release_in_buf(buffers);
+
+			buffer = tlm_buffer_advance_in_idx(buffers);
+
 		}
 
 		buffer = tlm_buffer_in_buf(buffers, NULL);

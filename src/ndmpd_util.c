@@ -1,5 +1,6 @@
 /*
  * Copyright 2009 Sun Microsystems, Inc.  
+ * Copyright 2017 Marcelo Araujo <araujo@FreeBSD.org>.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -65,9 +66,9 @@
 
 #include <ndmpd_tar_v3.h>
 
-/* 
- * Mutex to protect Nlp 
- */ 
+/*
+ * Mutex to protect Nlp
+ */
 mutex_t nlp_mtx;
 
 
@@ -117,9 +118,9 @@ int ndmp_force_bk_dirs  = 1;
 /*
  * List of things to be exluded from backup.
  */
-static const char *exls[] = {
-	EXCL_PROC,
-	EXCL_TMP,
+static char *exls[] = {
+	(char *)EXCL_PROC,
+	(char *)EXCL_TMP,
 	NULL, /* reserved for a copy of the "backup.directory" */
 	NULL
 };
@@ -1556,7 +1557,6 @@ char *
 getIPfromNIC(char *nicname) {
 	// IPv4
 	char *ip;
-	struct sockaddr_in *ipaddr;
 
 	int fd=0;
 	struct ifreq ifr;
@@ -1570,9 +1570,8 @@ getIPfromNIC(char *nicname) {
 	ioctl(fd, SIOCGIFADDR, &ifr);
 	close(fd);
 
-	//ip = inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr);
-	ipaddr = (struct sockaddr_in *)(void *)&ifr.ifr_addr;
-	ip = inet_ntoa(ipaddr->sin_addr);
+	//sprintf(ip, "%s", inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr));
+	ip = inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr);
 
 	return ip;
 }
@@ -1658,7 +1657,7 @@ ndmp_create_socket(u_long *addr, u_short *port)
  *     "the epoch": if time is 0.
  *     string format of the time.
  */
-const char *
+char *
 cctime(time_t *t)
 {
 	char *bp, *cp;
@@ -1823,14 +1822,13 @@ ndmpd_make_bk_dir_path(char *buf, char *fname)
  * Returns:
  *   list - array of character strings
  */
-const char **
+char **
 ndmpd_make_exc_list(void)
 {
-	char *val;
-	const char  **cpp;
+	char *val, **cpp;
 	int i, n;
 
-	n = sizeof(exls);
+	n = sizeof (exls);
 	if ((cpp = ndmp_malloc(n)) != NULL) {
 		for (i = 0; exls[i] != NULL; i++)
 			cpp[i] = exls[i];
@@ -1927,7 +1925,7 @@ ndmp_check_utf8magic(tlm_cmd_t *cmd)
  * Get the backup checkpoint time.
  */
 int
-ndmp_get_cur_bk_time(ndmp_lbr_params_t *nlp, time_t *tp)
+ndmp_get_cur_bk_time(ndmp_lbr_params_t *nlp, time_t *tp, char *jname)
 {
 	int err=0;
 
@@ -2040,7 +2038,7 @@ void
 randomize(unsigned char *buffer, int size)
 {
 	/* LINTED improper alignment */
-	unsigned int *p = (unsigned int *)(void *)buffer;
+	unsigned int *p = (unsigned int *)buffer;
 	unsigned int dwlen = size / sizeof (unsigned int);
 	unsigned int remlen = size % sizeof (unsigned int);
 	unsigned int tmp;

@@ -1,5 +1,6 @@
 /*
  * Copyright 2009 Sun Microsystems, Inc.  
+ * Copyright 2017 Marcelo Araujo <araujo@FreeBSD.org>.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -258,6 +259,8 @@ tar_getdir(tlm_commands_t *commands,
 				/*  ...need to preserve across volume changes */
 	tlm_acls_t *acls;	/* file access info */
 
+	bool_t is_long_name = FALSE;
+
 	char longname[TLM_MAX_PATH_NAME];
 	char longlink[TLM_MAX_PATH_NAME];
 	char hugename[TLM_MAX_PATH_NAME];
@@ -279,6 +282,7 @@ tar_getdir(tlm_commands_t *commands,
 					 * restore and its position in the
 					 * selections list
 					 */
+	int	nzerohdr;		/* the number of empty tar headers */
 	bool_t break_flg;		/* exit the while loop */
 	int	rv;
 	long nm_end, lnk_end;
@@ -329,6 +333,7 @@ tar_getdir(tlm_commands_t *commands,
 	 * work
 	 */
 	rv = 0;
+	nzerohdr = 0;
 	break_flg = FALSE;
 
 
@@ -428,6 +433,7 @@ tar_getdir(tlm_commands_t *commands,
 			if(chk_rv!=1){
 				continue;
 			}
+			nzerohdr = 0;
 			/*
 			 * When files are spanned to the next tape, the
 			 * information of the acls must not be over-written
@@ -546,6 +552,7 @@ tar_getdir(tlm_commands_t *commands,
 					}
 
 					name[0] = 0;
+					is_long_name = FALSE;
 				}
 
 				nm_end = 0;
@@ -675,6 +682,7 @@ tar_getdir(tlm_commands_t *commands,
 			if (hardlink_tmp_file) {
 				nmp = NULL;
 				want_this_file = FALSE;
+				hardlink_tmp_file = 0;
 			}
 
 			/*
@@ -738,6 +746,7 @@ tar_getdir(tlm_commands_t *commands,
 				longlink[0] = 0;
 				hugename[0] = 0;
 				name[0] = 0;
+				is_long_name = FALSE;
 			}
 			break;
 		case LF_XATTR:
@@ -849,10 +858,12 @@ tar_getdir(tlm_commands_t *commands,
 
 			if (size_left != 0)
 				ndmpd_log(LOG_DEBUG, "fsize %ld sleft %ld nmend %ld", file_size, size_left, nm_end);
+			is_long_name = TRUE;
 			break;
 		case LF_ACL:
 			size_left = load_acl_info(lib, drv, file_size, acls,
 			    &acl_spot, local_commands);
+
 			break;
 		case LF_VOLHDR:
 			break;
@@ -1408,9 +1419,13 @@ is_file_wanted(char *name,
  * Returns the number of bytes actually read.  On error returns -1.
  */
 static int
-input_mem(int l, int d, tlm_cmd_t *lcmds, char *mem, int len)
+input_mem(int l,
+    int d,
+    tlm_cmd_t *lcmds,
+    char *mem,
+    int len)
 {
-	int err = 0;
+	int err;
 	int toread, actual_size, rec_size;
 	char *rec;
 
@@ -1683,13 +1698,6 @@ load_acl_info(int lib,
 	acl_len = acls->acl_info.attr_len;
 	ndmpd_log(LOG_DEBUG, "ACL : acl_len=%d",acl_len);
 
-//#ifdef QNAP_TS
-//	// handle the ACL in xattr.
-//	xattr_len = acls->acl_info.xattr_len;
-//	ndmpd_log(LOG_DEBUG, "ACL : xattr_len=%d",xattr_len);
-//
-//#endif
-
 	acl_all_len = acl_len+xattr_len;
 
 	// we can not use dynamic allocate here, it will overwrite some address that we still need.
@@ -1805,11 +1813,7 @@ set_acl(char *name, tlm_acls_t *acls)
 		acl = acl_from_text(acl_txt);
 
 		if (acl!=NULL) {
-#ifdef QNAP_TS
-			erc = acl_set_file(name, ACL_TYPE_ACCESS, acl);
-#else
 			erc = acl_set_file(name, ACL_TYPE_NFS4, acl);
-#endif
 			if (erc < 0) {
 				ndmpd_log(LOG_DEBUG, "RESTORE> acl_set errno %d!!!", errno);
 				// if the volume does not support ACL, this will fail.
@@ -1821,14 +1825,6 @@ set_acl(char *name, tlm_acls_t *acls)
 			ndmpd_log(LOG_DEBUG,"RESTORE> acl_from_text error on file:%s",name);
 			fprintf(stderr, "RESTORE> acl_from_text error on file:%s",name);
 		}
-
-//#ifdef QNAP_TS
-//		char *aclname="security.NTACL";
-//		if(acls->acl_info.xattr_len>0){
-//			char *acl_xattr=acls->acl_info.attr_info+acls->acl_info.attr_len;
-//			setxattr(name, aclname, acl_xattr, acls->acl_info.xattr_len, 0);
-//		}
-//#endif
 
 		free(acls->acl_info.attr_info);
 

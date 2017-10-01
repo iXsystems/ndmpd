@@ -1,5 +1,6 @@
 /*
  * Copyright 2009 Sun Microsystems, Inc.  
+ * Copyright 2017 Marcelo Araujo <araujo@FreeBSD.org>.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -1259,7 +1260,7 @@ typedef enum ndmp_connect_reason ndmp_connect_reason;
 struct ndmp_notify_connected_request {
 	ndmp_connect_reason reason;
 	u_short protocol_version;
-	const char *text_reason;
+	char *text_reason;
 };
 typedef struct ndmp_notify_connected_request ndmp_notify_connected_request;
 

@@ -1,5 +1,6 @@
 /*
  * Copyright 2009 Sun Microsystems, Inc.  
+ * Copyright 2017 Marcelo Araujo <araujo@FreeBSD.org>.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -60,6 +61,5 @@ int ndmpd_fhnode_v3_cb(lbr_fhlog_call_backs_t *cbp, char *dir, char *file,
 	struct stat *stp, u_longlong_t off);
 int ndmpd_path_restored_v3(lbr_fhlog_call_backs_t *cbp, char *name,
 	struct stat *st, u_longlong_t ll_idx);
-char *get_bk_path_v3(ndmpd_module_params_t *params);
 
 #endif /* _NDMPD_FHISTORY_H */

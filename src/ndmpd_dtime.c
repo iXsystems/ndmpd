@@ -1,5 +1,6 @@
 /*
  * Copyright 2009 Sun Microsystems, Inc.  
+ * Copyright 2017 Marcelo Araujo <araujo@FreeBSD.org>.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -274,7 +275,7 @@ ddates_pathname(char *buf)
 }
 
 /*
- * getline_ndmpd
+ * getline
  *
  * Get a line from the file and handle the continued lines.
  */
