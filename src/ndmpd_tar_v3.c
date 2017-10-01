@@ -828,6 +828,7 @@ get_hist_env_v3(ndmpd_module_params_t *params, ndmp_lbr_params_t *nlp)
 static void
 get_exc_env_v3(ndmpd_module_params_t *params, ndmp_lbr_params_t *nlp)
 {
+	/*
 	char *envp;
 	
 	envp = MOD_GETENV(params, "EXCLUDE");
@@ -839,6 +840,50 @@ get_exc_env_v3(ndmpd_module_params_t *params, ndmp_lbr_params_t *nlp)
 		nlp->nlp_exl = split_env(envp, ',');
 		prl(nlp->nlp_exl);
 	}
+	*/
+
+	        char *envp;
+        char env_parameter[13]; // BSD_EFILE99, BSD_EDIR99
+        char tmpenv[1024];
+
+        /*
+         * we support only 99 exclude file name patterns
+         * */
+        int idx,max_count=100, exclude_count=0;
+
+
+        for(idx=1,exclude_count=0;idx<max_count;idx++){
+		sprintf(env_parameter,"BSD_EFILE%02d",idx);
+		envp = MOD_GETENV(params, env_parameter);
+                if(envp)
+                        exclude_count++;
+		sprintf(env_parameter,"BSD_EDIR%02d",idx);
+		                envp = MOD_GETENV(params, env_parameter);
+                if(envp)
+                        exclude_count++;
+        }
+
+        exclude_count+=1; // and an end directive.
+        nlp->nlp_exl=malloc(sizeof(char*)*exclude_count);
+	for(idx=1,exclude_count=0;idx<max_count;idx++){
+		sprintf(env_parameter,"BSD_EFILE%02d",idx);
+		               envp = MOD_GETENV(params, env_parameter);
+                if(envp){
+                        sprintf(tmpenv, "f_%s",envp);
+                        nlp->nlp_exl[exclude_count]=strdup(tmpenv);
+                        exclude_count++;
+                }
+		sprintf(env_parameter,"BSD_EDIR%02d",idx);
+		                if(envp){
+                        sprintf(tmpenv, "d_%s",envp);
+                        nlp->nlp_exl[exclude_count]=strdup(tmpenv);
+                        exclude_count++;
+                }
+        }
+
+        nlp->nlp_exl[exclude_count]=NULL;
+        prl(nlp->nlp_exl);
+
 
 }
 
