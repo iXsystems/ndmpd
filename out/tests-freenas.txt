@@ -1,0 +1,19 @@
+# Copy between two filers
+ java -jar ndmpcopy.jar -srchost 192.168.100.149 -srcuser marcelo -srcpass 123456 -srcbutype dump -srcpath /z -dsthost 192.168.100.150 -dstuser marcelo -dstpass 123456 -dstpath /z -dstenv TYPE=dump -dstenv RECURSIVE=Y -dstenv FILESYSTEM=/z -srcenv TYPE=dump -srcenv RECURSIVE=Y -srcenv HIST=Y
+ 
+# Copy between two filers
+ java -jar ndmpcopy.jar -srchost 192.168.100.149 -srcuser marcelo -srcpass 123456 -srcbutype dump -srcpath /z/ -dsthost 192.168.100.150 -dstuser marcelo -dstpass 123456 -dstpath /z/restore
+
+# Copy between two filers to the right place
+java -jar ndmpcopy.jar -srchost 192.168.100.149 -srcuser marcelo -srcpass 123456 -srcbutype dump -srcpath /z/ -dsthost 192.168.100.150 -dstuser marcelo -dstpass 123456 -dstpath /
+
+
+# TAR v3
+./ndmjob -c -D 192.168.100.149/3,marcelo,123456 -B tar -I index -C /z -T. -f FakeTape -d 5 
+./ndmjob -x -D 192.168.100.149/3,marcelo,123456 -B tar -J index -C /z -E DIRECT=yes -T. -f FakeTape -d 2 bin
+
+# DUMP v4
+./ndmjob -c -D 192.168.100.149,marcelo,123456 -B dump -I index -C /z -T. -f FakeTape -d 5 
+./ndmjob -x -D 192.168.100.149/4,marcelo,123456 -B dump -J index -C /z -E DIRECT=yes -T. -f FakeTape -d 2 restore
+./ndmjob -q -D 192.168.100.149/4,marcelo,123456 -d 2
+
