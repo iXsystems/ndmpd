@@ -33,6 +33,7 @@ TLM_SRCS = tlm/tlm_util.c \
 LDADD =	-lmd -lpthread -lc
 MAN=
 CFLAGS += -I. -I./include 
+CFLAGS += -DEMC_MODEL
 		   
 PREFIX ?= /usr/local
 DSTDIR = ${PREFIX}/sbin 

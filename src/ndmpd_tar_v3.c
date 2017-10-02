@@ -853,11 +853,11 @@ get_exc_env_v3(ndmpd_module_params_t *params, ndmp_lbr_params_t *nlp)
 
 
         for(idx=1,exclude_count=0;idx<max_count;idx++){
-		sprintf(env_parameter,"BSD_EFILE%02d",idx);
+		sprintf(env_parameter,"EMC_EFILE%02d",idx);
 		envp = MOD_GETENV(params, env_parameter);
                 if(envp)
                         exclude_count++;
-		sprintf(env_parameter,"BSD_EDIR%02d",idx);
+		sprintf(env_parameter,"EMC_EDIR%02d",idx);
 		                envp = MOD_GETENV(params, env_parameter);
                 if(envp)
                         exclude_count++;
@@ -866,14 +866,14 @@ get_exc_env_v3(ndmpd_module_params_t *params, ndmp_lbr_params_t *nlp)
         exclude_count+=1; // and an end directive.
         nlp->nlp_exl=malloc(sizeof(char*)*exclude_count);
 	for(idx=1,exclude_count=0;idx<max_count;idx++){
-		sprintf(env_parameter,"BSD_EFILE%02d",idx);
+		sprintf(env_parameter,"EMC_EFILE%02d",idx);
 		               envp = MOD_GETENV(params, env_parameter);
                 if(envp){
                         sprintf(tmpenv, "f_%s",envp);
                         nlp->nlp_exl[exclude_count]=strdup(tmpenv);
                         exclude_count++;
                 }
-		sprintf(env_parameter,"BSD_EDIR%02d",idx);
+		sprintf(env_parameter,"EMC_EDIR%02d",idx);
 		                if(envp){
                         sprintf(tmpenv, "d_%s",envp);
                         nlp->nlp_exl[exclude_count]=strdup(tmpenv);
